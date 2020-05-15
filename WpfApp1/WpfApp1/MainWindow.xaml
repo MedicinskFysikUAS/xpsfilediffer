@@ -5,9 +5,28 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:WpfApp1"
         mc:Ignorable="d"
-        Title="MainWindow" Height="450" Width="800">
+        Title="MainWindow" Height="450" Width="620">
     <Grid>
-        <TextBox HorizontalAlignment="Left" Margin="375,185,0,0" Text="TextBox" TextWrapping="Wrap" VerticalAlignment="Top" Width="120"/>
+        <WrapPanel HorizontalAlignment="Left" DockPanel.Dock="Top" Margin="5,0,0,10">
+            <Button x:Name="BtnOpenTPFile" Click="BtnOpenTPFile_Click" Content="Treatment plan file:"/>
+            <Label x:Name="TPXpsPathLabel" Content="Inte vald" HorizontalAlignment="Left" VerticalAlignment="Center"/>
+        </WrapPanel>
 
+        <WrapPanel HorizontalAlignment="Left" DockPanel.Dock="Top" Margin="5,25,0,10">
+            <Button x:Name="BtnOpenDVHFile" Click="BtnOpenDVHFile_Click" Content="DVH file:" HorizontalAlignment="Right" VerticalAlignment="Center"/>
+            <Label x:Name="DVHXpsPathLabel" Content="Inte vald" HorizontalAlignment="Left" VerticalAlignment="Center"/>
+        </WrapPanel>
+
+        <WrapPanel HorizontalAlignment="Left" DockPanel.Dock="Top" Margin="5,48,0,10">
+            <Button x:Name="BtnOpenTCCFile" Click="BtnOpenTCCFile_Click" Content="TCC file:" HorizontalAlignment="Right" VerticalAlignment="Center"/>
+            <Label x:Name="TCCXpsPathLabel" Content="Inte vald" HorizontalAlignment="Left" VerticalAlignment="Center"/>
+        </WrapPanel>
+
+        <WrapPanel HorizontalAlignment="Left" DockPanel.Dock="Top" Margin="5,100,0,10">
+            <Button x:Name="BtnCheck" Click="BtnCheck_Click" Content="Kontrollera" HorizontalAlignment="Right" VerticalAlignment="Center"/>
+        </WrapPanel>
+
+        <DataGrid x:Name="ResultDataGrid" Margin="0,133,10,79"/>
+        <Button x:Name="BtnExit" Click="BtnExit_Click" Content="Avsluta" HorizontalAlignment="Left" Margin="502,360,0,0" VerticalAlignment="Top"/>
     </Grid>
 </Window>

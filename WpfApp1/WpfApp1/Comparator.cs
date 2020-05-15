@@ -19,5 +19,30 @@ namespace WpfApp1
         {
             return (_treatmentPlan.patientFirstName() == _tccPlan.patientFirstName()) && (_treatmentPlan.patientLastName() == _tccPlan.patientLastName());
         }
+
+        public List<List<string>> resultRows()
+        {
+            List<List<string>> resultRows = new List<List<string>>();
+            List<string> resultRow = new List<string>();
+            resultRow.Add("Samma patientnamn");
+            if (hasSamePatientName())
+            {
+                resultRow.Add("OK");
+            }
+            else
+            {
+                resultRow.Add("Inte OK");
+            }
+            resultRow.Add("Patientnamn i TP: " + _treatmentPlan.patientFirstName() + " " + _treatmentPlan.patientLastName() +
+                " i TCC: " + _tccPlan.patientFirstName() + " " + _tccPlan.patientLastName());
+            resultRows.Add(resultRow);
+
+
+
+
+
+
+            return resultRows;
+        }
     }
 }

@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "lVNnjIq9IHWDMRVIr+xAeMfsGElWI+asp0g7lGomLt4/0pMkcw1w0HuqdvpE2E6U/NiN25c2w3bRJGIXV1qBGw==",
+  "dgSpecHash": "8MdKfzraXlchKipX9CV0Zram/pANkxrUxtt80rL8dtyu/ZCUZaGhWdgUohA7WtcVgiPpRd0fT0yQ3UCSBK5tZw==",
   "success": true,
-  "projectFilePath": "C:\\work\\git\\xpsFileDiff\\WpfApp1\\WpfApp1\\WpfApp1.csproj",
+  "projectFilePath": "C:\\work\\git\\xpsfilediffer\\WpfApp1\\WpfApp1\\WpfApp1.csproj",
   "expectedPackageFiles": [],
   "logs": []
 }

@@ -7,6 +7,8 @@ namespace WpfApp1
     class TccPlan
     {
         private List<List<string>> _pageList;
+        private StringExtractor _stringExtractor = new StringExtractor();
+
 
         public TccPlan(List<List<string>> pageList)
         {
@@ -15,12 +17,14 @@ namespace WpfApp1
 
         public string patientFirstName()
         {
-            return "Roine";
+            int pageIndex = 0;
+            return _stringExtractor.getValueAfterSearchString(_pageList[pageIndex], "Patient-ID", 1);
         }
 
         public string patientLastName()
         {
-            return "Österberg";
+            int pageIndex = 0;
+            return _stringExtractor.getValueAfterSearchString(_pageList[pageIndex], "Patient-ID", 0);
         }
     }
 }
