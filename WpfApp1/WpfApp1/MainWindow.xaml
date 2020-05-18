@@ -27,6 +27,6 @@
         </WrapPanel>
 
         <DataGrid x:Name="ResultDataGrid" Margin="0,133,10,79"/>
-        <Button x:Name="BtnExit" Click="BtnExit_Click" Content="Avsluta" HorizontalAlignment="Left" Margin="502,360,0,0" VerticalAlignment="Top"/>
+        <Button x:Name="BtnExit" Click="BtnExit_Click" Content="Avsluta" HorizontalAlignment="Left" Margin="502,360,0,0" VerticalAlignment="Top" Width="64"/>
     </Grid>
 </Window>
