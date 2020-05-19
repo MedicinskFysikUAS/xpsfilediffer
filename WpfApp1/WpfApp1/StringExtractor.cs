@@ -102,11 +102,16 @@ namespace WpfApp1
             return stringsOnPage.FindIndex(startIndex, x => x.StartsWith(searchedString));
         }
 
+        public int getIndexOnPage(List<string> stringsOnPage, string searchedString)
+        {
+            return stringsOnPage.FindIndex(x => x.StartsWith(searchedString));
+        }
+
 
         public List<Tuple<string, string>> valuesInIntervall(List<string> stringsOnPage, int startIndex, int stopIndex)
         {
             List<Tuple<string,string>> posAndTimeValues = new List<Tuple<string,string>>();
-            for (int i = startIndex + 2 ; i < stopIndex; i++)
+            for (int i = startIndex + 1 ; i < stopIndex; i++)
             {
                 string position = stringsOnPage[i].Substring(0, 3);
                 string time = stringsOnPage[i].Substring(stringsOnPage[i].Length - 4, 4);
@@ -119,7 +124,20 @@ namespace WpfApp1
         {
             int stopIndex = getIndexOnPageAfterStartIndex(stringsOnPage, startIndex, searchedString);
             List<Tuple<string, string>> posAndTimeValues = new List<Tuple<string, string>>();
-            for (int i = startIndex + 2; i < stopIndex - 1; i++)
+            for (int i = startIndex + 1; i < stopIndex; i++)
+            {
+                string position = stringsOnPage[i].Substring(0, 3);
+                string time = stringsOnPage[i].Substring(stringsOnPage[i].Length - 4, 4);
+                posAndTimeValues.Add(new Tuple<string, string>(position, time));
+            }
+            return posAndTimeValues;
+        }
+
+        public List<Tuple<string, string>> valuesFromSearchedString(List<string> stringsOnPage, string searchedString, int stopIndex)
+        {
+            int startIndex = getIndexOnPage(stringsOnPage, searchedString);
+            List<Tuple<string, string>> posAndTimeValues = new List<Tuple<string, string>>();
+            for (int i = startIndex + 1; i < stopIndex; i++)
             {
                 string position = stringsOnPage[i].Substring(0, 3);
                 string time = stringsOnPage[i].Substring(stringsOnPage[i].Length - 4, 4);

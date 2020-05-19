@@ -12,18 +12,18 @@
             <Label x:Name="TPXpsPathLabel" Content="Inte vald" HorizontalAlignment="Left" VerticalAlignment="Center"/>
         </WrapPanel>
 
-        <WrapPanel HorizontalAlignment="Left" DockPanel.Dock="Top" Margin="5,25,0,10">
-            <Button x:Name="BtnOpenDVHFile" Click="BtnOpenDVHFile_Click" Content="DVH file:" HorizontalAlignment="Right" VerticalAlignment="Center"/>
+        <WrapPanel HorizontalAlignment="Left" DockPanel.Dock="Top" Margin="5,30,0,10">
+            <Button x:Name="BtnOpenDVHFile" Click="BtnOpenDVHFile_Click" Content="DVH file:"/>
             <Label x:Name="DVHXpsPathLabel" Content="Inte vald" HorizontalAlignment="Left" VerticalAlignment="Center"/>
         </WrapPanel>
 
-        <WrapPanel HorizontalAlignment="Left" DockPanel.Dock="Top" Margin="5,48,0,10">
-            <Button x:Name="BtnOpenTCCFile" Click="BtnOpenTCCFile_Click" Content="TCC file:" HorizontalAlignment="Right" VerticalAlignment="Center"/>
+        <WrapPanel HorizontalAlignment="Left" DockPanel.Dock="Top" Margin="5,60,0,10">
+            <Button x:Name="BtnOpenTCCFile" Click="BtnOpenTCCFile_Click" Content="TCC file:"/>
             <Label x:Name="TCCXpsPathLabel" Content="Inte vald" HorizontalAlignment="Left" VerticalAlignment="Center"/>
         </WrapPanel>
 
-        <WrapPanel HorizontalAlignment="Left" DockPanel.Dock="Top" Margin="5,100,0,10">
-            <Button x:Name="BtnCheck" Click="BtnCheck_Click" Content="Kontrollera" HorizontalAlignment="Right" VerticalAlignment="Center"/>
+        <WrapPanel HorizontalAlignment="Left" DockPanel.Dock="Top" Margin="5,105,0,0">
+            <Button x:Name="BtnCheck" Click="BtnCheck_Click" Content="Kontrollera" HorizontalAlignment="Left" VerticalAlignment="Center" Height="25.96"/>
         </WrapPanel>
 
         <DataGrid x:Name="ResultDataGrid" Margin="0,133,10,79"/>

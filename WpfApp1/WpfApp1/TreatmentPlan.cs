@@ -105,9 +105,9 @@ namespace WpfApp1
 
         }
 
-        
 
-        public bool liveCatheterPositions()
+
+        public List<LiveCatheter> liveCatheters()
         {
             List<CatheterPositonAndTimeTable> startPositonAndTimeTables = new List<CatheterPositonAndTimeTable>();
             List<CatheterPositonAndTimeTable> stopPositonAndTimeTables = new List<CatheterPositonAndTimeTable>();
@@ -120,7 +120,7 @@ namespace WpfApp1
                 while (startIndex != -1)
                 {
                     CatheterPositonAndTimeTable startPositonAndTimeTable = new CatheterPositonAndTimeTable();
-                    startIndex = _stringExtractor.getIndexOnPageAfterStartIndex(page, startIndex + 1, "Live catheter");
+                    startIndex = _stringExtractor.getIndexOnPageAfterStartIndex(page, startIndex + 1, "Posx [mm]y [mm]z [mm]WeightTime [s]");
                     if (startIndex != -1)
                     {
                         startPositonAndTimeTable.setStartIndex(startIndex);
@@ -156,31 +156,44 @@ namespace WpfApp1
                 ++counter;
             }
 
+            List<LiveCatheter> liveCatheters = new List<LiveCatheter>();
+            counter = 1;
             foreach (var startAndStopPositonAndTimeTable in startAndStopPositonAndTimeTables)
             {
+                LiveCatheter liveCatheter = new LiveCatheter();
                 if (startAndStopPositonAndTimeTable.startPageIndex() == startAndStopPositonAndTimeTable.stopPageIndex())
                 {
-                    // Search from startAndStopPositonAndTimeTable.startIndex forward until  startAndStopPositonAndTimeTable.stopIndex on .startPageIndex()
                     List<Tuple<string, string>> values = _stringExtractor.valuesInIntervall(_pageList[startAndStopPositonAndTimeTable.startPageIndex()],
                         startAndStopPositonAndTimeTable.startIndex(),
                         startAndStopPositonAndTimeTable.stopIndex());
+                    liveCatheter.setPositonTimePairs(values);
+                    liveCatheter.setCatheterNumber(counter);
                 }
-                else if (startAndStopPositonAndTimeTable.startPageIndex() > startAndStopPositonAndTimeTable.stopPageIndex())
+                else if (startAndStopPositonAndTimeTable.startPageIndex() < startAndStopPositonAndTimeTable.stopPageIndex())
                 {
-                    // 1. Search from startAndStopPositonAndTimeTable.startIndex forward until "Page" on .startPageIndex()
                     List<Tuple<string, string>> values = _stringExtractor.valuesUntilSearchedString(_pageList[startAndStopPositonAndTimeTable.startPageIndex()],
                          startAndStopPositonAndTimeTable.startIndex(),
                          "Page");
-                    // 2. Search backwards from "Total Time" on .stopPageIndex()
+                    List<Tuple<string, string>> values2 = _stringExtractor.valuesFromSearchedString(_pageList[startAndStopPositonAndTimeTable.stopPageIndex()],                                             
+                                             "Printed at",
+                                             startAndStopPositonAndTimeTable.stopIndex());
+
+                    List<Tuple<string, string>> allValues = new List<Tuple<string, string>>();
+                    allValues.AddRange(values);
+                    allValues.AddRange(values2);
+                    liveCatheter.setPositonTimePairs(allValues);
+                    liveCatheter.setCatheterNumber(counter);
                 }
                 else
                 {
                     // Unhandled case
                 }
+
+                liveCatheters.Add(liveCatheter);
+                ++counter;
             }
 
-            return true;
-
+            return liveCatheters;
         }
 
     }
