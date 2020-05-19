@@ -78,5 +78,10 @@ namespace WpfApp1
             return String.Format("{0:0.0}", Convert.ToDecimal(_stringExtractor.getValueAfterSearchStringSplitOnSpace(_pageList[pageIndex], "Total strålningstid", 0)));
         }
 
+        public bool liveCatheterPositions()
+        {
+            return false;
+        }
+
     }
 }

@@ -105,5 +105,83 @@ namespace WpfApp1
 
         }
 
+        
+
+        public bool liveCatheterPositions()
+        {
+            List<CatheterPositonAndTimeTable> startPositonAndTimeTables = new List<CatheterPositonAndTimeTable>();
+            List<CatheterPositonAndTimeTable> stopPositonAndTimeTables = new List<CatheterPositonAndTimeTable>();
+
+            int pageIndex = 0;
+            foreach (var page in _pageList)
+            {
+                int startIndex = 0;
+                int stopIndex = 0;
+                while (startIndex != -1)
+                {
+                    CatheterPositonAndTimeTable startPositonAndTimeTable = new CatheterPositonAndTimeTable();
+                    startIndex = _stringExtractor.getIndexOnPageAfterStartIndex(page, startIndex + 1, "Live catheter");
+                    if (startIndex != -1)
+                    {
+                        startPositonAndTimeTable.setStartIndex(startIndex);
+                        startPositonAndTimeTable.setPageIndex(pageIndex);
+                        startPositonAndTimeTables.Add(startPositonAndTimeTable);
+                    }
+                }
+
+                while (stopIndex != -1)
+                {
+                    CatheterPositonAndTimeTable stopPositonAndTimeTable = new CatheterPositonAndTimeTable();
+                    stopIndex = _stringExtractor.getIndexOnPageAfterStartIndex(page, stopIndex + 1, "Total Time");
+                    if (stopIndex != -1)
+                    {
+                        stopPositonAndTimeTable.setStopIndex(stopIndex);
+                        stopPositonAndTimeTable.setPageIndex(pageIndex);
+                        stopPositonAndTimeTables.Add(stopPositonAndTimeTable);
+                    }
+                }
+                ++pageIndex;
+            }
+
+            int counter = 0;
+            List<CatheterPositonAndTimeTable> startAndStopPositonAndTimeTables = new List<CatheterPositonAndTimeTable>();
+            foreach (var startPositonAndTimeTable in startPositonAndTimeTables)
+            {
+                CatheterPositonAndTimeTable startAndStopPositonAndTimeTable = new CatheterPositonAndTimeTable();
+                startAndStopPositonAndTimeTable.setStartPageIndex(startPositonAndTimeTable.pageIndex());
+                startAndStopPositonAndTimeTable.setStartIndex(startPositonAndTimeTable.startIndex());
+                startAndStopPositonAndTimeTable.setStopPageIndex(stopPositonAndTimeTables[counter].pageIndex());
+                startAndStopPositonAndTimeTable.setStopIndex(stopPositonAndTimeTables[counter].stopIndex());
+                startAndStopPositonAndTimeTables.Add(startAndStopPositonAndTimeTable);
+                ++counter;
+            }
+
+            foreach (var startAndStopPositonAndTimeTable in startAndStopPositonAndTimeTables)
+            {
+                if (startAndStopPositonAndTimeTable.startPageIndex() == startAndStopPositonAndTimeTable.stopPageIndex())
+                {
+                    // Search from startAndStopPositonAndTimeTable.startIndex forward until  startAndStopPositonAndTimeTable.stopIndex on .startPageIndex()
+                    List<Tuple<string, string>> values = _stringExtractor.valuesInIntervall(_pageList[startAndStopPositonAndTimeTable.startPageIndex()],
+                        startAndStopPositonAndTimeTable.startIndex(),
+                        startAndStopPositonAndTimeTable.stopIndex());
+                }
+                else if (startAndStopPositonAndTimeTable.startPageIndex() > startAndStopPositonAndTimeTable.stopPageIndex())
+                {
+                    // 1. Search from startAndStopPositonAndTimeTable.startIndex forward until "Page" on .startPageIndex()
+                    List<Tuple<string, string>> values = _stringExtractor.valuesUntilSearchedString(_pageList[startAndStopPositonAndTimeTable.startPageIndex()],
+                         startAndStopPositonAndTimeTable.startIndex(),
+                         "Page");
+                    // 2. Search backwards from "Total Time" on .stopPageIndex()
+                }
+                else
+                {
+                    // Unhandled case
+                }
+            }
+
+            return true;
+
+        }
+
     }
 }

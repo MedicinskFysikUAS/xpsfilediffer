@@ -4,8 +4,18 @@ using System.Text;
 
 namespace WpfApp1
 {
-    Tuple<string, string> _positonTimePair;
     class LiveCatheter
     {
+        private List<Tuple<string, string>> _positonTimePairs;
+
+        public void addPositonTimePair(Tuple<string, string> positonTimePair)
+        {
+            _positonTimePairs.Add(positonTimePair);
+        }
+
+        public List<Tuple<string, string>> positonTimePairs()
+        {
+            return _positonTimePairs;
+        }
     }
 }

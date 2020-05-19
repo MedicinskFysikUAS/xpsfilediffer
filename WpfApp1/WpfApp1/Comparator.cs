@@ -63,6 +63,11 @@ namespace WpfApp1
             return (_treatmentPlan.totalTreatmentTime() == _tccPlan.totalTreatmentTime());
         }
 
+        bool hasSameCatheterPositionTimePairs()
+        {
+            return _treatmentPlan.liveCatheterPositions() == _tccPlan.liveCatheterPositions();
+        }
+
         // check -----------------------
 
         public List<string> checkPatientName()
@@ -240,6 +245,28 @@ namespace WpfApp1
             return resultRow;
         }
 
+        public List<string> checkCatheterPositionTimePairs()
+        {
+            List<string> resultRow = new List<string>();
+            resultRow.Add("Bestrålningsposition och tid");
+            string descriptionString = "";
+            if (hasSameCatheterPositionTimePairs())
+            {
+                resultRow.Add("OK");
+                ++_numberOfOk;
+                descriptionString = "Alla positioner och tider är lika.";
+            }
+            else
+            {
+                resultRow.Add("Inte OK");
+                ++_numberOfErrors;
+                descriptionString = "Någon/några positioner/tider är olika.";
+            }
+            resultRow.Add(descriptionString);
+
+            return resultRow;
+        }
+
 
 
         public List<List<string>> resultRows()
@@ -252,7 +279,8 @@ namespace WpfApp1
             resultRows.Add(checkApproveDateTime());
             resultRows.Add(checkFractionDose());
             resultRows.Add(checkPlannedSourceStrength());
-            resultRows.Add(checkTotalTreatmentTime());
+            resultRows.Add(checkTotalTreatmentTime()); 
+            resultRows.Add(checkCatheterPositionTimePairs());
             return resultRows;
         }
 

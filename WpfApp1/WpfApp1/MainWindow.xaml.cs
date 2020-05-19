@@ -32,7 +32,6 @@ namespace WpfApp1
             InitializeComponent();
 
 
-            string tmp = String.Format("{0:0.00}", 123.0);
 
             //string xpsFilePath = @"C:\work\git\xpsFileDiff\treatmentPlan.xps";
             //PageReader pageReader = new PageReader(xpsFilePath);
