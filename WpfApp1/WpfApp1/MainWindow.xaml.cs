@@ -37,6 +37,7 @@ namespace WpfApp1
         {
             DataTable dataTable = new DataTable();
             string tmp = needleLengthText.Text;
+            string tmp2 = probeDistanceText.Text;
 
             if (_treatmentPlanXpsFilePath != null /*&& _dvhXpsFilePath != "Inte vald"*/ && _tccPlanXpsFilePath != null)
             {

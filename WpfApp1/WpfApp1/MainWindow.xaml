@@ -29,6 +29,13 @@
             </TextBox>
         </WrapPanel>
 
+        <WrapPanel HorizontalAlignment="Left" DockPanel.Dock="Top" Margin="5,120,0,10">
+            <Label x:Name="probeDistanceLabel" Content="Avst. prob [mm]: "/>
+            <TextBox Name="probeDistanceText" VerticalAlignment="Center" Width="40">
+
+            </TextBox>
+        </WrapPanel>
+
         <Button x:Name="BtnCheck" Click="BtnCheck_Click" Content="Kontrollera" HorizontalAlignment="Left" Margin="495,114,0,0" VerticalAlignment="Top" Width="64" Height="26" RenderTransformOrigin="0.469,-2.114"/>
 
         <DataGrid x:Name="ResultDataGrid" Margin="0,159,10,94"/>
