@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:WpfApp1"
         mc:Ignorable="d"
-        Title="MainWindow" Height="450" Width="620">
+        Title="MainWindow" Height="524" Width="624">
     <Grid>
         <WrapPanel HorizontalAlignment="Left" DockPanel.Dock="Top" Margin="5,0,0,10">
             <Button x:Name="BtnOpenTPFile" Click="BtnOpenTPFile_Click" Content="Treatment plan file:"/>
@@ -22,11 +22,16 @@
             <Label x:Name="TCCXpsPathLabel" Content="Inte vald" HorizontalAlignment="Left" VerticalAlignment="Center"/>
         </WrapPanel>
 
-        <WrapPanel HorizontalAlignment="Left" DockPanel.Dock="Top" Margin="5,105,0,0">
-            <Button x:Name="BtnCheck" Click="BtnCheck_Click" Content="Kontrollera" HorizontalAlignment="Left" VerticalAlignment="Center" Height="25.96"/>
+        <WrapPanel HorizontalAlignment="Left" DockPanel.Dock="Top" Margin="5,90,0,10">
+            <Label x:Name="needleLengthLabel" Content="Nållängd [mm]: "/>
+            <TextBox Name="needleLengthText" VerticalAlignment="Center" Width="40">
+                     
+            </TextBox>
         </WrapPanel>
 
-        <DataGrid x:Name="ResultDataGrid" Margin="0,133,10,79"/>
-        <Button x:Name="BtnExit" Click="BtnExit_Click" Content="Avsluta" HorizontalAlignment="Left" Margin="502,360,0,0" VerticalAlignment="Top" Width="64"/>
+        <Button x:Name="BtnCheck" Click="BtnCheck_Click" Content="Kontrollera" HorizontalAlignment="Left" Margin="495,114,0,0" VerticalAlignment="Top" Width="64" Height="26" RenderTransformOrigin="0.469,-2.114"/>
+
+        <DataGrid x:Name="ResultDataGrid" Margin="0,159,10,94"/>
+        <Button x:Name="BtnExit" Click="BtnExit_Click" Content="Avsluta" HorizontalAlignment="Left" Margin="495,444,0,0" VerticalAlignment="Top" Width="64" Height="26"/>
     </Grid>
 </Window>

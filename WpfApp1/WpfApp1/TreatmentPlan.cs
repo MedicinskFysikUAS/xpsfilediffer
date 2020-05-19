@@ -73,7 +73,10 @@ namespace WpfApp1
         {
             int pageIndex = 1;
             string fractiondoseStr = _stringExtractor.getValueFromSpaceSeparetedString(_pageList[pageIndex], "Prescribed Dose:", 0);
-            fractiondoseStr = fractiondoseStr.Replace('.', ',');
+            if (fractiondoseStr.Contains('.'))
+            {
+                fractiondoseStr = fractiondoseStr.Replace('.', ',');
+            }
             Decimal fractiondoseFl = Convert.ToDecimal(fractiondoseStr);
             return String.Format("{0:0.00}", Convert.ToDecimal(fractiondoseFl));
         }

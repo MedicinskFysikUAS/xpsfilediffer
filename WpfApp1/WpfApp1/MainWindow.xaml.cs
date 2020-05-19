@@ -23,30 +23,22 @@ namespace WpfApp1
     /// </summary>
     public partial class MainWindow : Window
     {
-        List<List<string>> _resultRows;
+        List<List<string>> _resultRows = new List<List<string>>();
         string _treatmentPlanXpsFilePath;
         string _dvhXpsFilePath;
         string _tccPlanXpsFilePath;
         public MainWindow()
         {
             InitializeComponent();
-
-
-
-            //string xpsFilePath = @"C:\work\git\xpsFileDiff\treatmentPlan.xps";
-            //PageReader pageReader = new PageReader(xpsFilePath);
-            ////PageReader pageReader = new PageReader(_treatmentPlanXpsFilePath);
-            //List<List<string>> pageList = pageReader.getPages();
-            //TreatmentPlan treatmentPlan = new TreatmentPlan(pageList);
-            //TccPlan tccPlan = new TccPlan(pageList);
-            //Comparator comparator = new Comparator(treatmentPlan, tccPlan);
-            //_resultRows = comparator.resultRows();
-            //buildResultDataGrid();
+           
         }
 
         void buildResultDataGrid()
         {
-            if (_treatmentPlanXpsFilePath != "Inte vald" /*&& _dvhXpsFilePath != "Inte vald"*/ && _tccPlanXpsFilePath != "Inte vald")
+            DataTable dataTable = new DataTable();
+            string tmp = needleLengthText.Text;
+
+            if (_treatmentPlanXpsFilePath != null /*&& _dvhXpsFilePath != "Inte vald"*/ && _tccPlanXpsFilePath != null)
             {
                 PageReader treatmentPlanPageReader = new PageReader(_treatmentPlanXpsFilePath);
                 List<List<string>> treatmentPlanPageList = treatmentPlanPageReader.getPages();
@@ -60,7 +52,6 @@ namespace WpfApp1
                 Comparator comparator = new Comparator(treatmentPlan, tccPlan);
                 _resultRows = comparator.resultRows();
             }
-            DataTable dataTable = new DataTable();
             DataColumn testCase= new DataColumn("Test", typeof(string));
             DataColumn testResult = new DataColumn("Result", typeof(string));
             DataColumn resultDescripton = new DataColumn("Beskriving", typeof(string));
