@@ -78,10 +78,25 @@ namespace WpfApp1
             return String.Format("{0:0.0}", Convert.ToDecimal(_stringExtractor.getValueAfterSearchStringSplitOnSpace(_pageList[pageIndex], "Total strålningstid", 0)));
         }
 
+        // TODO: Remove this when correct version is implemented
         public bool liveCatheterPositions()
         {
             return false;
         }
 
+        public List<LiveCatheter> liveCatheters()
+        {
+            List<LiveCatheter> liveCatheters = new List<LiveCatheter>();
+
+            int pageIndex = 0;
+            int startIndex = 0;
+            foreach (var page in _pageList)
+            {
+                _stringExtractor.getIndexOnPageAfterStartIndex(page, startIndex + 1, "Posx [mm]y [mm]z [mm]WeightTime [s]");
+            }
+
+            return liveCatheters;
+
+        }
     }
 }

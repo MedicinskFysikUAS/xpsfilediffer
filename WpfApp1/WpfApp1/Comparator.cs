@@ -66,7 +66,7 @@ namespace WpfApp1
         bool hasSameCatheterPositionTimePairs()
         {
             List<LiveCatheter> tpLiveCatheters = _treatmentPlan.liveCatheters();
-            // TODO: List<LiveCatheter> tccLiveCatheters = _tccPlan.liveCatheters();
+            TODO: List<LiveCatheter> tccLiveCatheters = _tccPlan.liveCatheters();
             // TODO compare livecatheters
             return true;
         }

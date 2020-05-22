@@ -30,7 +30,10 @@ namespace WpfApp1
         public MainWindow()
         {
             InitializeComponent();
-           
+            // Debug:
+            PageReader tccPlanPageReader = new PageReader("C:\\work\\git\\xpsfilediffer\\xpsFiles\\tccPlan.xps");
+            List<List<string>> tccPlanPageList = tccPlanPageReader.getPages();
+
         }
 
         void buildResultDataGrid()
