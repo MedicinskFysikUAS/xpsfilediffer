@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Windows.Controls;
@@ -12,6 +13,8 @@ namespace WpfApp1
     class PageReader
     {
         private string xpsFilePath;
+        //private List<Tuple<string, string>> _positonTimePairs;
+        private List<LiveCatheter> _liveCatheters = new List<LiveCatheter>();
 
         public PageReader(string xpsFilePath)
         {
@@ -47,6 +50,7 @@ namespace WpfApp1
                 {
                     bool readCatherPositions = false;
                     string readCatherPositionsAtY = "";
+                    string channelNumber = "";
                     List<string> catheterPositions = new List<string>();
 
                     while (_pageContentReader.Read())
@@ -79,11 +83,12 @@ namespace WpfApp1
                                         GetAttribute("OriginX"));
 
                                         int startColumn = columnFromOrigX(originX);
-                                        string timeValuesStr = (_pageContentReader.GetAttribute("UnicodeString"));
+                                        //string timeValuesStr = (_pageContentReader.GetAttribute("UnicodeString"));
                                         List<Tuple<int, double>> columnAndTimes = getColumnAndTimes(startColumn, _pageContentReader);
-                                        setPositonTimePairsTmp(catheterPositions, columnAndTimes);
+                                        setPositonTimePairsTmp(channelNumber, catheterPositions, columnAndTimes);
                                         readCatherPositions = false;
                                         readCatherPositionsAtY = "";
+                                        channelNumber = "";
                                     }
 
 
@@ -92,6 +97,7 @@ namespace WpfApp1
                                         readCatherPositionsAtY = (_pageContentReader.
                                         GetAttribute("OriginY"));
                                         readCatherPositions = true;
+                                        channelNumber = tmp3;
                                     }
 
 
@@ -395,8 +401,50 @@ namespace WpfApp1
             return catheterPositions;
         }
 
-        public void setPositonTimePairsTmp(List<string>  catheterPositions, List<Tuple<int, double>> columnAndTimes)
+        public void addLiveCatheter(LiveCatheter liveCatheter)
         {
+            int index = -1;
+            int counter = 0;
+            foreach (var item in _liveCatheters)
+            {
+                if (item.catheterNumber() == liveCatheter.catheterNumber())
+                {
+                    index = counter;
+                    break;
+                }
+                ++counter;
+            }
+
+            if (index != -1)
+            {
+                LiveCatheter newLiveCatheter = _liveCatheters[index];
+                newLiveCatheter.appendPositionTimePairs(liveCatheter.positonTimePairs());
+                _liveCatheters[index] = newLiveCatheter;
+            }
+            else
+            {
+                _liveCatheters.Add(liveCatheter);
+            }
+        }
+
+        public int channelNumberToInt(string channelNumber)
+        {
+            int channelNumberInt = -1;
+            string channelNumberPrefix = "Kanal";
+            if (channelNumberPrefix.Length < channelNumber.Length)
+            {
+                string channelNumberStr = channelNumber.Substring(channelNumberPrefix.Length, channelNumber.Length - channelNumberPrefix.Length).Trim();
+                channelNumberInt = int.Parse(channelNumberStr);
+            }
+            return channelNumberInt;
+        }
+
+
+        public void setPositonTimePairsTmp(string channelNumber, List<string>  catheterPositions, List<Tuple<int, double>> columnAndTimes)
+        {
+            //List<Tuple<string, string>> positonTimePairs = new List<Tuple<string, string>>();
+            List<LiveCatheter> liveCatheters = new List<LiveCatheter>();
+            //List<Tuple<string, string>> positonTimePairs = new List<Tuple<string, string>>();
             List<Tuple<string, string>> positonTimePairs = new List<Tuple<string, string>>();
             foreach (var item in columnAndTimes)
             {
@@ -407,11 +455,21 @@ namespace WpfApp1
                 positonTimePairs.Add(tuple);
             }
 
+            LiveCatheter liveCatheter = new LiveCatheter();
+            liveCatheter.setPositonTimePairs(positonTimePairs);
+            liveCatheter.setCatheterNumber(channelNumberToInt(channelNumber));
+            addLiveCatheter(liveCatheter);
         }
+
+        public List<LiveCatheter> tccLiveCatheters()
+        {
+            return _liveCatheters;
+        }
+
 
     }
 
-   
+
 }
 
 

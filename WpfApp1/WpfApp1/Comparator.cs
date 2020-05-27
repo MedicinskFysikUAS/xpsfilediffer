@@ -63,11 +63,39 @@ namespace WpfApp1
             return (_treatmentPlan.totalTreatmentTime() == _tccPlan.totalTreatmentTime());
         }
 
+
         bool hasSameCatheterPositionTimePairs()
         {
             List<LiveCatheter> tpLiveCatheters = _treatmentPlan.liveCatheters();
-            TODO: List<LiveCatheter> tccLiveCatheters = _tccPlan.liveCatheters();
-            // TODO compare livecatheters
+            List<LiveCatheter> tccLiveCatheters = _tccPlan.liveCatheters();
+            if (tpLiveCatheters.Count != tccLiveCatheters.Count)
+            {
+                return false;
+            }
+
+            int counter = 0;
+            foreach (var item in tpLiveCatheters)
+            {
+                if (item.catheterNumber() == tccLiveCatheters[counter].catheterNumber())
+                {
+                    int subCounter = 0;
+                    foreach (var subItem in item.positonTimePairs())
+                    {
+                        // TODO: Must round treatment times to one decimal
+                        if (subItem.Item1 != tccLiveCatheters[counter].positonTimePairs()[subCounter].Item1 ||
+                            subItem.Item2 != tccLiveCatheters[counter].positonTimePairs()[subCounter].Item2)
+                        {
+                            return false;
+                        }
+                        ++subCounter;
+                    }
+                }
+                else
+                {
+                    return false;
+                }
+                ++counter;
+            }
             return true;
         }
 

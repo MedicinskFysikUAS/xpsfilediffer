@@ -9,11 +9,14 @@ namespace WpfApp1
     {
         private List<List<string>> _pageList;
         private StringExtractor _stringExtractor = new StringExtractor();
+        private List<Tuple<string, string>> _tccPositonTimePairs;
+        private List<LiveCatheter> _liveCatheters;
 
 
-        public TccPlan(List<List<string>> pageList)
+        public TccPlan(List<List<string>> pageList, List<LiveCatheter> liveCatheters)
         {
             _pageList = pageList;
+            _liveCatheters = liveCatheters;
         }
 
         public string patientFirstName()
@@ -86,16 +89,18 @@ namespace WpfApp1
 
         public List<LiveCatheter> liveCatheters()
         {
-            List<LiveCatheter> liveCatheters = new List<LiveCatheter>();
+         return _liveCatheters;
 
-            int pageIndex = 0;
-            int startIndex = 0;
-            foreach (var page in _pageList)
-            {
-                _stringExtractor.getIndexOnPageAfterStartIndex(page, startIndex + 1, "Posx [mm]y [mm]z [mm]WeightTime [s]");
-            }
+        //List<LiveCatheter> liveCatheters = new List<LiveCatheter>();
 
-            return liveCatheters;
+        //    int pageIndex = 0;
+        //    int startIndex = 0;
+        //    foreach (var page in _pageList)
+        //    {
+        //        _stringExtractor.getIndexOnPageAfterStartIndex(page, startIndex + 1, "Posx [mm]y [mm]z [mm]WeightTime [s]");
+        //    }
+
+        //    return liveCatheters;
 
         }
     }

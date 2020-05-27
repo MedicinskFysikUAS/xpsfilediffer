@@ -14,6 +14,11 @@ namespace WpfApp1
             _positonTimePairs = positonTimePairs;
         }
 
+        public void appendPositionTimePairs(List<Tuple<string, string>> positonTimePairs)
+        {
+            _positonTimePairs.AddRange(positonTimePairs);
+        }
+
         public void setCatheterNumber(int catheterNumber)
         {
             _catheterNumber = catheterNumber;

@@ -31,8 +31,8 @@ namespace WpfApp1
         {
             InitializeComponent();
             // Debug:
-            PageReader tccPlanPageReader = new PageReader("C:\\work\\git\\xpsfilediffer\\xpsFiles\\tccPlan.xps");
-            List<List<string>> tccPlanPageList = tccPlanPageReader.getPages();
+            //PageReader tccPlanPageReader = new PageReader("C:\\work\\git\\xpsfilediffer\\xpsFiles\\tccPlan.xps");
+            //List<List<string>> tccPlanPageList = tccPlanPageReader.getPages();
 
         }
 
@@ -52,7 +52,8 @@ namespace WpfApp1
                 //dvh dvh = new dvh(treatmentPlanPageList);
                 PageReader tccPlanPageReader = new PageReader(_tccPlanXpsFilePath);
                 List<List<string>> tccPlanPageList = tccPlanPageReader.getPages();
-                TccPlan tccPlan = new TccPlan(tccPlanPageList);
+                List<LiveCatheter> tccLiveCatheters = tccPlanPageReader.tccLiveCatheters();
+                TccPlan tccPlan = new TccPlan(tccPlanPageList, tccLiveCatheters);
                 Comparator comparator = new Comparator(treatmentPlan, tccPlan);
                 _resultRows = comparator.resultRows();
             }
