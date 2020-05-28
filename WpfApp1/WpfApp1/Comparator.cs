@@ -72,7 +72,6 @@ namespace WpfApp1
             {
                 return false;
             }
-
             int counter = 0;
             StringExtractor stringExtractor = new StringExtractor();
             foreach (var item in tpLiveCatheters)
@@ -81,33 +80,10 @@ namespace WpfApp1
                 {
                     int subCounter = 0;
                     foreach (var subItem in item.positonTimePairs())
-                    {
-                        // debug
-                        string tpPos = subItem.Item1;
-                        string tpTime = subItem.Item2;
-                        string tpTimeRound = stringExtractor.decimalStringToOneDecimalString(subItem.Item2);
-                        decimal tpTimeDec = stringExtractor.decimalStringToDecimal(subItem.Item2);
-                        string tccPos = tccLiveCatheters[counter].positonTimePairs()[subCounter].Item1;
-                        string tccPosRound = stringExtractor.decimalStringToZeroDecimalString(tccLiveCatheters[counter].positonTimePairs()[subCounter].Item1);
-                        string tccTime = tccLiveCatheters[counter].positonTimePairs()[subCounter].Item2;
-                        decimal tccTimeDec = stringExtractor.decimalStringToDecimal(tccLiveCatheters[counter].positonTimePairs()[subCounter].Item2);
-
-                        bool debugBool1 = false;
-                        bool debugBool2 = false;
-
-                        if (tpPos != tccPosRound)
-                        {
-                            debugBool1 = true;
-                        }
-
-                        if (tpTimeRound != tccTime)
-                        {
-                            debugBool2 = true;
-                        }
+                    {  
                         decimal deltaTime = Math.Abs(stringExtractor.decimalStringToDecimal(subItem.Item2) -
                             stringExtractor.decimalStringToDecimal(tccLiveCatheters[counter].positonTimePairs()[subCounter].Item2));
                         decimal timeEpsilon = 0.051m;
-
                         if (subItem.Item1 != stringExtractor.decimalStringToZeroDecimalString(tccLiveCatheters[counter].positonTimePairs()[subCounter].Item1) ||
                             deltaTime > timeEpsilon)
                         {

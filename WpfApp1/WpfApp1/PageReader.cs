@@ -29,7 +29,6 @@ namespace WpfApp1
 
         public List<List<string>> getPages()
         {
-            //XpsDocument _xpsDocument = new XpsDocument(@"C:\work\git\xpsFileDiff\treatmentPlan.xps", System.IO.FileAccess.Read);
             XpsDocument _xpsDocument = new XpsDocument(xpsFilePath, System.IO.FileAccess.Read);
             IXpsFixedDocumentSequenceReader fixedDocSeqReader = _xpsDocument.FixedDocumentSequenceReader;
             IXpsFixedDocumentReader _document = fixedDocSeqReader.FixedDocuments[0];
@@ -38,21 +37,13 @@ namespace WpfApp1
             for (int pageCount = 0; pageCount < sequence.DocumentPaginator.PageCount; ++pageCount)
             {
                 IXpsFixedPageReader _page = _document.FixedPages[pageCount];
-                //StringBuilder _currentText = new StringBuilder();
                 System.Xml.XmlReader _pageContentReader = _page.XmlReader;
-                //string xmlFilename = "xmlFileForPage" + pageCount + ".xml";
-                //WriteOutXml(_pageContentReader, xmlFilename);
                 List<string> stringsOnPage = new List<string>();
                 string startPageString = "Page number " + pageCount;
                 stringsOnPage.Add(startPageString);
 
                 if (_pageContentReader != null)
                 {
-                    bool readCatherPositions = false;
-                    string readCatherPositionsAtY = "";
-                    string channelNumber = "";
-                    List<string> catheterPositions = new List<string>();
-
                     while (_pageContentReader.Read())
                     {
                         string tmp = _pageContentReader.Name;
@@ -62,73 +53,10 @@ namespace WpfApp1
                         {
                             if (_pageContentReader.HasAttributes)
                             {
-                                /*
-                                 *  Each entry in the list of indices comprises a glyph ID, optionally a comma, followed by an AdvanceWidth, and finally, delimited with a semi-colon. There is actually a lot more that could be present in Indices, but this is about the limit of what you'll see being pumped out by the XPS printer driver. I
-                                 */
-
                                 if (_pageContentReader.GetAttribute("UnicodeString") != null)
                                 {
                                     stringsOnPage.Add(_pageContentReader.
                                       GetAttribute("UnicodeString"));
-
-
-                                    // Debug:
-                                    string tmp3 = (_pageContentReader.
-                                      GetAttribute("UnicodeString"));
-
-                                    if (readCatherPositions && readCatherPositionsAtY == _pageContentReader.
-                                        GetAttribute("OriginY"))
-                                    {
-                                        string originX = (_pageContentReader.
-                                        GetAttribute("OriginX"));
-
-                                        int startColumn = columnFromOrigX(originX);
-                                        //string timeValuesStr = (_pageContentReader.GetAttribute("UnicodeString"));
-                                        List<Tuple<int, double>> columnAndTimes = getColumnAndTimes(startColumn, _pageContentReader);
-                                        setPositonTimePairsTmp(channelNumber, catheterPositions, columnAndTimes);
-                                        readCatherPositions = false;
-                                        readCatherPositionsAtY = "";
-                                        channelNumber = "";
-                                    }
-
-
-                                    if (tmp3.StartsWith("Kanal") && tmp3.Length < 9)
-                                    {
-                                        readCatherPositionsAtY = (_pageContentReader.
-                                        GetAttribute("OriginY"));
-                                        readCatherPositions = true;
-                                        channelNumber = tmp3;
-                                    }
-
-
-                                        if (tmp3.StartsWith("Stråln"))
-                                    {
-                                        catheterPositions = catheterPositionsInHeader(_pageContentReader);
-                                        List<int> headerPositions = new List<int>();
-                                        headerPositions = getPositions(_pageContentReader);
-                                        // index 24 gives position for the ,-sign in the first column
-                                        // every 5:th index gives the following columns
-                                        // 12 columns
-                                        int columnNummer = 3;
-                                        int columnPoss = columnPosition(headerPositions, columnNummer);
-                                    }
-
-                                    if (tmp3 == "Kanal 1")
-                                    {
-                                        List<int> chanelPositions = new List<int>();
-                                        chanelPositions = getPositions(_pageContentReader);
-                                    }
-
-                                    if (tmp3 == "0,70,71,01,52,0")
-                                    {
-                                        List<int> valuePositions = new List<int>();
-                                        valuePositions = getPositions(_pageContentReader);
-                                    }
-
-                                    
-
-
-
                                 }
                             }
                         }
@@ -136,30 +64,75 @@ namespace WpfApp1
                 }
                 pageList.Add(stringsOnPage);
             }
-
             return pageList;
-
         }
 
-        public List<int> getPositions(System.Xml.XmlReader pageContentReader)
+        public void setTccLiveCatheters()
         {
-            string debug = pageContentReader.GetAttribute("Indices");
-            List<string> Indices = debug.Split(';').ToList();
-            int nCharacters = Indices.Count();
-            string origX = pageContentReader.GetAttribute("OriginX");
-            List<int> positions = new List<int>();
-            double dPositon = double.Parse(origX.Replace('.', ','));
-            int positon = Convert.ToInt32(dPositon);
-            foreach (var item in Indices)
+            XpsDocument _xpsDocument = new XpsDocument(xpsFilePath, System.IO.FileAccess.Read);
+            IXpsFixedDocumentSequenceReader fixedDocSeqReader = _xpsDocument.FixedDocumentSequenceReader;
+            IXpsFixedDocumentReader _document = fixedDocSeqReader.FixedDocuments[0];
+            FixedDocumentSequence sequence = _xpsDocument.GetFixedDocumentSequence();
+            List<List<string>> pageList = new List<List<string>>();
+            for (int pageCount = 0; pageCount < sequence.DocumentPaginator.PageCount; ++pageCount)
             {
-                if (item.Split(',').Length > 1)
+                IXpsFixedPageReader _page = _document.FixedPages[pageCount];
+                System.Xml.XmlReader _pageContentReader = _page.XmlReader;
+                if (_pageContentReader != null)
                 {
-                    string AdvanceWidthStr = item.Split(',')[1].Trim();
-                    positon += int.Parse(AdvanceWidthStr);
-                    positions.Add(positon);
+                    bool readCatheterPositions = false;
+                    string readCatheterPositionsAtY = "";
+                    string channelNumber = "";
+                    List<string> catheterPositions = new List<string>();
+
+                    while (_pageContentReader.Read())
+                    {
+                        if (_pageContentReader.Name == "Glyphs")
+                        {
+                            if (_pageContentReader.HasAttributes)
+                            {
+                                /*
+                                 *  Each entry in the list of indices comprises a glyph ID, optionally a comma, followed by an AdvanceWidth, and finally, delimited with a semi-colon. There is actually a lot more that could be present in Indices, but this is about the limit of what you'll see being pumped out by the XPS printer driver. I
+                                 */
+
+                                if (_pageContentReader.GetAttribute("UnicodeString") != null)
+                                {  
+                                    // If the previous Glyphs included the a unicode string starting with Kanal the next Glyphs will
+                                    // include the indecies for the time positoins
+                                    if (readCatheterPositions && readCatheterPositionsAtY == _pageContentReader.
+                                        GetAttribute("OriginY"))
+                                    {
+                                        string originX = (_pageContentReader.
+                                        GetAttribute("OriginX"));
+                                        int startColumn = columnFromOrigX(originX);
+                                        List<Tuple<int, double>> columnAndTimes = getColumnAndTimes(startColumn, _pageContentReader);
+                                        setPositonTimePairs(channelNumber, catheterPositions, columnAndTimes);
+                                        readCatheterPositions = false;
+                                        readCatheterPositionsAtY = "";
+                                        channelNumber = "";
+                                    }
+
+                                    string unicodeString = (_pageContentReader.
+                                      GetAttribute("UnicodeString"));
+
+                                    if (unicodeString.StartsWith("Kanal") && unicodeString.Length < 9)
+                                    {
+                                        readCatheterPositionsAtY = (_pageContentReader.
+                                        GetAttribute("OriginY"));
+                                        readCatheterPositions = true;
+                                        channelNumber = unicodeString;
+                                    }
+
+                                    if (unicodeString.StartsWith("Stråln"))
+                                    {
+                                        catheterPositions = catheterPositionsInHeader(_pageContentReader);
+                                    }
+                                }
+                            }
+                        }
+                    }
                 }
             }
-            return positions;
         }
 
         public int stringToInt(string stringValue)
@@ -181,11 +154,6 @@ namespace WpfApp1
             {
                 return -1.0;
             }
-        }
-
-        public int columnPosition(List<int> headerPositions, int columnNummer)
-        {
-            return headerPositions[24 + columnNummer * 5];
         }
 
         public int columnFromOrigX(string originX)
@@ -229,7 +197,6 @@ namespace WpfApp1
 
         }
 
-
         public bool newColumnForwidthDiff(int widthDiff)
         {
             return widthDiff > 100;
@@ -258,65 +225,41 @@ namespace WpfApp1
             {
                 return 4;
             }
-            else
-            {
-                return -1;
-            }
-        }
-            public int columnOffetfromWidthSum(int widthSum)
-        {
-            int deltaSum = 561;
-            if ((widthSum > 0 && (widthSum < 100)))
-            {
-                return 0;
-            }
-            else if ((widthSum > 100) && (widthSum < (deltaSum * 1)))
-            {
-                return 1;
-            }
-            else if ((widthSum > (deltaSum * 1)) && (widthSum < (deltaSum * 2)))
-            {
-                return 2;
-            }
-            else if ((widthSum > (deltaSum * 2)) && (widthSum < (deltaSum * 3)))
-            {
-                return 3;
-            }
-            else if ((widthSum > (deltaSum * 3)) && (widthSum < (deltaSum * 4)))
-            {
-                return 4;
-            }
-            else if ((widthSum > (deltaSum * 4)) && (widthSum < (deltaSum * 5)))
+            else if (widthDiff < oneColumnWidth * 5)
             {
                 return 5;
             }
-            else if ((widthSum > (deltaSum * 5)) && (widthSum < (deltaSum * 6)))
+            else if (widthDiff < oneColumnWidth * 6)
             {
                 return 6;
             }
-            else if ((widthSum > (deltaSum * 6)) && (widthSum < (deltaSum * 7)))
+            else if (widthDiff < oneColumnWidth * 7)
             {
                 return 7;
             }
-            else if ((widthSum > (deltaSum * 7)) && (widthSum < (deltaSum * 8)))
+            else if (widthDiff < oneColumnWidth * 8)
             {
                 return 8;
             }
-            else if ((widthSum > (deltaSum * 8)) && (widthSum < (deltaSum * 9)))
+            else if (widthDiff < oneColumnWidth * 9)
             {
                 return 9;
             }
-            else if ((widthSum > (deltaSum * 9)) && (widthSum < (deltaSum * 10)))
+            else if (widthDiff < oneColumnWidth * 10)
             {
                 return 10;
             }
-            else if ((widthSum > (deltaSum * 10)) && (widthSum < (deltaSum * 11)))
+            else if (widthDiff < oneColumnWidth * 11)
             {
                 return 11;
             }
-            else if ((widthSum > (deltaSum * 11)) && (widthSum < (deltaSum * 12)))
+            else if (widthDiff < oneColumnWidth * 12)
             {
                 return 12;
+            }
+            else if (widthDiff < oneColumnWidth * 13)
+            {
+                return 13;
             }
             else
             {
@@ -440,11 +383,9 @@ namespace WpfApp1
         }
 
 
-        public void setPositonTimePairsTmp(string channelNumber, List<string>  catheterPositions, List<Tuple<int, double>> columnAndTimes)
+        public void setPositonTimePairs(string channelNumber, List<string>  catheterPositions, List<Tuple<int, double>> columnAndTimes)
         {
-            //List<Tuple<string, string>> positonTimePairs = new List<Tuple<string, string>>();
             List<LiveCatheter> liveCatheters = new List<LiveCatheter>();
-            //List<Tuple<string, string>> positonTimePairs = new List<Tuple<string, string>>();
             List<Tuple<string, string>> positonTimePairs = new List<Tuple<string, string>>();
             foreach (var item in columnAndTimes)
             {
@@ -463,6 +404,7 @@ namespace WpfApp1
 
         public List<LiveCatheter> tccLiveCatheters()
         {
+            this.setTccLiveCatheters();
             return _liveCatheters;
         }
 

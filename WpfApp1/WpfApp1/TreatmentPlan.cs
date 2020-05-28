@@ -199,5 +199,25 @@ namespace WpfApp1
             return liveCatheters;
         }
 
-    }
+        public List<Catheter> catheters()
+        {
+            List<Catheter> catheters = new List<Catheter>(); // TODO: TBD: Create TPCatheter and TCCCatheter
+            foreach (var page in _pageList)
+            {
+                if (isCatheterTableHeader)
+                {
+                    while (!tableEndReached()) // equal to Sources or page
+                    {
+                        if (isTableData())
+                        {
+                            Catheter catheter = new Catheter();
+                            catheter.setCatheterNumber(1);
+                            // ...
+                            catheters.Add(catheter);
+                        }
+                    }
+                }
+            }
+
+        }
 }
