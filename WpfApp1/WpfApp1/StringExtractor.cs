@@ -146,5 +146,52 @@ namespace WpfApp1
             return posAndTimeValues;
         }
 
+        public string decimalStringToZeroDecimalString(string decimalString)
+        {
+            string localDecimalString = decimalString;
+            if (decimalString.Contains('.'))
+            {
+                localDecimalString = decimalString.Replace('.', ',');
+            }
+            Decimal decimalValue = Convert.ToDecimal(localDecimalString);
+            Decimal decimalValueOneDec = Math.Round(decimalValue, 0, MidpointRounding.ToEven);
+            return String.Format("{0:0}", Convert.ToDecimal(decimalValueOneDec));
+        }
+
+        public string decimalStringToOneDecimalString(string decimalString)
+        {
+            string localDecimalString = decimalString;
+            if (decimalString.Contains('.'))
+            {
+                localDecimalString = decimalString.Replace('.', ',');
+            }
+            Decimal decimalValue = Convert.ToDecimal(localDecimalString);
+            Decimal decimalValueOneDec = Math.Round(decimalValue, 1, MidpointRounding.ToEven);
+            return String.Format("{0:0.0}", Convert.ToDecimal(decimalValueOneDec));
+        }
+
+        public string decimalStringToTwoDecimalString(string decimalString)
+        {
+            string localDecimalString = decimalString;
+            if (decimalString.Contains('.'))
+            {
+                localDecimalString = decimalString.Replace('.', ',');
+            }
+            Decimal decimalValue = Convert.ToDecimal(localDecimalString);
+            Decimal decimalValueOneDec = Math.Round(decimalValue, 2, MidpointRounding.ToEven);
+            return String.Format("{0:0.00}", Convert.ToDecimal(decimalValueOneDec));
+        }
+
+        public decimal decimalStringToDecimal(string decimalString)
+        {
+            string localDecimalString = decimalString;
+            if (decimalString.Contains('.'))
+            {
+                localDecimalString = decimalString.Replace('.', ',');
+            }
+            return Convert.ToDecimal(localDecimalString);
+        }
     }
+
+    
 }
