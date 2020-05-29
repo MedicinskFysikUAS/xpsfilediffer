@@ -107,6 +107,26 @@ namespace WpfApp1
             return stringsOnPage.FindIndex(x => x.StartsWith(searchedString));
         }
 
+        public int getIndexOnPageForSearchedStringFromIndex(List<string> stringsOnPage, int startIndex, string searchedString)
+        {
+            return stringsOnPage.FindIndex(startIndex, x => x == searchedString);
+        }
+
+        public int getIndexOnPageForStartWithSearchedStringFromIndex(List<string> stringsOnPage, int startIndex, string searchedString, string containString)
+        {
+            return stringsOnPage.FindIndex(startIndex, x => x.StartsWith(searchedString) && x.Contains(containString));
+        }
+
+
+        public List<string> allValuesInIntervall(List<string> stringsOnPage, int startIndex, int stopIndex)
+        {
+            List<string> lines = new List<string>();
+            for (int i = startIndex + 1; i < stopIndex; i++)
+            {
+                lines.Add(stringsOnPage[i]);
+            }
+            return lines;
+        }
 
         public List<Tuple<string, string>> valuesInIntervall(List<string> stringsOnPage, int startIndex, int stopIndex)
         {

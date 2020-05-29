@@ -30,10 +30,6 @@ namespace WpfApp1
         public MainWindow()
         {
             InitializeComponent();
-            // Debug:
-            //PageReader tccPlanPageReader = new PageReader("C:\\work\\git\\xpsfilediffer\\xpsFiles\\tccPlan.xps");
-            //List<List<string>> tccPlanPageList = tccPlanPageReader.getPages();
-
         }
 
         void buildResultDataGrid()
@@ -42,11 +38,23 @@ namespace WpfApp1
             string tmp = needleLengthText.Text;
             string tmp2 = probeDistanceText.Text;
 
-            if (_treatmentPlanXpsFilePath != null /*&& _dvhXpsFilePath != "Inte vald"*/ && _tccPlanXpsFilePath != null)
+            if (_treatmentPlanXpsFilePath != null)
             {
                 PageReader treatmentPlanPageReader = new PageReader(_treatmentPlanXpsFilePath);
                 List<List<string>> treatmentPlanPageList = treatmentPlanPageReader.getPages();
                 TreatmentPlan treatmentPlan = new TreatmentPlan(treatmentPlanPageList);
+                Comparator comparator = new Comparator();
+                comparator.treatmentPlan = treatmentPlan;
+                _resultRows.AddRange(comparator.treatmentPlanResultRows());
+            }
+
+            if (_treatmentPlanXpsFilePath != null && _tccPlanXpsFilePath != null)
+            {
+                PageReader treatmentPlanPageReader = new PageReader(_treatmentPlanXpsFilePath);
+                List<List<string>> treatmentPlanPageList = treatmentPlanPageReader.getPages();
+                TreatmentPlan treatmentPlan = new TreatmentPlan(treatmentPlanPageList);
+                Comparator comparator = new Comparator();
+                comparator.treatmentPlan = treatmentPlan;
                 //PageReader dvhPageReader = new PageReader(_dvhXpsFilePath);
                 //List<List<string>> dvhPageList = dvhPageReader.getPages();
                 //dvh dvh = new dvh(treatmentPlanPageList);
@@ -54,8 +62,9 @@ namespace WpfApp1
                 List<List<string>> tccPlanPageList = tccPlanPageReader.getPages();
                 List<LiveCatheter> tccLiveCatheters = tccPlanPageReader.tccLiveCatheters();
                 TccPlan tccPlan = new TccPlan(tccPlanPageList, tccLiveCatheters);
-                Comparator comparator = new Comparator(treatmentPlan, tccPlan);
-                _resultRows = comparator.resultRows();
+                comparator.tccPlan = tccPlan;
+                //_resultRows = comparator.resultRows();
+                _resultRows.AddRange(comparator.resultRows());
             }
             DataColumn testCase= new DataColumn("Test", typeof(string));
             DataColumn testResult = new DataColumn("Result", typeof(string));

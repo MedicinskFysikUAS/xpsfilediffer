@@ -8,18 +8,16 @@ namespace WpfApp1
     {
         private TreatmentPlan _treatmentPlan;
         private TccPlan _tccPlan;
-        private int _numberOfOk;
+        private int _numberOfOk; // TODO Remove these
         private int _numberOfWarnings;
         private int _numberOfErrors;
 
-        public Comparator(TreatmentPlan treatmentPlan, TccPlan tccPlan)
+        public Comparator()
         {
-            _treatmentPlan = treatmentPlan;
-            _tccPlan = tccPlan;
-            _numberOfOk = 0;
-            _numberOfWarnings = 0;
-            _numberOfErrors = 0;
         }
+
+        public TreatmentPlan treatmentPlan { get => _treatmentPlan; set => _treatmentPlan = value; }
+        public TccPlan tccPlan { get => _tccPlan; set => _tccPlan = value; }
 
         // has --------------------------
         public bool hasSamePatientName()
@@ -97,6 +95,18 @@ namespace WpfApp1
                     return false;
                 }
                 ++counter;
+            }
+            return true;
+        }
+
+        public bool treatmentPlanHasSameChannelLength(decimal channelLength)
+        {
+            foreach (var catheter in _treatmentPlan.treatmentPlanCatheters())
+            {
+                if (catheter.selector != channelLength)
+                {
+                    return false;
+                }
             }
             return true;
         }
@@ -300,9 +310,37 @@ namespace WpfApp1
             return resultRow;
         }
 
+        public List<string> checkTreatmentPlanChannelLength()
+        {
+            List<string> resultRow = new List<string>();
+            decimal channelLength = 1190.0m;
+            resultRow.Add("Channel length i dosplan = " + channelLength);
+            string descriptionString = "";
+            if (treatmentPlanHasSameChannelLength(channelLength))
+            {
+                resultRow.Add("OK");
+                ++_numberOfOk;
+                descriptionString = "Channel length för samtilga kanaler är " + channelLength;
+            }
+            else
+            {
+                resultRow.Add("Inte OK");
+                ++_numberOfErrors;
+                descriptionString = "Channel length är inte lika med " + channelLength + " för en eller fler kanaler.";
+            }
+            resultRow.Add(descriptionString);
 
+            return resultRow;
+        }
 
-        public List<List<string>> resultRows()
+        public List<List<string>> treatmentPlanResultRows()
+        {
+            List<List<string>> resultRows = new List<List<string>>();
+            resultRows.Add(checkTreatmentPlanChannelLength());
+            return resultRows;
+        }
+
+            public List<List<string>> resultRows()
         {
             List<List<string>> resultRows = new List<List<string>>();
             resultRows.Add(checkPatientName());

@@ -18,7 +18,7 @@ namespace WpfApp1
             _pageList = pageList;
         }
 
-        
+
         public string patientFirstName()
         {
             int pageIndex = 0;
@@ -177,7 +177,7 @@ namespace WpfApp1
                     List<Tuple<string, string>> values = _stringExtractor.valuesUntilSearchedString(_pageList[startAndStopPositonAndTimeTable.startPageIndex()],
                          startAndStopPositonAndTimeTable.startIndex(),
                          "Page");
-                    List<Tuple<string, string>> values2 = _stringExtractor.valuesFromSearchedString(_pageList[startAndStopPositonAndTimeTable.stopPageIndex()],                                             
+                    List<Tuple<string, string>> values2 = _stringExtractor.valuesFromSearchedString(_pageList[startAndStopPositonAndTimeTable.stopPageIndex()],
                                              "Printed at",
                                              startAndStopPositonAndTimeTable.stopIndex());
 
@@ -199,25 +199,112 @@ namespace WpfApp1
             return liveCatheters;
         }
 
-        public List<Catheter> catheters()
+        public bool isCatheterTableHeader(string line)
         {
-            List<Catheter> catheters = new List<Catheter>(); // TODO: TBD: Create TPCatheter and TCCCatheter
-            foreach (var page in _pageList)
+            return line == "locked";
+        }
+
+        public bool isLineAfterLastCatheterTable(string line)
+        {
+            return line.StartsWith("Page") && line.Contains("of") ||
+                line == "Sources";
+        }
+
+        public int catheterNumberFromLine(string line)
+        {
+            return 1;
+        }
+
+        public TreatmentPlanCatheter catheterFromLine(string line)
+        {
+            TreatmentPlanCatheter catheter = new TreatmentPlanCatheter();
+            catheter.catheterNumber = catheterNumberFromLine(line);
+            catheter.offset = "";
+            string tmp = catheter.offset;
+            return catheter;
+        }
+
+        public int getCatheterTableEndIndex(List<string> page, int startIndex)
+        {
+            if (_stringExtractor.getIndexOnPageForStartWithSearchedStringFromIndex(page, startIndex, "Page", "of") != -1 &&
+                _stringExtractor.getIndexOnPageForSearchedStringFromIndex(page, startIndex, "Source") == -1)
             {
-                if (isCatheterTableHeader)
+                return _stringExtractor.getIndexOnPageForStartWithSearchedStringFromIndex(page, startIndex, "Page", "of");
+            }
+            else if (_stringExtractor.getIndexOnPageForStartWithSearchedStringFromIndex(page, startIndex, "Page", "of") == -1 &&
+                _stringExtractor.getIndexOnPageForSearchedStringFromIndex(page, startIndex, "Source") != -1)
+            {
+                return _stringExtractor.getIndexOnPageForSearchedStringFromIndex(page, startIndex, "Source");
+            }
+            else if (_stringExtractor.getIndexOnPageForStartWithSearchedStringFromIndex(page, startIndex, "Page", "of") != -1 &&
+                _stringExtractor.getIndexOnPageForSearchedStringFromIndex(page, startIndex, "Source") != -1)
+            {
+                if (_stringExtractor.getIndexOnPageForStartWithSearchedStringFromIndex(page, startIndex, "Page", "of") <
+                    _stringExtractor.getIndexOnPageForSearchedStringFromIndex(page, startIndex, "Source"))
                 {
-                    while (!tableEndReached()) // equal to Sources or page
-                    {
-                        if (isTableData())
-                        {
-                            Catheter catheter = new Catheter();
-                            catheter.setCatheterNumber(1);
-                            // ...
-                            catheters.Add(catheter);
-                        }
-                    }
+                    return _stringExtractor.getIndexOnPageForStartWithSearchedStringFromIndex(page, startIndex, "Page", "of");
+                }
+                else
+                {
+                    return _stringExtractor.getIndexOnPageForSearchedStringFromIndex(page, startIndex, "Source");
                 }
             }
+            else
+            {
+                return -1;
+            }
+
 
         }
+
+        public List<TreatmentPlanCatheter> treatmentPlanCatheters()
+        {
+            List<TreatmentPlanCatheter> catheters = new List<TreatmentPlanCatheter>();
+            int startTableIndex = -1;
+            int endTableIndex = -1;
+            foreach (var page in _pageList)
+            {
+                int currentIndex = 0;
+                while (currentIndex != -1)
+                {
+                    int timesStringIndex = _stringExtractor.getIndexOnPageForSearchedStringFromIndex(page, currentIndex, "Times");
+                    int lockedStringIndex = -1;
+                    if (timesStringIndex != -1)
+                    {
+                        lockedStringIndex = _stringExtractor.getIndexOnPageForSearchedStringFromIndex(page, timesStringIndex, "locked");
+
+                    }
+                    if (timesStringIndex != -1 && lockedStringIndex != -1 && lockedStringIndex == timesStringIndex + 1)
+                    {
+                        startTableIndex = lockedStringIndex;
+                        endTableIndex = getCatheterTableEndIndex(page, currentIndex);
+                        List<string> allValuses = _stringExtractor.allValuesInIntervall(page, startTableIndex, endTableIndex);
+                        currentIndex = endTableIndex;
+                    }
+                    else
+                    {
+                        currentIndex = -1;
+                    }
+                }
+
+
+                //foreach (var line in page)
+                //{
+                //    if (isLineAfterLastCatheterTable(line))
+                //    {
+                //        startRead = false;
+                //    }
+                //    if (startRead)
+                //    {
+                //        catheters.Add(catheterFromLine(line));
+                //    }
+                //    if (isCatheterTableHeader(line))
+                //    {
+                //        startRead = true;
+                //    }
+                //}
+            }
+            return catheters;
+        }
+    }
 }
