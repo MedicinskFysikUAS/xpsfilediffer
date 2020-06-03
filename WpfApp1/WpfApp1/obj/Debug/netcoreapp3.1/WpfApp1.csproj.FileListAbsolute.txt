@@ -36,3 +36,5 @@ C:\work\git\xpsfilediffer\WpfApp1\WpfApp1\obj\Debug\netcoreapp3.1\WpfApp1.Assemb
 C:\work\git\xpsfilediffer\WpfApp1\WpfApp1\obj\Debug\netcoreapp3.1\WpfApp1.dll
 C:\work\git\xpsfilediffer\WpfApp1\WpfApp1\obj\Debug\netcoreapp3.1\WpfApp1.pdb
 C:\work\git\xpsfilediffer\WpfApp1\WpfApp1\obj\Debug\netcoreapp3.1\WpfApp1.genruntimeconfig.cache
+C:\work\git\xpsfilediffer\WpfApp1\WpfApp1\obj\Debug\netcoreapp3.1\ResultWindow.g.cs
+C:\work\git\xpsfilediffer\WpfApp1\WpfApp1\obj\Debug\netcoreapp3.1\ResultWindow.baml

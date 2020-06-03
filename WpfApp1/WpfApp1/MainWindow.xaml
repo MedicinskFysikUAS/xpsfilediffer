@@ -7,38 +7,48 @@
         mc:Ignorable="d"
         Title="MainWindow" Height="524" Width="624">
     <Grid>
-        <WrapPanel HorizontalAlignment="Left" DockPanel.Dock="Top" Margin="5,0,0,10">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="60*"/>
+            <ColumnDefinition Width="100*"/>
+            <ColumnDefinition Width="45*"/>
+            <ColumnDefinition Width="3*"/>
+        </Grid.ColumnDefinitions>
+        <WrapPanel HorizontalAlignment="Left" Margin="5,0,0,10">
             <Button x:Name="BtnOpenTPFile" Click="BtnOpenTPFile_Click" Content="Treatment plan file:"/>
             <Label x:Name="TPXpsPathLabel" Content="Inte vald" HorizontalAlignment="Left" VerticalAlignment="Center"/>
         </WrapPanel>
 
-        <WrapPanel HorizontalAlignment="Left" DockPanel.Dock="Top" Margin="5,30,0,10">
+        <WrapPanel HorizontalAlignment="Left" Margin="5,30,0,10">
             <Button x:Name="BtnOpenDVHFile" Click="BtnOpenDVHFile_Click" Content="DVH file:"/>
-            <Label x:Name="DVHXpsPathLabel" Content="Inte vald" HorizontalAlignment="Left" VerticalAlignment="Center"/>
+            <Label x:Name="DVHXpsPathLabel" Content="Inte vald" HorizontalAlignment="Left" VerticalAlignment="Center" Width="105"/>
         </WrapPanel>
 
-        <WrapPanel HorizontalAlignment="Left" DockPanel.Dock="Top" Margin="5,60,0,10">
+        <WrapPanel HorizontalAlignment="Left" Margin="5,60,0,10">
             <Button x:Name="BtnOpenTCCFile" Click="BtnOpenTCCFile_Click" Content="TCC file:"/>
             <Label x:Name="TCCXpsPathLabel" Content="Inte vald" HorizontalAlignment="Left" VerticalAlignment="Center"/>
         </WrapPanel>
 
-        <WrapPanel HorizontalAlignment="Left" DockPanel.Dock="Top" Margin="5,90,0,10">
+        <WrapPanel HorizontalAlignment="Left" Margin="5,90,0,10">
             <Label x:Name="needleLengthLabel" Content="Nållängd [mm]: "/>
-            <TextBox Name="needleLengthText" VerticalAlignment="Center" Width="40">
-                     
-            </TextBox>
+            <TextBox x:Name="needleLengthText" VerticalAlignment="Center" Width="40" RenderTransformOrigin="2.125,0.281"/>
         </WrapPanel>
 
-        <WrapPanel HorizontalAlignment="Left" DockPanel.Dock="Top" Margin="5,120,0,10">
+        <WrapPanel HorizontalAlignment="Left" Margin="5,120,0,10">
             <Label x:Name="probeDistanceLabel" Content="Avst. prob [mm]: "/>
             <TextBox Name="probeDistanceText" VerticalAlignment="Center" Width="40">
 
             </TextBox>
         </WrapPanel>
 
-        <Button x:Name="BtnCheck" Click="BtnCheck_Click" Content="Kontrollera" HorizontalAlignment="Left" Margin="495,114,0,0" VerticalAlignment="Top" Width="64" Height="26" RenderTransformOrigin="0.469,-2.114"/>
+        <Button x:Name="BtnCheck" Click="BtnCheck_Click" Content="Kontrollera" HorizontalAlignment="Left" Margin="15,114,0,0" VerticalAlignment="Top" Width="64" Height="26" RenderTransformOrigin="0.469,-2.114" Grid.Column="2"/>
 
-        <DataGrid x:Name="ResultDataGrid" Margin="0,159,10,94"/>
-        <Button x:Name="BtnExit" Click="BtnExit_Click" Content="Avsluta" HorizontalAlignment="Left" Margin="495,444,0,0" VerticalAlignment="Top" Width="64" Height="26"/>
+        <DataGrid x:Name="ResultDataGrid" Margin="0,209,1,94" Grid.ColumnSpan="3"/>
+        <Button x:Name="BtnExit" Click="BtnExit_Click" Content="Avsluta" HorizontalAlignment="Left" Margin="15,444,0,0" VerticalAlignment="Top" Width="64" Height="26" Grid.Column="2"/>
+        <TextBox x:Name="needleDepthText" VerticalAlignment="Top" RenderTransformOrigin="2.125,0.281" Margin="109,94,151,0" Grid.Column="1"  IsReadOnly="True"/>
+        <Label x:Name="needleDepthLabel" Content="Nåldjup [mm]: " Grid.Column="1" HorizontalAlignment="Left" Margin="20,90,0,0" VerticalAlignment="Top"/>
+        <Label x:Name="freeLengthLabel" Content="Free Length [mm]: " Grid.Column="1" HorizontalAlignment="Left" Margin="20,120,0,0" VerticalAlignment="Top"/>
+        <TextBox x:Name="freeLengthText" Grid.Column="1" HorizontalAlignment="Left" Margin="124,127,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="40"  IsReadOnly="True"/>
+        <Label x:Name="needleLengthProbSumLabel" Content="Summa nållängd prob:" Grid.Column="1" HorizontalAlignment="Left" Margin="20,152,0,0" VerticalAlignment="Top"/>
+        <TextBox x:Name="needleLengthProbSumText" Grid.Column="1" HorizontalAlignment="Left" Margin="155,156,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="40"  IsReadOnly="True"/>
     </Grid>
 </Window>

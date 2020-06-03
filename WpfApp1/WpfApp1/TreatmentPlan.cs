@@ -215,38 +215,38 @@ namespace WpfApp1
             return 1;
         }
 
-        public TreatmentPlanCatheter catheterFromLine(string line)
-        {
-            TreatmentPlanCatheter catheter = new TreatmentPlanCatheter();
-            catheter.catheterNumber = catheterNumberFromLine(line);
-            catheter.offset = "";
-            string tmp = catheter.offset;
-            return catheter;
-        }
+        //public TreatmentPlanCatheter catheterFromLine(string line)
+        //{
+        //    TreatmentPlanCatheter catheter = new TreatmentPlanCatheter();
+        //    catheter.catheterNumber = catheterNumberFromLine(line);
+        //    catheter.offset = "";
+        //    string tmp = catheter.offset;
+        //    return catheter;
+        //}
 
         public int getCatheterTableEndIndex(List<string> page, int startIndex)
         {
             if (_stringExtractor.getIndexOnPageForStartWithSearchedStringFromIndex(page, startIndex, "Page", "of") != -1 &&
-                _stringExtractor.getIndexOnPageForSearchedStringFromIndex(page, startIndex, "Source") == -1)
+                _stringExtractor.getIndexOnPageForSearchedStringFromIndex(page, startIndex, "Sources") == -1)
             {
                 return _stringExtractor.getIndexOnPageForStartWithSearchedStringFromIndex(page, startIndex, "Page", "of");
             }
             else if (_stringExtractor.getIndexOnPageForStartWithSearchedStringFromIndex(page, startIndex, "Page", "of") == -1 &&
-                _stringExtractor.getIndexOnPageForSearchedStringFromIndex(page, startIndex, "Source") != -1)
+                _stringExtractor.getIndexOnPageForSearchedStringFromIndex(page, startIndex, "Sources") != -1)
             {
                 return _stringExtractor.getIndexOnPageForSearchedStringFromIndex(page, startIndex, "Source");
             }
             else if (_stringExtractor.getIndexOnPageForStartWithSearchedStringFromIndex(page, startIndex, "Page", "of") != -1 &&
-                _stringExtractor.getIndexOnPageForSearchedStringFromIndex(page, startIndex, "Source") != -1)
+                _stringExtractor.getIndexOnPageForSearchedStringFromIndex(page, startIndex, "Sources") != -1)
             {
                 if (_stringExtractor.getIndexOnPageForStartWithSearchedStringFromIndex(page, startIndex, "Page", "of") <
-                    _stringExtractor.getIndexOnPageForSearchedStringFromIndex(page, startIndex, "Source"))
+                    _stringExtractor.getIndexOnPageForSearchedStringFromIndex(page, startIndex, "Sources"))
                 {
                     return _stringExtractor.getIndexOnPageForStartWithSearchedStringFromIndex(page, startIndex, "Page", "of");
                 }
                 else
                 {
-                    return _stringExtractor.getIndexOnPageForSearchedStringFromIndex(page, startIndex, "Source");
+                    return _stringExtractor.getIndexOnPageForSearchedStringFromIndex(page, startIndex, "Sources");
                 }
             }
             else
@@ -278,7 +278,21 @@ namespace WpfApp1
                     {
                         startTableIndex = lockedStringIndex;
                         endTableIndex = getCatheterTableEndIndex(page, currentIndex);
-                        List<string> allValuses = _stringExtractor.allValuesInIntervall(page, startTableIndex, endTableIndex);
+                        List<string> allValues = _stringExtractor.allValuesInInterval(page, startTableIndex, endTableIndex);
+                        List<List<string>> catheterTableLines = _stringExtractor.tenItemsRowsInInterval(allValues);
+                        foreach (var catheterTableLine in catheterTableLines)
+                        {
+                            TreatmentPlanCatheter treatmentPlanCatheter = new TreatmentPlanCatheter();
+                            treatmentPlanCatheter.catheterNumber = _stringExtractor.catheterNumberFromString(catheterTableLine[0]);
+                            treatmentPlanCatheter.selector = _stringExtractor.decimalStringToDecimal(catheterTableLine[3]);
+                            treatmentPlanCatheter.depth = _stringExtractor.decimalStringToDecimal(catheterTableLine[4]);
+                            treatmentPlanCatheter.freeLength = _stringExtractor.decimalStringToDecimal(catheterTableLine[5]);
+                            treatmentPlanCatheter.offset = _stringExtractor.decimalStringToDecimal(catheterTableLine[6]);
+                            treatmentPlanCatheter.tipField = _stringExtractor.decimalStringToDecimal(catheterTableLine[7]);
+                            treatmentPlanCatheter.isActiveLocked = _stringExtractor.isYesString(catheterTableLine[8]);
+                            treatmentPlanCatheter.isTimeLocked = !_stringExtractor.isNoString(catheterTableLine[9]);
+                            catheters.Add(treatmentPlanCatheter);
+                        }
                         currentIndex = endTableIndex;
                     }
                     else

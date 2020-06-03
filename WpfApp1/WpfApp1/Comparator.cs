@@ -111,6 +111,18 @@ namespace WpfApp1
             return true;
         }
 
+        public bool treatmentPlanHasExpectedDepth(decimal expectedDepth,decimal epsilon)
+        {
+            foreach (var catheter in _treatmentPlan.treatmentPlanCatheters())
+            {
+                if (Math.Abs(catheter.depth - expectedDepth) > epsilon)
+                {
+                    return false;
+                }
+            }
+            return true;
+        }
+
         // check -----------------------
 
         public List<string> checkPatientName()
@@ -333,10 +345,35 @@ namespace WpfApp1
             return resultRow;
         }
 
+        public List<string> checkTreatmentPlanDepth(decimal expectedDepth)
+        {
+            List<string> resultRow = new List<string>();
+            decimal epsilon = 0.1m;
+            resultRow.Add("Samma nåldjup i dosplan");
+            string descriptionString = "";
+            if (treatmentPlanHasExpectedDepth(expectedDepth, epsilon))
+            {
+                resultRow.Add("OK");
+                ++_numberOfOk;
+                descriptionString = "Nåldjupet är konstant (inom " + epsilon + " mm)";
+            }
+            else
+            {
+                resultRow.Add("Inte OK");
+                ++_numberOfErrors;
+                descriptionString = "Nåldjupet avviker mer än " + epsilon + " mm.";
+            }
+            resultRow.Add(descriptionString);
+
+            return resultRow;
+        }
+
+
         public List<List<string>> treatmentPlanResultRows()
         {
             List<List<string>> resultRows = new List<List<string>>();
             resultRows.Add(checkTreatmentPlanChannelLength());
+            resultRows.Add(checkTreatmentPlanDepth(0.1m)); 
             return resultRows;
         }
 

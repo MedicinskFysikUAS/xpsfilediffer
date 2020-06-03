@@ -117,8 +117,26 @@ namespace WpfApp1
             return stringsOnPage.FindIndex(startIndex, x => x.StartsWith(searchedString) && x.Contains(containString));
         }
 
+        public List<List<string>> tenItemsRowsInInterval(List<string> stringsInIntervall)
+        {
+            List<List<string>> allItems = new List<List<string>>();
+            int nColumns = 10;
+            int nRows = stringsInIntervall.Count / nColumns;
 
-        public List<string> allValuesInIntervall(List<string> stringsOnPage, int startIndex, int stopIndex)
+            for (int row = 0; row < nRows; row++)
+            {
+                List<string> tenItems = new List<string>();
+                for (int column = 0; column < nColumns; column++)
+                {
+                    tenItems.Add(stringsInIntervall[column + (row * nColumns)]);
+                }
+                allItems.Add(tenItems);
+
+            }
+            return allItems;
+        }
+
+        public List<string> allValuesInInterval(List<string> stringsOnPage, int startIndex, int stopIndex)
         {
             List<string> lines = new List<string>();
             for (int i = startIndex + 1; i < stopIndex; i++)
@@ -210,6 +228,22 @@ namespace WpfApp1
                 localDecimalString = decimalString.Replace('.', ',');
             }
             return Convert.ToDecimal(localDecimalString);
+        }
+
+        public int catheterNumberFromString(string catheterString)
+        {
+            string integerString = catheterString.Replace('L', ' ');
+            return int.Parse(integerString.Trim());
+        }
+
+        public bool isYesString(string inputString)
+        {
+            return inputString.ToLower() == "yes";
+        }
+
+        public bool isNoString(string inputString)
+        {
+            return inputString.Trim().ToLower() == "no";
         }
     }
 

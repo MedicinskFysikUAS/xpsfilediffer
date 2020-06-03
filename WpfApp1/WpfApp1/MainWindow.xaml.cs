@@ -30,13 +30,38 @@ namespace WpfApp1
         public MainWindow()
         {
             InitializeComponent();
+            needleDepthLabel.Visibility = Visibility.Hidden;
+            needleDepthText.Visibility = Visibility.Hidden;
+            freeLengthLabel.Visibility = Visibility.Hidden;
+            freeLengthText.Visibility = Visibility.Hidden;
+            needleLengthProbSumLabel.Visibility = Visibility.Hidden;
+            needleLengthProbSumText.Visibility = Visibility.Hidden;
+
+        }
+
+        public void calculateLengthAndFreeLength()
+        {
+            Calculator calculator = new Calculator();
+            StringExtractor stringExtractor = new StringExtractor();
+            calculator.NeedleLength = stringExtractor.decimalStringToDecimal(needleLengthText.Text);
+            calculator.ProbeDistance = stringExtractor.decimalStringToDecimal(probeDistanceText.Text);
+            needleDepthText.Text = calculator.needleDepth().ToString();
+            freeLengthText.Text = calculator.freeLength().ToString();
+            needleLengthProbSumText.Text = calculator.needleLengthPlusProbeDistance().ToString();
+
+            needleDepthLabel.Visibility = Visibility.Visible;
+            needleDepthText.Visibility = Visibility.Visible;
+            freeLengthLabel.Visibility = Visibility.Visible;
+            freeLengthText.Visibility = Visibility.Visible;
+            needleLengthProbSumLabel.Visibility = Visibility.Visible;
+            needleLengthProbSumText.Visibility = Visibility.Visible;
+
         }
 
         void buildResultDataGrid()
         {
             DataTable dataTable = new DataTable();
-            string tmp = needleLengthText.Text;
-            string tmp2 = probeDistanceText.Text;
+           
 
             if (_treatmentPlanXpsFilePath != null)
             {
@@ -122,6 +147,7 @@ namespace WpfApp1
 
         private void BtnCheck_Click(object sender, RoutedEventArgs e)
         {
+            calculateLengthAndFreeLength();
             this.buildResultDataGrid();
         }
 
