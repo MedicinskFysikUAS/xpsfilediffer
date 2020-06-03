@@ -27,35 +27,72 @@ namespace WpfApp1
         string _treatmentPlanXpsFilePath;
         string _dvhXpsFilePath;
         string _tccPlanXpsFilePath;
+        Specifications _specifications;
         public MainWindow()
         {
             InitializeComponent();
-            needleDepthLabel.Visibility = Visibility.Hidden;
-            needleDepthText.Visibility = Visibility.Hidden;
-            freeLengthLabel.Visibility = Visibility.Hidden;
-            freeLengthText.Visibility = Visibility.Hidden;
-            needleLengthProbSumLabel.Visibility = Visibility.Hidden;
-            needleLengthProbSumText.Visibility = Visibility.Hidden;
-
+            setLabelAndTextboxVisable(false);
         }
+
+        public void setLabelAndTextboxVisable(bool setLabelAndTextboxVisable)
+        {
+            if (setLabelAndTextboxVisable)
+            {
+                needleDepthLabel.Visibility = Visibility.Visible;
+                needleDepthText.Visibility = Visibility.Visible;
+                freeLengthLabel.Visibility = Visibility.Visible;
+                freeLengthText.Visibility = Visibility.Visible;
+                needleLengthProbSumLabel.Visibility = Visibility.Visible;
+                needleLengthProbSumText.Visibility = Visibility.Visible;
+            }
+            else
+            {
+                needleDepthLabel.Visibility = Visibility.Hidden;
+                needleDepthText.Visibility = Visibility.Hidden;
+                freeLengthLabel.Visibility = Visibility.Hidden;
+                freeLengthText.Visibility = Visibility.Hidden;
+                needleLengthProbSumLabel.Visibility = Visibility.Hidden;
+                needleLengthProbSumText.Visibility = Visibility.Hidden;
+            }
+        }
+
+
 
         public void calculateLengthAndFreeLength()
         {
             Calculator calculator = new Calculator();
             StringExtractor stringExtractor = new StringExtractor();
-            calculator.NeedleLength = stringExtractor.decimalStringToDecimal(needleLengthText.Text);
-            calculator.ProbeDistance = stringExtractor.decimalStringToDecimal(probeDistanceText.Text);
-            needleDepthText.Text = calculator.needleDepth().ToString();
-            freeLengthText.Text = calculator.freeLength().ToString();
-            needleLengthProbSumText.Text = calculator.needleLengthPlusProbeDistance().ToString();
+            if (needleLengthText.Text.Length > 0 && probeDistanceText.Text.Length > 0)
+            {
+                calculator.NeedleLength = stringExtractor.decimalStringToDecimal(needleLengthText.Text);
+                calculator.ProbeDistance = stringExtractor.decimalStringToDecimal(probeDistanceText.Text);
+                needleDepthText.Text = calculator.needleDepth().ToString();
+                freeLengthText.Text = calculator.freeLength().ToString();
+                needleLengthProbSumText.Text = calculator.needleLengthPlusProbeDistance().ToString();
+                if (calculator.sufficientNeedleDepth())
+                {
+                    needleLengthProbSumText.Background = Brushes.Green;
+                }
+                else
+                {
+                    needleLengthProbSumText.Background = Brushes.Red;
+                }
+                setLabelAndTextboxVisable(true);
+            }
+        }
 
-            needleDepthLabel.Visibility = Visibility.Visible;
-            needleDepthText.Visibility = Visibility.Visible;
-            freeLengthLabel.Visibility = Visibility.Visible;
-            freeLengthText.Visibility = Visibility.Visible;
-            needleLengthProbSumLabel.Visibility = Visibility.Visible;
-            needleLengthProbSumText.Visibility = Visibility.Visible;
+        public void updateSpecifications()
+        {
+            Calculator calculator = new Calculator();
+            StringExtractor stringExtractor = new StringExtractor();
+            if (needleLengthText.Text.Length > 0 && probeDistanceText.Text.Length > 0)
+            {
+                calculator.NeedleLength = stringExtractor.decimalStringToDecimal(needleLengthText.Text);
+                calculator.ProbeDistance = stringExtractor.decimalStringToDecimal(probeDistanceText.Text);
 
+                _specifications.NeedleDepth = calculator.needleDepth();
+                _specifications.FreeLength = calculator.freeLength();
+            }
         }
 
         void buildResultDataGrid()
@@ -68,7 +105,7 @@ namespace WpfApp1
                 PageReader treatmentPlanPageReader = new PageReader(_treatmentPlanXpsFilePath);
                 List<List<string>> treatmentPlanPageList = treatmentPlanPageReader.getPages();
                 TreatmentPlan treatmentPlan = new TreatmentPlan(treatmentPlanPageList);
-                Comparator comparator = new Comparator();
+                Comparator comparator = new Comparator(); // TODO Add _specifications to the constructor
                 comparator.treatmentPlan = treatmentPlan;
                 _resultRows.AddRange(comparator.treatmentPlanResultRows());
             }
@@ -147,6 +184,7 @@ namespace WpfApp1
 
         private void BtnCheck_Click(object sender, RoutedEventArgs e)
         {
+            updateSpecifications();
             calculateLengthAndFreeLength();
             this.buildResultDataGrid();
         }

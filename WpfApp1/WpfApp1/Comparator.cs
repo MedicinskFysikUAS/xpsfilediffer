@@ -372,6 +372,7 @@ namespace WpfApp1
         public List<List<string>> treatmentPlanResultRows()
         {
             List<List<string>> resultRows = new List<List<string>>();
+            // TODO Add a 'header' result row 
             resultRows.Add(checkTreatmentPlanChannelLength());
             resultRows.Add(checkTreatmentPlanDepth(0.1m)); 
             return resultRows;
@@ -380,6 +381,7 @@ namespace WpfApp1
             public List<List<string>> resultRows()
         {
             List<List<string>> resultRows = new List<List<string>>();
+            // TODO Add a 'header' result row 
             resultRows.Add(checkPatientName());
             resultRows.Add(checkPatientId());
             resultRows.Add(checkPlanCode());
