@@ -32,6 +32,7 @@ namespace WpfApp1
         {
             InitializeComponent();
             setLabelAndTextboxVisable(false);
+            _specifications = new Specifications();
         }
 
         public void setLabelAndTextboxVisable(bool setLabelAndTextboxVisable)
@@ -89,7 +90,6 @@ namespace WpfApp1
             {
                 calculator.NeedleLength = stringExtractor.decimalStringToDecimal(needleLengthText.Text);
                 calculator.ProbeDistance = stringExtractor.decimalStringToDecimal(probeDistanceText.Text);
-
                 _specifications.NeedleDepth = calculator.needleDepth();
                 _specifications.FreeLength = calculator.freeLength();
             }
@@ -98,14 +98,14 @@ namespace WpfApp1
         void buildResultDataGrid()
         {
             DataTable dataTable = new DataTable();
-           
+            _resultRows.Clear();
 
             if (_treatmentPlanXpsFilePath != null)
             {
                 PageReader treatmentPlanPageReader = new PageReader(_treatmentPlanXpsFilePath);
                 List<List<string>> treatmentPlanPageList = treatmentPlanPageReader.getPages();
                 TreatmentPlan treatmentPlan = new TreatmentPlan(treatmentPlanPageList);
-                Comparator comparator = new Comparator(); // TODO Add _specifications to the constructor
+                Comparator comparator = new Comparator(_specifications); 
                 comparator.treatmentPlan = treatmentPlan;
                 _resultRows.AddRange(comparator.treatmentPlanResultRows());
             }
@@ -115,7 +115,7 @@ namespace WpfApp1
                 PageReader treatmentPlanPageReader = new PageReader(_treatmentPlanXpsFilePath);
                 List<List<string>> treatmentPlanPageList = treatmentPlanPageReader.getPages();
                 TreatmentPlan treatmentPlan = new TreatmentPlan(treatmentPlanPageList);
-                Comparator comparator = new Comparator();
+                Comparator comparator = new Comparator(_specifications);
                 comparator.treatmentPlan = treatmentPlan;
                 //PageReader dvhPageReader = new PageReader(_dvhXpsFilePath);
                 //List<List<string>> dvhPageList = dvhPageReader.getPages();

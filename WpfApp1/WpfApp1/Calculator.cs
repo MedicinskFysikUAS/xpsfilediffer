@@ -9,6 +9,7 @@ namespace WpfApp1
         private decimal _needleLength;
         private decimal _probeDistance;
 
+
         public decimal NeedleLength { get => _needleLength; set => _needleLength = value; }
         public decimal ProbeDistance { get => _probeDistance; set => _probeDistance = value; }
 

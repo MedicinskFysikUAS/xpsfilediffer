@@ -11,9 +11,11 @@ namespace WpfApp1
         private int _numberOfOk; // TODO Remove these
         private int _numberOfWarnings;
         private int _numberOfErrors;
+        private Specifications _specifications;
 
-        public Comparator()
+        public Comparator(Specifications specifications)
         {
+            _specifications = specifications;
         }
 
         public TreatmentPlan treatmentPlan { get => _treatmentPlan; set => _treatmentPlan = value; }
@@ -62,7 +64,7 @@ namespace WpfApp1
         }
 
 
-        bool hasSameCatheterPositionTimePairs()
+        bool hasSameCatheterPositionTimePairs(decimal timeEpsilon)
         {
             List<LiveCatheter> tpLiveCatheters = _treatmentPlan.liveCatheters();
             List<LiveCatheter> tccLiveCatheters = _tccPlan.liveCatheters();
@@ -81,7 +83,6 @@ namespace WpfApp1
                     {  
                         decimal deltaTime = Math.Abs(stringExtractor.decimalStringToDecimal(subItem.Item2) -
                             stringExtractor.decimalStringToDecimal(tccLiveCatheters[counter].positonTimePairs()[subCounter].Item2));
-                        decimal timeEpsilon = 0.051m;
                         if (subItem.Item1 != stringExtractor.decimalStringToZeroDecimalString(tccLiveCatheters[counter].positonTimePairs()[subCounter].Item1) ||
                             deltaTime > timeEpsilon)
                         {
@@ -111,11 +112,11 @@ namespace WpfApp1
             return true;
         }
 
-        public bool treatmentPlanHasExpectedDepth(decimal expectedDepth,decimal epsilon)
+        public bool treatmentPlanHasExpectedDepth(decimal expectedDepth)
         {
             foreach (var catheter in _treatmentPlan.treatmentPlanCatheters())
             {
-                if (Math.Abs(catheter.depth - expectedDepth) > epsilon)
+                if (Math.Abs(catheter.depth - expectedDepth) > _specifications.DepthEpsilon)
                 {
                     return false;
                 }
@@ -300,12 +301,12 @@ namespace WpfApp1
             return resultRow;
         }
 
-        public List<string> checkCatheterPositionTimePairs()
+        public List<string> checkCatheterPositionTimePairs(decimal timeEpsilon)
         {
             List<string> resultRow = new List<string>();
             resultRow.Add("Bestrålningsposition och tid");
             string descriptionString = "";
-            if (hasSameCatheterPositionTimePairs())
+            if (hasSameCatheterPositionTimePairs(timeEpsilon))
             {
                 resultRow.Add("OK");
                 ++_numberOfOk;
@@ -322,46 +323,53 @@ namespace WpfApp1
             return resultRow;
         }
 
-        public List<string> checkTreatmentPlanChannelLength()
+        public List<string> checkTreatmentPlanChannelLength(decimal expectedChannelLength)
         {
             List<string> resultRow = new List<string>();
-            decimal channelLength = 1190.0m;
-            resultRow.Add("Channel length i dosplan = " + channelLength);
+            resultRow.Add("Channel length i dosplan = " + expectedChannelLength);
             string descriptionString = "";
-            if (treatmentPlanHasSameChannelLength(channelLength))
+            if (treatmentPlanHasSameChannelLength(expectedChannelLength))
             {
                 resultRow.Add("OK");
                 ++_numberOfOk;
-                descriptionString = "Channel length för samtilga kanaler är " + channelLength;
+                descriptionString = "Channel length för samtilga kanaler är " + expectedChannelLength;
             }
             else
             {
                 resultRow.Add("Inte OK");
                 ++_numberOfErrors;
-                descriptionString = "Channel length är inte lika med " + channelLength + " för en eller fler kanaler.";
+                descriptionString = "Channel length är inte lika med " + expectedChannelLength + " för en eller fler kanaler.";
             }
             resultRow.Add(descriptionString);
 
             return resultRow;
         }
 
-        public List<string> checkTreatmentPlanDepth(decimal expectedDepth)
+        public List<string> headerResultRow(string description)
         {
             List<string> resultRow = new List<string>();
-            decimal epsilon = 0.1m;
+            resultRow.Add(" ");
+            resultRow.Add("<-- " + description + " -->");
+            resultRow.Add("");
+            return resultRow;
+        }
+
+        public List<string> checkTreatmentPlanDepth(decimal expectedDepth, decimal depthEpsilon)
+        {
+            List<string> resultRow = new List<string>();
             resultRow.Add("Samma nåldjup i dosplan");
             string descriptionString = "";
-            if (treatmentPlanHasExpectedDepth(expectedDepth, epsilon))
+            if (treatmentPlanHasExpectedDepth(expectedDepth))
             {
                 resultRow.Add("OK");
                 ++_numberOfOk;
-                descriptionString = "Nåldjupet är konstant (inom " + epsilon + " mm)";
+                descriptionString = "Nåldjupet är konstant (inom " + depthEpsilon + " mm)";
             }
             else
             {
                 resultRow.Add("Inte OK");
                 ++_numberOfErrors;
-                descriptionString = "Nåldjupet avviker mer än " + epsilon + " mm.";
+                descriptionString = "Nåldjupet avviker mer än " + depthEpsilon + " mm.";
             }
             resultRow.Add(descriptionString);
 
@@ -373,15 +381,16 @@ namespace WpfApp1
         {
             List<List<string>> resultRows = new List<List<string>>();
             // TODO Add a 'header' result row 
-            resultRows.Add(checkTreatmentPlanChannelLength());
-            resultRows.Add(checkTreatmentPlanDepth(0.1m)); 
+            resultRows.Add(headerResultRow("Kontroll av dosplan"));
+            resultRows.Add(checkTreatmentPlanChannelLength(_specifications.ExpectedChannelLength));
+            resultRows.Add(checkTreatmentPlanDepth(_specifications.NeedleDepth, _specifications.DepthEpsilon)); 
             return resultRows;
         }
 
             public List<List<string>> resultRows()
         {
             List<List<string>> resultRows = new List<List<string>>();
-            // TODO Add a 'header' result row 
+            resultRows.Add(headerResultRow("Kontroll av dosplan och tcc-rapport"));
             resultRows.Add(checkPatientName());
             resultRows.Add(checkPatientId());
             resultRows.Add(checkPlanCode());
@@ -390,7 +399,7 @@ namespace WpfApp1
             resultRows.Add(checkFractionDose());
             resultRows.Add(checkPlannedSourceStrength());
             resultRows.Add(checkTotalTreatmentTime()); 
-            resultRows.Add(checkCatheterPositionTimePairs());
+            resultRows.Add(checkCatheterPositionTimePairs(_specifications.TimeEpsilon));
             return resultRows;
         }
 

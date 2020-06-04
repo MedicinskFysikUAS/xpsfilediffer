@@ -13,32 +13,8 @@
             <ColumnDefinition Width="45*"/>
             <ColumnDefinition Width="3*"/>
         </Grid.ColumnDefinitions>
-        <WrapPanel HorizontalAlignment="Left" Margin="5,0,0,10">
-            <Button x:Name="BtnOpenTPFile" Click="BtnOpenTPFile_Click" Content="Treatment plan file:"/>
-            <Label x:Name="TPXpsPathLabel" Content="Inte vald" HorizontalAlignment="Left" VerticalAlignment="Center"/>
-        </WrapPanel>
 
-        <WrapPanel HorizontalAlignment="Left" Margin="5,30,0,10">
-            <Button x:Name="BtnOpenDVHFile" Click="BtnOpenDVHFile_Click" Content="DVH file:"/>
-            <Label x:Name="DVHXpsPathLabel" Content="Inte vald" HorizontalAlignment="Left" VerticalAlignment="Center" Width="105"/>
-        </WrapPanel>
 
-        <WrapPanel HorizontalAlignment="Left" Margin="5,60,0,10">
-            <Button x:Name="BtnOpenTCCFile" Click="BtnOpenTCCFile_Click" Content="TCC file:"/>
-            <Label x:Name="TCCXpsPathLabel" Content="Inte vald" HorizontalAlignment="Left" VerticalAlignment="Center"/>
-        </WrapPanel>
-
-        <WrapPanel HorizontalAlignment="Left" Margin="5,90,0,10">
-            <Label x:Name="needleLengthLabel" Content="Nållängd [mm]: "/>
-            <TextBox x:Name="needleLengthText" VerticalAlignment="Center" Width="40" RenderTransformOrigin="2.125,0.281"/>
-        </WrapPanel>
-
-        <WrapPanel HorizontalAlignment="Left" Margin="5,120,0,10">
-            <Label x:Name="probeDistanceLabel" Content="Avst. prob [mm]: "/>
-            <TextBox Name="probeDistanceText" VerticalAlignment="Center" Width="40">
-
-            </TextBox>
-        </WrapPanel>
 
         <Button x:Name="BtnCheck" Click="BtnCheck_Click" Content="Kontrollera" HorizontalAlignment="Left" Margin="15,114,0,0" VerticalAlignment="Top" Width="64" Height="26" RenderTransformOrigin="0.469,-2.114" Grid.Column="2"/>
 
@@ -50,5 +26,7 @@
         <TextBox x:Name="freeLengthText" Grid.Column="1" HorizontalAlignment="Left" Margin="124,127,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="40"  IsReadOnly="True"/>
         <Label x:Name="needleLengthProbSumLabel" Content="Summa nållängd + prob:" Grid.Column="1" HorizontalAlignment="Left" Margin="20,156,0,0" VerticalAlignment="Top"/>
         <TextBox x:Name="needleLengthProbSumText" Grid.Column="1" HorizontalAlignment="Left" Margin="162,160,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="40"  IsReadOnly="True"/>
+        <Label x:Name="TPXpsPathLabel" Content="Inte vald" HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top"/>
+        <Button x:Name="BtnOpenTPFile" Click="BtnOpenTPFile_Click" Content="Treatment plan file:" HorizontalAlignment="Left" Margin="90,13,0,0" VerticalAlignment="Top"/>
     </Grid>
 </Window>
