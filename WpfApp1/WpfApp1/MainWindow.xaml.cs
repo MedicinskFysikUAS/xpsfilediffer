@@ -31,6 +31,7 @@ namespace WpfApp1
         public MainWindow()
         {
             InitializeComponent();
+            instructionLabel.Background = Brushes.Red;
             setLabelAndTextboxVisable(false);
             _specifications = new Specifications();
         }
@@ -58,8 +59,6 @@ namespace WpfApp1
                 calculatedLabel.Visibility = Visibility.Hidden;
             }
         }
-
-
 
         public void calculateLengthAndFreeLength()
         {

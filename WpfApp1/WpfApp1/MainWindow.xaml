@@ -39,6 +39,6 @@
         <Label x:Name="probeDistanceLabel" Content="Avst. prob [mm]: " HorizontalAlignment="Left" Margin="5,123,0,0" VerticalAlignment="Top" Height="26" Width="101"/>
         <TextBox x:Name="probeDistanceText" HorizontalAlignment="Left" Margin="106,127,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="45" Height="18"/>
         <Label x:Name="calculatedLabel" Content="Beräknat:" Grid.Column="1" HorizontalAlignment="Left" Margin="6,89,0,0" VerticalAlignment="Top" FontStyle="Italic"/>
-        <Label x:Name="instructionLabel" Content="Tryck alltid Kontrollera efter att något har ändrats!" Grid.Column="1" HorizontalAlignment="Left" Margin="185,137,0,0" VerticalAlignment="Top" FontStyle="Italic" Grid.ColumnSpan="2" FontSize="10" Width="235"/>
+        <Label x:Name="instructionLabel" Content="Tryck alltid Kontrollera efter att något har ändrats!" Grid.Column="1" HorizontalAlignment="Left" Margin="170,137,0,0" VerticalAlignment="Top" FontStyle="Italic" Grid.ColumnSpan="2" FontSize="11" Width="250" FontWeight="Normal"/>
     </Grid>
 </Window>
