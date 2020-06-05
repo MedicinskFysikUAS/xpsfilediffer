@@ -45,6 +45,7 @@ namespace WpfApp1
                 freeLengthText.Visibility = Visibility.Visible;
                 needleLengthProbSumLabel.Visibility = Visibility.Visible;
                 needleLengthProbSumText.Visibility = Visibility.Visible;
+                calculatedLabel.Visibility = Visibility.Visible;
             }
             else
             {
@@ -54,6 +55,7 @@ namespace WpfApp1
                 freeLengthText.Visibility = Visibility.Hidden;
                 needleLengthProbSumLabel.Visibility = Visibility.Hidden;
                 needleLengthProbSumText.Visibility = Visibility.Hidden;
+                calculatedLabel.Visibility = Visibility.Hidden;
             }
         }
 
@@ -95,12 +97,17 @@ namespace WpfApp1
             }
         }
 
+        public bool needleDepthAndFreeLengthIsSet()
+        {
+            return ((needleDepthText.Visibility == Visibility.Visible) && (freeLengthText.Visibility == Visibility.Visible));
+        }
+
         void buildResultDataGrid()
         {
             DataTable dataTable = new DataTable();
             _resultRows.Clear();
 
-            if (_treatmentPlanXpsFilePath != null)
+            if (_treatmentPlanXpsFilePath != null && needleDepthAndFreeLengthIsSet())
             {
                 PageReader treatmentPlanPageReader = new PageReader(_treatmentPlanXpsFilePath);
                 List<List<string>> treatmentPlanPageList = treatmentPlanPageReader.getPages();

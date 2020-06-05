@@ -112,17 +112,30 @@ namespace WpfApp1
             return true;
         }
 
-        public bool treatmentPlanHasExpectedDepth(decimal expectedDepth)
+        public bool treatmentPlanHasExpectedDepth(decimal expectedDepth, decimal needleDepthEpsilon)
         {
             foreach (var catheter in _treatmentPlan.treatmentPlanCatheters())
             {
-                if (Math.Abs(catheter.depth - expectedDepth) > _specifications.DepthEpsilon)
+                if (Math.Abs(catheter.depth - expectedDepth) > needleDepthEpsilon)
                 {
                     return false;
                 }
             }
             return true;
         }
+
+        public bool treatmentPlanHasExpectedFreeLength(decimal expectedFreeLength, decimal freeLengthEpsilon)
+        {
+            foreach (var catheter in _treatmentPlan.treatmentPlanCatheters())
+            {
+                if (Math.Abs(catheter.freeLength - expectedFreeLength) > freeLengthEpsilon)
+                {
+                    return false;
+                }
+            }
+            return true;
+        }
+
 
         // check -----------------------
 
@@ -354,43 +367,64 @@ namespace WpfApp1
             return resultRow;
         }
 
-        public List<string> checkTreatmentPlanDepth(decimal expectedDepth, decimal depthEpsilon)
+        public List<string> checkTreatmentPlanDepth(decimal expectedDepth, decimal needleDepthEpsilon)
         {
             List<string> resultRow = new List<string>();
             resultRow.Add("Samma nåldjup i dosplan");
             string descriptionString = "";
-            if (treatmentPlanHasExpectedDepth(expectedDepth))
+            if (treatmentPlanHasExpectedDepth(expectedDepth, needleDepthEpsilon))
             {
                 resultRow.Add("OK");
                 ++_numberOfOk;
-                descriptionString = "Nåldjupet är konstant (inom " + depthEpsilon + " mm)";
+                descriptionString = "Nåldjupet är " + expectedDepth + " (inom " + needleDepthEpsilon + " mm)";
             }
             else
             {
                 resultRow.Add("Inte OK");
                 ++_numberOfErrors;
-                descriptionString = "Nåldjupet avviker mer än " + depthEpsilon + " mm.";
+                descriptionString = "Nåldjupet avviker från " + expectedDepth + " mer än " + needleDepthEpsilon + " mm.";
             }
             resultRow.Add(descriptionString);
 
             return resultRow;
         }
 
+        public List<string> checkTreatmentFreeLength(decimal expectedFreeLength, decimal needleDepthEpsilon)
+        {
+            List<string> resultRow = new List<string>();
+            resultRow.Add("Samma free length i dosplan");
+            string descriptionString = "";
+            if (treatmentPlanHasExpectedFreeLength(expectedFreeLength, needleDepthEpsilon))
+            {
+                resultRow.Add("OK");
+                ++_numberOfOk;
+                descriptionString = "Free length är " + expectedFreeLength + " (inom " + needleDepthEpsilon + " mm)";
+            }
+            else
+            {
+                resultRow.Add("Inte OK");
+                ++_numberOfErrors;
+                descriptionString = "Free length avviker från " + expectedFreeLength + " mer än " + needleDepthEpsilon + " mm.";
+            }
+            resultRow.Add(descriptionString);
+
+            return resultRow;
+        }
 
         public List<List<string>> treatmentPlanResultRows()
         {
             List<List<string>> resultRows = new List<List<string>>();
-            // TODO Add a 'header' result row 
-            resultRows.Add(headerResultRow("Kontroll av dosplan"));
+            resultRows.Add(headerResultRow("Dosplan"));
             resultRows.Add(checkTreatmentPlanChannelLength(_specifications.ExpectedChannelLength));
-            resultRows.Add(checkTreatmentPlanDepth(_specifications.NeedleDepth, _specifications.DepthEpsilon)); 
+            resultRows.Add(checkTreatmentPlanDepth(_specifications.NeedleDepth, _specifications.NeedleDepthEpsilon)); 
+            resultRows.Add(checkTreatmentFreeLength(_specifications.FreeLength, _specifications.FreeLengthEpsilon)); 
             return resultRows;
         }
 
             public List<List<string>> resultRows()
         {
             List<List<string>> resultRows = new List<List<string>>();
-            resultRows.Add(headerResultRow("Kontroll av dosplan och tcc-rapport"));
+            resultRows.Add(headerResultRow("Dosplan & TCC-rapport"));
             resultRows.Add(checkPatientName());
             resultRows.Add(checkPatientId());
             resultRows.Add(checkPlanCode());
