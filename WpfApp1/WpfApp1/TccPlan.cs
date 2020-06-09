@@ -68,6 +68,12 @@ namespace WpfApp1
             return String.Format("{0:0.00}", Convert.ToDecimal(_stringExtractor.getValueBeforeSearchStringSplitOnSpace(_pageList[pageIndex], "Planerad TRAK", 0)));
         }
 
+        public decimal PrescribedDose()
+        {
+            int pageIndex = 0;
+            return Convert.ToDecimal(_stringExtractor.getValueBeforeSearchStringSplitOnSpace(_pageList[pageIndex], "Planerad TRAK", 0));
+        }
+
         public string plannedSourceStrength()
         {
             int pageIndex = 0;

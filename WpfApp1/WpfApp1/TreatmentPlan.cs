@@ -81,6 +81,17 @@ namespace WpfApp1
             return String.Format("{0:0.00}", Convert.ToDecimal(fractiondoseFl));
         }
 
+        public decimal PrescribedDose()
+        {
+            int pageIndex = 1;
+            string stringValue = _stringExtractor.getValueBetweenSearchStrings(_pageList[pageIndex], "Prescribed Dose:", "Gy");
+            if (stringValue.Contains('.'))
+            {
+                stringValue = stringValue.Replace('.', ',');
+            }
+            return Convert.ToDecimal(stringValue);
+        }
+
         public string plannedSourceStrength()
         {
             int pageIndex = 0;
@@ -94,6 +105,18 @@ namespace WpfApp1
             return String.Format("{0:0}", Convert.ToDecimal(zeroDecfractiondose));
         }
 
+        public decimal plannedSourceStrengthValue()
+        {
+            int pageIndex = 0;
+            string fractiondoseStr = _stringExtractor.getValueFromSpaceSeparetedString(_pageList[pageIndex], "Planned Source Strength:", 0);
+            if (fractiondoseStr.Contains('.'))
+            {
+                fractiondoseStr = fractiondoseStr.Replace('.', ',');
+            }
+            return Convert.ToDecimal(fractiondoseStr);
+        }
+
+
         public string totalTreatmentTime()
         {
             int pageIndex = 1;
@@ -105,9 +128,18 @@ namespace WpfApp1
             Decimal totalTreatmentTime = Convert.ToDecimal(totalTreatmentTimeStr);
             Decimal totalTreatmentTimeOneDec = Math.Round(totalTreatmentTime, 1);
             return String.Format("{0:0.0}", Convert.ToDecimal(totalTreatmentTimeOneDec));
-
         }
 
+        public decimal totalTreatmentTimeValue()
+        {
+            int pageIndex = 1;
+            string totalTreatmentTimeStr = _stringExtractor.getValueFromSpaceSeparetedString(_pageList[pageIndex], "Total Treatment Time:", 0);
+            if (totalTreatmentTimeStr.Contains('.'))
+            {
+                totalTreatmentTimeStr = totalTreatmentTimeStr.Replace('.', ',');
+            }
+            return Convert.ToDecimal(totalTreatmentTimeStr);
+        }
 
 
         public List<LiveCatheter> liveCatheters()

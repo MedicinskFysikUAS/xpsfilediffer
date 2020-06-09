@@ -40,5 +40,16 @@
         <TextBox x:Name="probeDistanceText" HorizontalAlignment="Left" Margin="106,127,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="45" Height="18"/>
         <Label x:Name="calculatedLabel" Content="Beräknat:" Grid.Column="1" HorizontalAlignment="Left" Margin="6,89,0,0" VerticalAlignment="Top" FontStyle="Italic"/>
         <Label x:Name="instructionLabel" Content="Tryck alltid Kontrollera efter att något har ändrats!" Grid.Column="1" HorizontalAlignment="Left" Margin="170,137,0,0" VerticalAlignment="Top" FontStyle="Italic" Grid.ColumnSpan="2" FontSize="11" Width="250" FontWeight="Normal"/>
+        <Label x:Name="prescribedDoseLabel" Content="Ordinerad dos [Gy]:" HorizontalAlignment="Left" Margin="3,146,0,0" VerticalAlignment="Top" Height="26" Width="118" RenderTransformOrigin="0.5,0.5">
+            <Label.RenderTransform>
+                <TransformGroup>
+                    <ScaleTransform/>
+                    <SkewTransform AngleY="0"/>
+                    <RotateTransform/>
+                    <TranslateTransform Y="0"/>
+                </TransformGroup>
+            </Label.RenderTransform>
+        </Label>
+        <TextBox x:Name="prescribedDoseText" HorizontalAlignment="Left" Margin="116,150,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="44"/>
     </Grid>
 </Window>

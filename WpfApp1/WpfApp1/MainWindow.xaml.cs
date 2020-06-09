@@ -31,7 +31,6 @@ namespace WpfApp1
         public MainWindow()
         {
             InitializeComponent();
-            instructionLabel.Background = Brushes.Red;
             setLabelAndTextboxVisable(false);
             _specifications = new Specifications();
         }
@@ -93,6 +92,7 @@ namespace WpfApp1
                 calculator.ProbeDistance = stringExtractor.decimalStringToDecimal(probeDistanceText.Text);
                 _specifications.NeedleDepth = calculator.needleDepth();
                 _specifications.FreeLength = calculator.freeLength();
+                _specifications.PrescriptionDose = stringExtractor.decimalStringToDecimal(prescribedDoseText.Text);
             }
         }
 
@@ -116,6 +116,20 @@ namespace WpfApp1
                 _resultRows.AddRange(comparator.treatmentPlanResultRows());
             }
 
+            if (_treatmentPlanXpsFilePath != null && _dvhXpsFilePath != null)
+            {
+                PageReader treatmentPlanPageReader = new PageReader(_treatmentPlanXpsFilePath);
+                List<List<string>> treatmentPlanPageList = treatmentPlanPageReader.getPages();
+                TreatmentPlan treatmentPlan = new TreatmentPlan(treatmentPlanPageList);
+                PageReader treatmentDvhPageReader = new PageReader(_dvhXpsFilePath);
+                List<List<string>> treatmentPlanDvhPageList = treatmentDvhPageReader.getPages();
+                TreatmentDvh treatmentDvh = new TreatmentDvh(treatmentPlanDvhPageList);
+                Comparator comparator = new Comparator(_specifications);
+                comparator.treatmentPlan = treatmentPlan;
+                comparator.treatmentDvh = treatmentDvh;
+                _resultRows.AddRange(comparator.treatmentPlanAndDvhResultRows());
+            }
+
             if (_treatmentPlanXpsFilePath != null && _tccPlanXpsFilePath != null)
             {
                 PageReader treatmentPlanPageReader = new PageReader(_treatmentPlanXpsFilePath);
@@ -133,6 +147,25 @@ namespace WpfApp1
                 comparator.tccPlan = tccPlan;
                 //_resultRows = comparator.resultRows();
                 _resultRows.AddRange(comparator.resultRows());
+            }
+
+            if (_treatmentPlanXpsFilePath != null && _dvhXpsFilePath != null && _tccPlanXpsFilePath != null)
+            {
+                PageReader treatmentPlanPageReader = new PageReader(_treatmentPlanXpsFilePath);
+                List<List<string>> treatmentPlanPageList = treatmentPlanPageReader.getPages();
+                TreatmentPlan treatmentPlan = new TreatmentPlan(treatmentPlanPageList);
+                PageReader treatmentDvhPageReader = new PageReader(_dvhXpsFilePath);
+                List<List<string>> treatmentPlanDvhPageList = treatmentDvhPageReader.getPages();
+                TreatmentDvh treatmentDvh = new TreatmentDvh(treatmentPlanDvhPageList);
+                PageReader tccPlanPageReader = new PageReader(_tccPlanXpsFilePath);
+                List<List<string>> tccPlanPageList = tccPlanPageReader.getPages();
+                List<LiveCatheter> tccLiveCatheters = tccPlanPageReader.tccLiveCatheters();
+                TccPlan tccPlan = new TccPlan(tccPlanPageList, tccLiveCatheters);
+                Comparator comparator = new Comparator(_specifications);
+                comparator.treatmentPlan = treatmentPlan;
+                comparator.treatmentDvh = treatmentDvh;
+                comparator.tccPlan = tccPlan;
+                _resultRows.AddRange(comparator.allXpsResultRows());
             }
             DataColumn testCase= new DataColumn("Test", typeof(string));
             DataColumn testResult = new DataColumn("Result", typeof(string));

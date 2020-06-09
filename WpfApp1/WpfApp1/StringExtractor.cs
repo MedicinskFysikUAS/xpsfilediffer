@@ -25,6 +25,26 @@ namespace WpfApp1
             return stringValue;
         }
 
+        public string getValueBetweenSearchStrings(List<string> stringsOnPage, string startString, string endString)
+        {
+            int foundIndex = stringsOnPage.FindIndex(x => x.StartsWith(startString));
+            string stringValue = "";
+            if (foundIndex != -1)
+            {
+                string fullString = stringsOnPage[foundIndex];
+                int endIndex = fullString.IndexOf(endString);
+                if (endIndex != -1)
+                {
+                    stringValue = fullString.Substring(startString.Length, (endIndex - startString.Length)).Trim();
+                }
+                else
+                {
+                    stringValue = fullString.Substring(startString.Length, (fullString.Length - startString.Length)).Trim();
+                }
+            }
+            return stringValue;
+        }
+
 
         public string getValueAfterSearchString(List<string> stringsOnPage, string searchedString, int stringIndex)
         {

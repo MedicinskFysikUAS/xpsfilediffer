@@ -8,6 +8,7 @@ namespace WpfApp1
     {
         private TreatmentPlan _treatmentPlan;
         private TccPlan _tccPlan;
+        private TreatmentDvh _treatmentDvh;
         private int _numberOfOk; // TODO Remove these
         private int _numberOfWarnings;
         private int _numberOfErrors;
@@ -20,6 +21,8 @@ namespace WpfApp1
 
         public TreatmentPlan treatmentPlan { get => _treatmentPlan; set => _treatmentPlan = value; }
         public TccPlan tccPlan { get => _tccPlan; set => _tccPlan = value; }
+
+        public TreatmentDvh treatmentDvh { get => _treatmentDvh; set => _treatmentDvh = value; }
 
         // has --------------------------
         public bool hasSamePatientName()
@@ -80,7 +83,7 @@ namespace WpfApp1
                 {
                     int subCounter = 0;
                     foreach (var subItem in item.positonTimePairs())
-                    {  
+                    {
                         decimal deltaTime = Math.Abs(stringExtractor.decimalStringToDecimal(subItem.Item2) -
                             stringExtractor.decimalStringToDecimal(tccLiveCatheters[counter].positonTimePairs()[subCounter].Item2));
                         if (subItem.Item1 != stringExtractor.decimalStringToZeroDecimalString(tccLiveCatheters[counter].positonTimePairs()[subCounter].Item1) ||
@@ -136,6 +139,21 @@ namespace WpfApp1
             return true;
         }
 
+        public decimal treatmentTimeDeviation(decimal estimatedTreatmentTime, decimal reportedTreatmentTime)
+        {
+            return Math.Abs((estimatedTreatmentTime - reportedTreatmentTime) / reportedTreatmentTime);
+        }
+
+        public bool treatmentTimeAsEstimated(decimal estimatedTreatmentTime, decimal reportedTreatmentTime, decimal treatmentTimeEpsilon)
+        {
+            return treatmentTimeDeviation(estimatedTreatmentTime, reportedTreatmentTime) < treatmentTimeEpsilon;
+        }
+
+
+        public bool prescriptionDoseIsTheSame(decimal guiPresciptionDose, decimal treatmentPlanPrescriptionDose, decimal dvhPrescriptionDose)
+        {
+            return ((guiPresciptionDose == treatmentPlanPrescriptionDose) && (treatmentPlanPrescriptionDose == dvhPrescriptionDose));
+        }
 
         // check -----------------------
 
@@ -193,8 +211,8 @@ namespace WpfApp1
                 resultRow.Add("Inte OK");
                 ++_numberOfErrors;
             }
-            resultRow.Add("Plankod i TP: " + _treatmentPlan.planCode() + 
-                " i TCC: " + _tccPlan.planCode() );
+            resultRow.Add("Plankod i TP: " + _treatmentPlan.planCode() +
+                " i TCC: " + _tccPlan.planCode());
 
             return resultRow;
         }
@@ -225,7 +243,7 @@ namespace WpfApp1
                 TCCStatus = "Godkänd";
             }
 
-            resultRow.Add("TP är : " + TPStatus + 
+            resultRow.Add("TP är : " + TPStatus +
                 " TCC-planen är : " + TCCStatus);
 
             return resultRow;
@@ -411,6 +429,67 @@ namespace WpfApp1
             return resultRow;
         }
 
+        public List<string> checkTreatmentTime(decimal estimatedTreatmentTime, decimal reportedTreatmentTime, decimal treatmentTimeEpsilon)
+        {
+            List<string> resultRow = new List<string>();
+            resultRow.Add("Uppskattning av behandlingstid");
+            string descriptionString = "";
+            decimal precentageEpsilon = treatmentTimeEpsilon * 100.0m;
+            if (treatmentTimeAsEstimated(estimatedTreatmentTime, reportedTreatmentTime, treatmentTimeEpsilon))
+            {
+                resultRow.Add("OK");
+                ++_numberOfOk;
+                descriptionString = "Avvikelsen mellan uppskattad och rapporterad tid är mindre än " + precentageEpsilon.ToString("0") + "% " + " (" +
+                    estimatedTreatmentTime.ToString("0.0") + " resp " + reportedTreatmentTime.ToString("0.0") + " sek)";
+            }
+            else
+            {
+                resultRow.Add("Inte OK");
+                ++_numberOfErrors;
+                descriptionString = "Avvikelsen mellan uppskattad och rapporterad tid är mer än " + precentageEpsilon.ToString("0") + "% " + " (" +
+                     estimatedTreatmentTime.ToString("0.0") + " resp " + reportedTreatmentTime.ToString("0.0") + " sek)";
+            }
+            resultRow.Add(descriptionString);
+            return resultRow;
+
+        }
+        // checkPresciptionDose
+
+        public List<string> checkPresciptionDose(decimal guiPresciptionDose, decimal treatmentPlanPrescriptionDose, decimal dvhPrescriptionDose, 
+            decimal tccPrescriptionDose)
+        {
+            List<string> resultRow = new List<string>();
+            resultRow.Add("Ordinerad dos");
+            string descriptionString = "";
+            if (prescriptionDoseIsTheSame(guiPresciptionDose, treatmentPlanPrescriptionDose, dvhPrescriptionDose))
+            {
+                resultRow.Add("OK");
+                ++_numberOfOk;
+                descriptionString = "Den angivna ordinerade dosen är den samma som i planen, dvh och tcc-rapporten";
+                    }
+            else
+            {
+                resultRow.Add("Inte OK");
+                ++_numberOfErrors;
+                descriptionString = "Den angivna ordinerade dosen är INTE den samma som i planen, dvh och tcc-rapporten";
+            }
+            resultRow.Add(descriptionString);
+            return resultRow;
+        }
+
+        public List<List<string>> treatmentPlanAndDvhResultRows()
+        {
+            List<List<string>> resultRows = new List<List<string>>();
+            resultRows.Add(headerResultRow("Dosplan & DVH"));
+            Calculator calculator = new Calculator();
+            decimal estimatedTreatmentTime = calculator.estimatedTreatmentTime(
+                _treatmentDvh.PtvVolume(), _treatmentDvh.PrescribedDose(), _treatmentPlan.plannedSourceStrengthValue());
+            decimal reportedTreatmentTime = _treatmentPlan.totalTreatmentTimeValue();
+
+            resultRows.Add(checkTreatmentTime(estimatedTreatmentTime, reportedTreatmentTime, _specifications.TreatmentTimeEpsilon));
+            return resultRows;
+        }
+
         public List<List<string>> treatmentPlanResultRows()
         {
             List<List<string>> resultRows = new List<List<string>>();
@@ -436,6 +515,19 @@ namespace WpfApp1
             resultRows.Add(checkCatheterPositionTimePairs(_specifications.TimeEpsilon));
             return resultRows;
         }
+
+        public List<List<string>> allXpsResultRows()
+        {
+            List<List<string>> resultRows = new List<List<string>>();
+            resultRows.Add(headerResultRow("Dosplan, DVH & TCC-rapport"));
+            resultRows.Add(checkPresciptionDose(_specifications.PrescriptionDose, _treatmentPlan.PrescribedDose(), 
+                _treatmentDvh.PrescribedDose(), _tccPlan.PrescribedDose()));
+
+            return resultRows;
+        }
+
+        //calculator.PrescibedDose = stringExtractor.decimalStringToDecimal(prescribedDoseText.Text);
+
 
         public int numberOfOk()
         {
