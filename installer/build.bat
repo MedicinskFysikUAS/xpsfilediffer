@@ -28,5 +28,5 @@ START "Create installer" /B /wait makensis.exe "/DVERSION=%version%" "xpsfiledif
 rem create directory in buildArtifacts directory named according to the release name
 set releaseName=..\buildArtifacts\setup_jmfXps-%version%
 echo %releaseName%
-if not exist %releaseName% mkdir %releaseName%
-xcopy /y ..\buildArtifacts\setup_dcmkoll-3.3.0.306.exe %releaseName%\
+rem if not exist %releaseName% mkdir %releaseName%
+rem xcopy /y ..\buildArtifacts\setup_dcmkoll-3.3.0.306.exe %releaseName%\

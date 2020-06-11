@@ -10,7 +10,7 @@
 !define installerDir "."
 
 ## The name of the exe must be setup_dcmkoll-3.3.0.306.exe to be able to run it
-OutFile "..\buildArtifacts\setup_dcmkoll-3.3.0.306.exe"
+OutFile "..\buildArtifacts\xpsDiffInstaller"
 
 RequestExecutionLevel user
 
@@ -88,19 +88,15 @@ File "${installerDir}\xpsDiff.ico"
 !define vbsScriptName "mkDesktopLink.vbs"
 File "${installerDir}\${vbsScriptName}"
  
-# xpsfilediffer files
-SetOutPath "${xpsfiledifferOutDir}"
-File "${installerDir}\xpsDiff.ico"
 
+# publishFolder files
 SetOutPath "${publishFolderOutDirPath}"
 File "${publishFolderDir}\*.*"
-File "${installerDir}\runXpsfilediffer.bat"
-File "${installerDir}\runXpsfilediffer.ps1"
 
 ExpandEnvStrings $0 %COMSPEC%
 
 
-ExecWait '"$0" /C "${ApplicationDir}\${installerOutDir}\${vbsScriptName}" ${ApplicationName} ${xpsfiledifferOutDir}\runXpsfilediffer.bat ${installerDirOutDirPath}\xpsDiff.ico ${xpsfiledifferOutDir} %userprofile%'
+ExecWait '"$0" /C "${ApplicationDir}\${installerOutDir}\${vbsScriptName}" ${ApplicationName} ${publishFolderDirOutDirPath}\runXpsfilediffer.bat ${installerDirOutDirPath}\xpsDiff.ico ${publishFolderDirOutDirPath} %userprofile%'
 
 # define uninstaller name
 WriteUninstaller "${ApplicationDir}\uninstaller.exe"

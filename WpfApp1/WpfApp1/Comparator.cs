@@ -191,7 +191,7 @@ namespace WpfApp1
                 resultRow.Add("Inte OK");
                 ++_numberOfErrors;
             }
-            resultRow.Add("Personnummer i TP: " + _treatmentPlan.patientId() +
+            resultRow.Add("Personnummer i plan: " + _treatmentPlan.patientId() +
                 " i TCC: " + _tccPlan.patientId());
 
             return resultRow;
@@ -211,7 +211,7 @@ namespace WpfApp1
                 resultRow.Add("Inte OK");
                 ++_numberOfErrors;
             }
-            resultRow.Add("Plankod i TP: " + _treatmentPlan.planCode() +
+            resultRow.Add("Plankod i plan: " + _treatmentPlan.planCode() +
                 " i TCC: " + _tccPlan.planCode());
 
             return resultRow;
@@ -243,7 +243,7 @@ namespace WpfApp1
                 TCCStatus = "Godkänd";
             }
 
-            resultRow.Add("TP är : " + TPStatus +
+            resultRow.Add("plan är : " + TPStatus +
                 " TCC-planen är : " + TCCStatus);
 
             return resultRow;
@@ -266,7 +266,7 @@ namespace WpfApp1
                 ++_numberOfErrors;
                 info += "inte samma";
             }
-            resultRow.Add("Tiden för godkännande i TP och TCC är " + info);
+            resultRow.Add("Tiden för godkännande i plan och TCC är " + info);
 
             return resultRow;
         }
@@ -285,7 +285,7 @@ namespace WpfApp1
                 resultRow.Add("Inte OK");
                 ++_numberOfErrors;
             }
-            resultRow.Add("Fraktionsdos i TP: " + _treatmentPlan.fractionDose() +
+            resultRow.Add("Fraktionsdos i plan: " + _treatmentPlan.fractionDose() +
                 " i TCC: " + _tccPlan.fractionDose());
 
             return resultRow;
@@ -305,7 +305,7 @@ namespace WpfApp1
                 resultRow.Add("Inte OK");
                 ++_numberOfErrors;
             }
-            resultRow.Add("Planned Source Strength i TP: " + _treatmentPlan.plannedSourceStrength() +
+            resultRow.Add("Planned Source Strength i plan: " + _treatmentPlan.plannedSourceStrength() +
                 " planerad AK-styrka i TCC: " + _tccPlan.plannedSourceStrength());
 
             return resultRow;
@@ -326,7 +326,7 @@ namespace WpfApp1
                 resultRow.Add("Inte OK");
                 ++_numberOfErrors;
             }
-            resultRow.Add("Behandlingstid i TP: " + _treatmentPlan.totalTreatmentTime() +
+            resultRow.Add("Behandlingstid i plan: " + _treatmentPlan.totalTreatmentTime() +
                 " och i TCC: " + _tccPlan.totalTreatmentTime());
 
             return resultRow;
@@ -380,7 +380,7 @@ namespace WpfApp1
         {
             List<string> resultRow = new List<string>();
             resultRow.Add(" ");
-            resultRow.Add("<-- " + description + " -->");
+            resultRow.Add(" " + description + " ");
             resultRow.Add("");
             return resultRow;
         }
@@ -453,7 +453,6 @@ namespace WpfApp1
             return resultRow;
 
         }
-        // checkPresciptionDose
 
         public List<string> checkPresciptionDose(decimal guiPresciptionDose, decimal treatmentPlanPrescriptionDose, decimal dvhPrescriptionDose, 
             decimal tccPrescriptionDose)
@@ -466,7 +465,7 @@ namespace WpfApp1
                 resultRow.Add("OK");
                 ++_numberOfOk;
                 descriptionString = "Den angivna ordinerade dosen är den samma som i planen, dvh och tcc-rapporten";
-                    }
+            }
             else
             {
                 resultRow.Add("Inte OK");
@@ -480,7 +479,7 @@ namespace WpfApp1
         public List<List<string>> treatmentPlanAndDvhResultRows()
         {
             List<List<string>> resultRows = new List<List<string>>();
-            resultRows.Add(headerResultRow("Dosplan & DVH"));
+            resultRows.Add(headerResultRow("Plan & DVH"));
             Calculator calculator = new Calculator();
             decimal estimatedTreatmentTime = calculator.estimatedTreatmentTime(
                 _treatmentDvh.PtvVolume(), _treatmentDvh.PrescribedDose(), _treatmentPlan.plannedSourceStrengthValue());
@@ -493,7 +492,7 @@ namespace WpfApp1
         public List<List<string>> treatmentPlanResultRows()
         {
             List<List<string>> resultRows = new List<List<string>>();
-            resultRows.Add(headerResultRow("Dosplan"));
+            resultRows.Add(headerResultRow("Plan"));
             resultRows.Add(checkTreatmentPlanChannelLength(_specifications.ExpectedChannelLength));
             resultRows.Add(checkTreatmentPlanDepth(_specifications.NeedleDepth, _specifications.NeedleDepthEpsilon)); 
             resultRows.Add(checkTreatmentFreeLength(_specifications.FreeLength, _specifications.FreeLengthEpsilon)); 
@@ -503,7 +502,7 @@ namespace WpfApp1
             public List<List<string>> resultRows()
         {
             List<List<string>> resultRows = new List<List<string>>();
-            resultRows.Add(headerResultRow("Dosplan & TCC-rapport"));
+            resultRows.Add(headerResultRow("Plan & TCC"));
             resultRows.Add(checkPatientName());
             resultRows.Add(checkPatientId());
             resultRows.Add(checkPlanCode());
@@ -519,7 +518,7 @@ namespace WpfApp1
         public List<List<string>> allXpsResultRows()
         {
             List<List<string>> resultRows = new List<List<string>>();
-            resultRows.Add(headerResultRow("Dosplan, DVH & TCC-rapport"));
+            resultRows.Add(headerResultRow("Plan, DVH & TCC"));
             resultRows.Add(checkPresciptionDose(_specifications.PrescriptionDose, _treatmentPlan.PrescribedDose(), 
                 _treatmentDvh.PrescribedDose(), _tccPlan.PrescribedDose()));
 

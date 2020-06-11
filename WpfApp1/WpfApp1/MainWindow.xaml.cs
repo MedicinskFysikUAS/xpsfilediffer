@@ -15,6 +15,7 @@ using System.Windows.Shapes;
 using System.Windows.Xps.Packaging;
 using System.Data;
 using Microsoft.Win32;
+using System.Windows.Controls.Primitives;
 
 namespace WpfApp1
 {
@@ -32,6 +33,7 @@ namespace WpfApp1
         {
             InitializeComponent();
             setLabelAndTextboxVisable(false);
+            resultSummaryLabel.Content = "";
             _specifications = new Specifications();
         }
 
@@ -103,8 +105,8 @@ namespace WpfApp1
 
         void buildResultDataGrid()
         {
-            DataTable dataTable = new DataTable();
             _resultRows.Clear();
+            resultSummaryLabel.Content = "";
 
             if (_treatmentPlanXpsFilePath != null && needleDepthAndFreeLengthIsSet())
             {
@@ -170,6 +172,7 @@ namespace WpfApp1
             DataColumn testCase= new DataColumn("Test", typeof(string));
             DataColumn testResult = new DataColumn("Result", typeof(string));
             DataColumn resultDescripton = new DataColumn("Beskriving", typeof(string));
+            DataTable dataTable = new DataTable();
             dataTable.Columns.Add(testCase);
             dataTable.Columns.Add(testResult);
             dataTable.Columns.Add(resultDescripton);
@@ -182,12 +185,47 @@ namespace WpfApp1
                 dataTable.Rows.Add(dataRow);
             }
             ResultDataGrid.ItemsSource = dataTable.DefaultView;
+            ResultDataGrid.UpdateLayout();
+
+            int counter = 0;
+            int nOk = 0;
+            int nErrors = 0;
+            foreach (var item in ResultDataGrid.ItemsSource)
+            {
+                DataGridRow row = (DataGridRow)ResultDataGrid.ItemContainerGenerator.ContainerFromIndex(counter);
+                if (row != null)
+                {
+                    DataGridCell cellInSecondColumn = ResultDataGrid.Columns[1].GetCellContent(row).Parent as DataGridCell;
+                    string tmp = cellInSecondColumn.ToString();
+                    if (cellInSecondColumn.ToString() == "System.Windows.Controls.DataGridCell: OK")
+                    {
+                        cellInSecondColumn.Background = Brushes.Green;
+                        ++nOk;
+                    }
+                    else if (cellInSecondColumn.ToString() == "System.Windows.Controls.DataGridCell: Inte OK")
+                    {
+                        cellInSecondColumn.Background = Brushes.Red;
+                        ++nErrors;
+                    }
+                }
+                ++counter;
+            }
+
+            if (nOk + nErrors > 0)
+            {
+                if (nErrors == 0)
+                {
+                    resultSummaryLabel.Content = "Alla test var OK";
+                    resultSummaryLabel.Background = Brushes.Green;
+                }
+                else
+                {
+                    resultSummaryLabel.Content = "Alla test var INTE OK";
+                    resultSummaryLabel.Background = Brushes.Red;
+                }
+            }
         }
 
-        //private void Window_Loaded(object sender, RoutedEventArgs e)
-        //{
-        //    //this.buildResultDataGrid();
-        //}
 
 
 

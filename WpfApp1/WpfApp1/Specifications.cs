@@ -8,8 +8,8 @@ namespace WpfApp1
     {
         private decimal _needleDepth;
         private decimal _freeLength;
-        private decimal _freeLengthEpsilon = 0.3m;
-        private decimal _needleDepthEpsilon = 0.3m;
+        private decimal _freeLengthEpsilon = 0.1m;
+        private decimal _needleDepthEpsilon = 0.1m;
         private decimal _timeEpsilon = 0.051m;
         private decimal _expectedChannelLength = 1190.0m;
         private decimal _treatmentTimeEpsilon = 0.1m;
