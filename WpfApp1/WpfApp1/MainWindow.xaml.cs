@@ -28,6 +28,19 @@ namespace WpfApp1
         string _treatmentPlanXpsFilePath;
         string _dvhXpsFilePath;
         string _tccPlanXpsFilePath;
+
+        string _treatmentPlanXpsFilePathProstate;
+        string _dvhXpsFilePathProstate;
+        string _tccPlanXpsFilePathProstate;
+
+        string _treatmentPlanXpsFilePathCylinder;
+        string _dvhXpsFilePathCylinder;
+        string _tccPlanXpsFilePathCylinder; 
+
+        string _treatmentPlanXpsFilePathIntraUterine;
+        string _dvhXpsFilePathIntraUterine;
+        string _tccPlanXpsFilePathIntraUterine;
+
         Specifications _specifications;
         public MainWindow()
         {
@@ -94,6 +107,10 @@ namespace WpfApp1
                 calculator.ProbeDistance = stringExtractor.decimalStringToDecimal(probeDistanceText.Text);
                 _specifications.NeedleDepth = calculator.needleDepth();
                 _specifications.FreeLength = calculator.freeLength();
+            }
+
+            if (prescribedDoseText.Text.Length > 0)
+            {
                 _specifications.PrescriptionDose = stringExtractor.decimalStringToDecimal(prescribedDoseText.Text);
             }
         }
@@ -101,6 +118,29 @@ namespace WpfApp1
         public bool needleDepthAndFreeLengthIsSet()
         {
             return ((needleDepthText.Visibility == Visibility.Visible) && (freeLengthText.Visibility == Visibility.Visible));
+        }
+
+        private void updateInputFilePaths()
+        {
+            if (ProstateTab.IsSelected)
+            {
+                _treatmentPlanXpsFilePath = _treatmentPlanXpsFilePathProstate;
+                _dvhXpsFilePath = _dvhXpsFilePathProstate;
+                _tccPlanXpsFilePath = _tccPlanXpsFilePathProstate;
+            }
+            else if (CylinderTab.IsSelected)
+            {
+                _treatmentPlanXpsFilePath = _treatmentPlanXpsFilePathCylinder;
+                _dvhXpsFilePath = _dvhXpsFilePathCylinder;
+                _tccPlanXpsFilePath = _tccPlanXpsFilePathCylinder;
+            }
+            else if (IntraUterineTab.IsSelected)
+            {
+                _treatmentPlanXpsFilePath = _treatmentPlanXpsFilePathIntraUterine;
+                _dvhXpsFilePath = _dvhXpsFilePathIntraUterine;
+                _tccPlanXpsFilePath = _tccPlanXpsFilePathIntraUterine;
+            }
+
         }
 
         void buildResultDataGrid()
@@ -185,8 +225,13 @@ namespace WpfApp1
                 dataTable.Rows.Add(dataRow);
             }
             ResultDataGrid.ItemsSource = dataTable.DefaultView;
-            ResultDataGrid.UpdateLayout();
+            updateResultSummaryLabel();
 
+        }
+
+        private void updateResultSummaryLabel()
+        {
+            ResultDataGrid.UpdateLayout();
             int counter = 0;
             int nOk = 0;
             int nErrors = 0;
@@ -226,16 +271,27 @@ namespace WpfApp1
             }
         }
 
-
-
-
         private void BtnOpenTPFile_Click(object sender, RoutedEventArgs e)
         {
             OpenFileDialog openFileDialog = new OpenFileDialog();
             if (openFileDialog.ShowDialog() == true)
             {
-                _treatmentPlanXpsFilePath = openFileDialog.FileName;
-                TPXpsPathLabel.Content = _treatmentPlanXpsFilePath;
+                var selectedFile = openFileDialog.FileName;
+                if (ProstateTab.IsSelected)
+                {
+                    TPXpsPathLabel0.Content = selectedFile;
+                    _treatmentPlanXpsFilePathProstate = selectedFile;
+                }
+                else if (CylinderTab.IsSelected)
+                {
+                    TPXpsPathLabel1.Content = selectedFile;
+                    _treatmentPlanXpsFilePathCylinder = selectedFile;
+                }
+                else if (IntraUterineTab.IsSelected)
+                {
+                    TPXpsPathLabel2.Content = selectedFile;
+                    _treatmentPlanXpsFilePathIntraUterine = selectedFile;
+                }
             }
         }
 
@@ -244,8 +300,22 @@ namespace WpfApp1
             OpenFileDialog openFileDialog = new OpenFileDialog();
             if (openFileDialog.ShowDialog() == true)
             {
-                _dvhXpsFilePath = openFileDialog.FileName;
-                DVHXpsPathLabel.Content = _dvhXpsFilePath;
+                var selectedFile = openFileDialog.FileName;
+                if (ProstateTab.IsSelected)
+                {
+                    DVHXpsPathLabel0.Content = selectedFile;
+                    _dvhXpsFilePathProstate = selectedFile;
+                }
+                else if (CylinderTab.IsSelected)
+                {
+                    DVHXpsPathLabel1.Content = selectedFile;
+                    _dvhXpsFilePathCylinder = selectedFile;
+                }
+                else if (IntraUterineTab.IsSelected)
+                {
+                    DVHXpsPathLabel2.Content = selectedFile;
+                    _dvhXpsFilePathIntraUterine = selectedFile;
+                }
             }
         }
 
@@ -254,21 +324,56 @@ namespace WpfApp1
             OpenFileDialog openFileDialog = new OpenFileDialog();
             if (openFileDialog.ShowDialog() == true)
             {
-                _tccPlanXpsFilePath = openFileDialog.FileName;
-                TCCXpsPathLabel.Content = _tccPlanXpsFilePath;
+                var selectedFile = openFileDialog.FileName;
+                if (ProstateTab.IsSelected)
+                {
+                    TCCXpsPathLabel0.Content = selectedFile;
+                    _tccPlanXpsFilePathProstate = selectedFile;
+                }
+                else if (CylinderTab.IsSelected)
+                {
+                    TCCXpsPathLabel1.Content = selectedFile;
+                    _tccPlanXpsFilePathCylinder = selectedFile;
+                }
+                else if (IntraUterineTab.IsSelected)
+                {
+                    TCCXpsPathLabel2.Content = selectedFile;
+                    _tccPlanXpsFilePathIntraUterine = selectedFile;
+                }
             }
         }
+
 
         private void BtnCheck_Click(object sender, RoutedEventArgs e)
         {
             updateSpecifications();
             calculateLengthAndFreeLength();
+            updateInputFilePaths();
             this.buildResultDataGrid();
         }
 
         private void BtnExit_Click(object sender, RoutedEventArgs e)
         {
             System.Windows.Application.Current.Shutdown();
+        }
+
+        private void TabControl_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            //if (ProstateTab.IsSelected)
+            //{
+            //    TPXpsPathLabel0.Content = _treatmentPlanXpsFilePath;
+            //    TPXpsPathLabel1.Content = "Inte vald";
+            //}
+            //    if (CylinderTab.IsSelected)
+            //{
+            //    TPXpsPathLabel0.Content = "";
+            //    TPXpsPathLabel1.Content = _treatmentPlanXpsFilePath; 
+            //}
+            //        if (IntraUterine.IsSelected)
+            //{
+            //    TPXpsPathLabel0.Content = "";
+            //    TPXpsPathLabel1.Content = _treatmentPlanXpsFilePath;
+            //}
         }
     }
 }

@@ -9,9 +9,6 @@ namespace WpfApp1
         private TreatmentPlan _treatmentPlan;
         private TccPlan _tccPlan;
         private TreatmentDvh _treatmentDvh;
-        private int _numberOfOk; // TODO Remove these
-        private int _numberOfWarnings;
-        private int _numberOfErrors;
         private Specifications _specifications;
 
         public Comparator(Specifications specifications)
@@ -164,12 +161,12 @@ namespace WpfApp1
             if (hasSamePatientName())
             {
                 resultRow.Add("OK");
-                ++_numberOfOk;
+                
             }
             else
             {
                 resultRow.Add("Inte OK");
-                ++_numberOfErrors;
+                
             }
             resultRow.Add("Patientnamn i TP: " + _treatmentPlan.patientFirstName() + " " + _treatmentPlan.patientLastName() +
                 " i TCC: " + _tccPlan.patientFirstName() + " " + _tccPlan.patientLastName());
@@ -184,12 +181,12 @@ namespace WpfApp1
             if (hasSamePatientId())
             {
                 resultRow.Add("OK");
-                ++_numberOfOk;
+                
             }
             else
             {
                 resultRow.Add("Inte OK");
-                ++_numberOfErrors;
+                
             }
             resultRow.Add("Personnummer i plan: " + _treatmentPlan.patientId() +
                 " i TCC: " + _tccPlan.patientId());
@@ -204,12 +201,12 @@ namespace WpfApp1
             if (hasSamePlanCode())
             {
                 resultRow.Add("OK");
-                ++_numberOfOk;
+                
             }
             else
             {
                 resultRow.Add("Inte OK");
-                ++_numberOfErrors;
+                
             }
             resultRow.Add("Plankod i plan: " + _treatmentPlan.planCode() +
                 " i TCC: " + _tccPlan.planCode());
@@ -225,12 +222,10 @@ namespace WpfApp1
             if (hasApprovedStatus())
             {
                 resultRow.Add("OK");
-                ++_numberOfOk;
             }
             else
             {
                 resultRow.Add("Inte OK");
-                ++_numberOfErrors;
             }
             string TPStatus = "Inte godkänd";
             if (_treatmentPlan.planIsApproved())
@@ -257,13 +252,12 @@ namespace WpfApp1
             if (hasSameStatusSetDateTime())
             {
                 resultRow.Add("OK");
-                ++_numberOfOk;
+                
                 info += "samma";
             }
             else
             {
                 resultRow.Add("Inte OK");
-                ++_numberOfErrors;
                 info += "inte samma";
             }
             resultRow.Add("Tiden för godkännande i plan och TCC är " + info);
@@ -278,12 +272,10 @@ namespace WpfApp1
             if (hasSameFractionDose())
             {
                 resultRow.Add("OK");
-                ++_numberOfOk;
             }
             else
             {
                 resultRow.Add("Inte OK");
-                ++_numberOfErrors;
             }
             resultRow.Add("Fraktionsdos i plan: " + _treatmentPlan.fractionDose() +
                 " i TCC: " + _tccPlan.fractionDose());
@@ -298,12 +290,10 @@ namespace WpfApp1
             if (hasSamePlannedSourceStrength())
             {
                 resultRow.Add("OK");
-                ++_numberOfOk;
             }
             else
             {
                 resultRow.Add("Inte OK");
-                ++_numberOfErrors;
             }
             resultRow.Add("Planned Source Strength i plan: " + _treatmentPlan.plannedSourceStrength() +
                 " planerad AK-styrka i TCC: " + _tccPlan.plannedSourceStrength());
@@ -319,12 +309,10 @@ namespace WpfApp1
             if (hasSameTotalTreatmentTime())
             {
                 resultRow.Add("OK");
-                ++_numberOfOk;
             }
             else
             {
                 resultRow.Add("Inte OK");
-                ++_numberOfErrors;
             }
             resultRow.Add("Behandlingstid i plan: " + _treatmentPlan.totalTreatmentTime() +
                 " och i TCC: " + _tccPlan.totalTreatmentTime());
@@ -340,13 +328,11 @@ namespace WpfApp1
             if (hasSameCatheterPositionTimePairs(timeEpsilon))
             {
                 resultRow.Add("OK");
-                ++_numberOfOk;
                 descriptionString = "Alla positioner och tider är lika.";
             }
             else
             {
                 resultRow.Add("Inte OK");
-                ++_numberOfErrors;
                 descriptionString = "Någon/några positioner/tider är olika.";
             }
             resultRow.Add(descriptionString);
@@ -362,13 +348,11 @@ namespace WpfApp1
             if (treatmentPlanHasSameChannelLength(expectedChannelLength))
             {
                 resultRow.Add("OK");
-                ++_numberOfOk;
                 descriptionString = "Channel length för samtilga kanaler är " + expectedChannelLength;
             }
             else
             {
                 resultRow.Add("Inte OK");
-                ++_numberOfErrors;
                 descriptionString = "Channel length är inte lika med " + expectedChannelLength + " för en eller fler kanaler.";
             }
             resultRow.Add(descriptionString);
@@ -393,13 +377,11 @@ namespace WpfApp1
             if (treatmentPlanHasExpectedDepth(expectedDepth, needleDepthEpsilon))
             {
                 resultRow.Add("OK");
-                ++_numberOfOk;
                 descriptionString = "Nåldjupet är " + expectedDepth + " (inom " + needleDepthEpsilon + " mm)";
             }
             else
             {
                 resultRow.Add("Inte OK");
-                ++_numberOfErrors;
                 descriptionString = "Nåldjupet avviker från " + expectedDepth + " mer än " + needleDepthEpsilon + " mm.";
             }
             resultRow.Add(descriptionString);
@@ -415,13 +397,11 @@ namespace WpfApp1
             if (treatmentPlanHasExpectedFreeLength(expectedFreeLength, needleDepthEpsilon))
             {
                 resultRow.Add("OK");
-                ++_numberOfOk;
                 descriptionString = "Free length är " + expectedFreeLength + " (inom " + needleDepthEpsilon + " mm)";
             }
             else
             {
                 resultRow.Add("Inte OK");
-                ++_numberOfErrors;
                 descriptionString = "Free length avviker från " + expectedFreeLength + " mer än " + needleDepthEpsilon + " mm.";
             }
             resultRow.Add(descriptionString);
@@ -438,14 +418,12 @@ namespace WpfApp1
             if (treatmentTimeAsEstimated(estimatedTreatmentTime, reportedTreatmentTime, treatmentTimeEpsilon))
             {
                 resultRow.Add("OK");
-                ++_numberOfOk;
                 descriptionString = "Avvikelsen mellan uppskattad och rapporterad tid är mindre än " + precentageEpsilon.ToString("0") + "% " + " (" +
                     estimatedTreatmentTime.ToString("0.0") + " resp " + reportedTreatmentTime.ToString("0.0") + " sek)";
             }
             else
             {
                 resultRow.Add("Inte OK");
-                ++_numberOfErrors;
                 descriptionString = "Avvikelsen mellan uppskattad och rapporterad tid är mer än " + precentageEpsilon.ToString("0") + "% " + " (" +
                      estimatedTreatmentTime.ToString("0.0") + " resp " + reportedTreatmentTime.ToString("0.0") + " sek)";
             }
@@ -463,13 +441,11 @@ namespace WpfApp1
             if (prescriptionDoseIsTheSame(guiPresciptionDose, treatmentPlanPrescriptionDose, dvhPrescriptionDose))
             {
                 resultRow.Add("OK");
-                ++_numberOfOk;
                 descriptionString = "Den angivna ordinerade dosen är den samma som i planen, dvh och tcc-rapporten";
             }
             else
             {
                 resultRow.Add("Inte OK");
-                ++_numberOfErrors;
                 descriptionString = "Den angivna ordinerade dosen är INTE den samma som i planen, dvh och tcc-rapporten";
             }
             resultRow.Add(descriptionString);
@@ -524,24 +500,7 @@ namespace WpfApp1
 
             return resultRows;
         }
-
-        //calculator.PrescibedDose = stringExtractor.decimalStringToDecimal(prescribedDoseText.Text);
-
-
-        public int numberOfOk()
-        {
-            return _numberOfOk;
-        }
-
-        public int numberOfWarnings()
-        {
-            return _numberOfWarnings;
-        }
-
-        public int numberOfErrors()
-        {
-            return _numberOfErrors;
-        }
+        
     }
 
 }

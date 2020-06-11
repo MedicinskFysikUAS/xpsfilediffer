@@ -12,8 +12,8 @@
             <ColumnDefinition Width="500*"/>
             <ColumnDefinition Width="159*"/>
         </Grid.ColumnDefinitions>
-        <TabControl Grid.ColumnSpan="3" Height="469" VerticalAlignment="Top">
-            <TabItem x:Name="prostateTab" Header="Prostata">
+        <TabControl Grid.ColumnSpan="3" Height="469" VerticalAlignment="Top" SelectionChanged="TabControl_SelectionChanged">
+            <TabItem x:Name="ProstateTab" Header="Prostata">
                 <Grid Margin="0,10,8,-10" Height="467">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="185*"/>
@@ -34,12 +34,12 @@
                     <Label x:Name="needleLengthProbSumLabel" Content="Nållängd + prob:" Grid.Column="1" HorizontalAlignment="Left" Margin="6,165,0,0" VerticalAlignment="Top" Height="26" Width="104"/>
                     <TextBox x:Name="needleLengthProbSumText" Grid.Column="1" HorizontalAlignment="Left" Margin="115,169,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="40"  IsReadOnly="True" Height="22"/>
                     <Grid HorizontalAlignment="Left" Height="79" Margin="10,7,0,0" VerticalAlignment="Top" Width="460" Grid.ColumnSpan="2">
-                        <Label x:Name="TPXpsPathLabel" Content="Inte vald" HorizontalAlignment="Left" Margin="120,0,0,0" VerticalAlignment="Top" Height="26" Width="330"/>
-                        <Button x:Name="BtnOpenTPFile" Click="BtnOpenTPFile_Click" Content="Treatment plan file:" HorizontalAlignment="Left" Margin="0,3,0,0" VerticalAlignment="Top" Width="115" Height="23"/>
-                        <Button x:Name="BtnOpenDVHFile" Click="BtnOpenDVHFile_Click" Content="DVH file:" HorizontalAlignment="Left" Margin="0,31,0,0" VerticalAlignment="Top" Height="20" Width="50"/>
-                        <Label x:Name="DVHXpsPathLabel" Content="Inte vald" HorizontalAlignment="Left" Margin="56,28,0,0" VerticalAlignment="Top" Height="26" Width="394"/>
-                        <Button x:Name="BtnOpenTCCFile" Click="BtnOpenTCCFile_Click" Content="TCC file:" HorizontalAlignment="Left" Margin="0,56,0,0" VerticalAlignment="Top" Height="20" Width="46"/>
-                        <Label x:Name="TCCXpsPathLabel" Content="Inte vald" HorizontalAlignment="Left" Margin="56,53,0,0" VerticalAlignment="Top" Height="26" Width="394"/>
+                        <Label x:Name="TPXpsPathLabel0" Content="Inte vald" HorizontalAlignment="Left" Margin="120,0,0,0" VerticalAlignment="Top" Height="26" Width="330"/>
+                        <Button x:Name="BtnOpenTPFile0" Click="BtnOpenTPFile_Click" Content="Treatment plan file:" HorizontalAlignment="Left" Margin="0,3,0,0" VerticalAlignment="Top" Width="115" Height="23"/>
+                        <Button x:Name="BtnOpenDVHFile0" Click="BtnOpenDVHFile_Click" Content="DVH file:" HorizontalAlignment="Left" Margin="0,31,0,0" VerticalAlignment="Top" Height="20" Width="50"/>
+                        <Label x:Name="DVHXpsPathLabel0" Content="Inte vald" HorizontalAlignment="Left" Margin="56,28,0,0" VerticalAlignment="Top" Height="26" Width="394"/>
+                        <Button x:Name="BtnOpenTCCFile0" Click="BtnOpenTCCFile_Click" Content="TCC file:" HorizontalAlignment="Left" Margin="0,56,0,0" VerticalAlignment="Top" Height="20" Width="46"/>
+                        <Label x:Name="TCCXpsPathLabel0" Content="Inte vald" HorizontalAlignment="Left" Margin="56,53,0,0" VerticalAlignment="Top" Height="26" Width="394"/>
                     </Grid>
                     <Label x:Name="needleLengthLabel" Content="Nållängd [mm]: " HorizontalAlignment="Left" Margin="5,96,0,0" VerticalAlignment="Top" Height="26" Width="95"/>
                     <TextBox x:Name="needleLengthText" HorizontalAlignment="Left" Margin="106,100,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="45" Height="22"/>
@@ -58,15 +58,31 @@
                         </Label.RenderTransform>
                     </Label>
                     <TextBox x:Name="prescribedDoseText" HorizontalAlignment="Left" Margin="116,164,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="44" Height="22"/>
-                    <Label x:Name="resultSummaryLabel" Content="label" HorizontalAlignment="Left" Margin="178,404,0,0" VerticalAlignment="Top" Width="135" Grid.ColumnSpan="2"/>
+                    <Label x:Name="resultSummaryLabel" Content="label" HorizontalAlignment="Left" Margin="177,404,0,0" VerticalAlignment="Top" Width="124" Grid.ColumnSpan="2"/>
                 </Grid>
 
             </TabItem>
             <TabItem x:Name="CylinderTab" Header="Cylinder">
-                <Label Content="Detta är inte klart ännu..." />
+                <Grid HorizontalAlignment="Left" Height="79" Margin="10,7,0,0" VerticalAlignment="Top" Width="460" Grid.ColumnSpan="2">
+                    <Label x:Name="TPXpsPathLabel1" Content="Inte vald" HorizontalAlignment="Left" Margin="120,0,0,0" VerticalAlignment="Top" Height="26" Width="330"/>
+                    <Button x:Name="BtnOpenTPFile1" Click="BtnOpenTPFile_Click" Content="Treatment plan file:" HorizontalAlignment="Left" Margin="0,3,0,0" VerticalAlignment="Top" Width="115" Height="23"/>
+                    <Button x:Name="BtnOpenDVHFile1" Click="BtnOpenDVHFile_Click" Content="DVH file:" HorizontalAlignment="Left" Margin="0,31,0,0" VerticalAlignment="Top" Height="20" Width="50"/>
+                    <Label x:Name="DVHXpsPathLabel1" Content="Inte vald" HorizontalAlignment="Left" Margin="56,28,0,0" VerticalAlignment="Top" Height="26" Width="394"/>
+                    <Button x:Name="BtnOpenTCCFile1" Click="BtnOpenTCCFile_Click" Content="TCC file:" HorizontalAlignment="Left" Margin="0,56,0,0" VerticalAlignment="Top" Height="20" Width="46"/>
+                    <Label x:Name="TCCXpsPathLabel1" Content="Inte vald" HorizontalAlignment="Left" Margin="56,53,0,0" VerticalAlignment="Top" Height="26" Width="394"/>
+                </Grid>
+                
             </TabItem>
-            <TabItem x:Name="IntrauterinTab" Header="Intrauterin">
-                <Label Content="Detta är inte klart ännu..." />
+            <TabItem x:Name="IntraUterineTab" Header="Intrauterin">
+
+                <Grid HorizontalAlignment="Left" Height="79" Margin="10,7,0,0" VerticalAlignment="Top" Width="460" Grid.ColumnSpan="2">
+                    <Label x:Name="TPXpsPathLabel2" Content="Inte vald" HorizontalAlignment="Left" Margin="120,0,0,0" VerticalAlignment="Top" Height="26" Width="330"/>
+                    <Button x:Name="BtnOpenTPFile2" Click="BtnOpenTPFile_Click" Content="Treatment plan file:" HorizontalAlignment="Left" Margin="0,3,0,0" VerticalAlignment="Top" Width="115" Height="23"/>
+                    <Button x:Name="BtnOpenDVHFile2" Click="BtnOpenDVHFile_Click" Content="DVH file:" HorizontalAlignment="Left" Margin="0,31,0,0" VerticalAlignment="Top" Height="20" Width="50"/>
+                    <Label x:Name="DVHXpsPathLabel2" Content="Inte vald" HorizontalAlignment="Left" Margin="56,28,0,0" VerticalAlignment="Top" Height="26" Width="394"/>
+                    <Button x:Name="BtnOpenTCCFile2" Click="BtnOpenTCCFile_Click" Content="TCC file:" HorizontalAlignment="Left" Margin="0,56,0,0" VerticalAlignment="Top" Height="20" Width="46"/>
+                    <Label x:Name="TCCXpsPathLabel2" Content="Inte vald" HorizontalAlignment="Left" Margin="56,53,0,0" VerticalAlignment="Top" Height="26" Width="394"/>
+                </Grid>
             </TabItem>
 
         </TabControl>
