@@ -5,52 +5,73 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:WpfApp1"
         mc:Ignorable="d"
-        Title="jmfXps" Height="524" Width="624">
-    <Grid Margin="0,10,0,-10">
+        Title="jmfXps" Height="548" Width="684">
+    <Grid Margin="0,0,0,7">
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="185*"/>
-            <ColumnDefinition Width="295*"/>
-            <ColumnDefinition Width="135*"/>
-            <ColumnDefinition Width="9*"/>
+            <ColumnDefinition Width="25*"/>
+            <ColumnDefinition Width="500*"/>
+            <ColumnDefinition Width="159*"/>
         </Grid.ColumnDefinitions>
+        <TabControl Grid.ColumnSpan="3" Height="469" VerticalAlignment="Top">
+            <TabItem x:Name="prostateTab" Header="Prostata">
+                <Grid Margin="0,10,8,-10" Height="467">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="185*"/>
+                        <ColumnDefinition Width="295*"/>
+                        <ColumnDefinition Width="135*"/>
+                        <ColumnDefinition Width="9*"/>
+                    </Grid.ColumnDefinitions>
 
 
 
-        <Button x:Name="BtnCheck" Click="BtnCheck_Click" Content="Kontrollera" HorizontalAlignment="Left" Margin="61,169,0,0" VerticalAlignment="Top" Width="64" Height="26" RenderTransformOrigin="0.469,-2.114" Grid.Column="2"/>
+                    <Button x:Name="BtnCheck" Click="BtnCheck_Click" Content="Kontrollera" HorizontalAlignment="Left" Margin="61,169,0,0" VerticalAlignment="Top" Width="64" Height="26" RenderTransformOrigin="0.469,-2.114" Grid.Column="2"/>
 
-        <DataGrid x:Name="ResultDataGrid" Margin="0,200,1,70" Grid.ColumnSpan="3" EnableRowVirtualization="False" VirtualizingStackPanel.IsVirtualizing="False" />
-        <Button x:Name="BtnExit" Click="BtnExit_Click" Content="Avsluta" HorizontalAlignment="Left" Margin="68,443,0,0" VerticalAlignment="Top" Width="57" Height="26" Grid.Column="2"/>
-        <TextBox x:Name="needleDepthText" VerticalAlignment="Top" RenderTransformOrigin="2.125,0.281" Margin="115,110,140,0" Grid.Column="1"  IsReadOnly="True" Height="18"/>
-        <Label x:Name="needleDepthLabel" Content="Nåldjup [mm]: " Grid.Column="1" HorizontalAlignment="Left" Margin="6,106,0,0" VerticalAlignment="Top" Height="26" Width="89"/>
-        <Label x:Name="freeLengthLabel" Content="Free Length [mm]: " Grid.Column="1" HorizontalAlignment="Left" Margin="6,136,0,0" VerticalAlignment="Top" Height="26" Width="109"/>
-        <TextBox x:Name="freeLengthText" Grid.Column="1" HorizontalAlignment="Left" Margin="115,140,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="40"  IsReadOnly="True" Height="18"/>
-        <Label x:Name="needleLengthProbSumLabel" Content="Nållängd + prob:" Grid.Column="1" HorizontalAlignment="Left" Margin="6,165,0,0" VerticalAlignment="Top" Height="26" Width="104"/>
-        <TextBox x:Name="needleLengthProbSumText" Grid.Column="1" HorizontalAlignment="Left" Margin="115,169,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="40"  IsReadOnly="True" Height="22"/>
-        <Grid HorizontalAlignment="Left" Height="79" Margin="10,7,0,0" VerticalAlignment="Top" Width="460" Grid.ColumnSpan="2">
-            <Label x:Name="TPXpsPathLabel" Content="Inte vald" HorizontalAlignment="Left" Margin="120,0,0,0" VerticalAlignment="Top" Height="26" Width="330"/>
-            <Button x:Name="BtnOpenTPFile" Click="BtnOpenTPFile_Click" Content="Treatment plan file:" HorizontalAlignment="Left" Margin="0,3,0,0" VerticalAlignment="Top" Width="115" Height="20"/>
-            <Button x:Name="BtnOpenDVHFile" Click="BtnOpenDVHFile_Click" Content="DVH file:" HorizontalAlignment="Left" Margin="0,31,0,0" VerticalAlignment="Top" Height="20" Width="50"/>
-            <Label x:Name="DVHXpsPathLabel" Content="Inte vald" HorizontalAlignment="Left" Margin="56,28,0,0" VerticalAlignment="Top" Height="26" Width="394"/>
-            <Button x:Name="BtnOpenTCCFile" Click="BtnOpenTCCFile_Click" Content="TCC file:" HorizontalAlignment="Left" Margin="0,56,0,0" VerticalAlignment="Top" Height="20" Width="46"/>
-            <Label x:Name="TCCXpsPathLabel" Content="Inte vald" HorizontalAlignment="Left" Margin="56,53,0,0" VerticalAlignment="Top" Height="26" Width="394"/>
-        </Grid>
-        <Label x:Name="needleLengthLabel" Content="Nållängd [mm]: " HorizontalAlignment="Left" Margin="5,96,0,0" VerticalAlignment="Top" Height="26" Width="95"/>
-        <TextBox x:Name="needleLengthText" HorizontalAlignment="Left" Margin="106,100,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="45" Height="18"/>
-        <Label x:Name="probeDistanceLabel" Content="Avst. prob [mm]: " HorizontalAlignment="Left" Margin="5,128,0,0" VerticalAlignment="Top" Height="26" Width="101"/>
-        <TextBox x:Name="probeDistanceText" HorizontalAlignment="Left" Margin="106,132,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="45" Height="18"/>
-        <Label x:Name="calculatedLabel" Content="Beräknat:" Grid.Column="1" HorizontalAlignment="Left" Margin="6,83,0,0" VerticalAlignment="Top" FontStyle="Italic"/>
-        <Label x:Name="instructionLabel" Content="Tryck alltid Kontrollera efter att något har ändrats!" Grid.Column="1" HorizontalAlignment="Left" Margin="170,137,0,0" VerticalAlignment="Top" FontStyle="Italic" Grid.ColumnSpan="2" FontSize="11" Width="250" FontWeight="Normal"/>
-        <Label x:Name="prescribedDoseLabel" Content="Ordinerad dos [Gy]:" HorizontalAlignment="Left" Margin="3,160,0,0" VerticalAlignment="Top" Height="26" Width="118" RenderTransformOrigin="0.5,0.5">
-            <Label.RenderTransform>
-                <TransformGroup>
-                    <ScaleTransform/>
-                    <SkewTransform AngleY="0"/>
-                    <RotateTransform/>
-                    <TranslateTransform Y="0"/>
-                </TransformGroup>
-            </Label.RenderTransform>
-        </Label>
-        <TextBox x:Name="prescribedDoseText" HorizontalAlignment="Left" Margin="116,164,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="44"/>
-        <Label x:Name="resultSummaryLabel" Content="label" Grid.Column="1" HorizontalAlignment="Left" Margin="0,440,0,0" VerticalAlignment="Top" Width="135"/>
+                    <DataGrid x:Name="ResultDataGrid" Margin="0,200,0,68" Grid.ColumnSpan="4" EnableRowVirtualization="False" VirtualizingStackPanel.IsVirtualizing="False" />
+                    <TextBox x:Name="needleDepthText" VerticalAlignment="Top" RenderTransformOrigin="2.125,0.281" Margin="115,110,140,0" Grid.Column="1"  IsReadOnly="True" Height="22"/>
+                    <Label x:Name="needleDepthLabel" Content="Nåldjup [mm]: " Grid.Column="1" HorizontalAlignment="Left" Margin="6,106,0,0" VerticalAlignment="Top" Height="26" Width="89"/>
+                    <Label x:Name="freeLengthLabel" Content="Free Length [mm]: " Grid.Column="1" HorizontalAlignment="Left" Margin="6,136,0,0" VerticalAlignment="Top" Height="26" Width="109"/>
+                    <TextBox x:Name="freeLengthText" Grid.Column="1" HorizontalAlignment="Left" Margin="115,140,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="40"  IsReadOnly="True" Height="22"/>
+                    <Label x:Name="needleLengthProbSumLabel" Content="Nållängd + prob:" Grid.Column="1" HorizontalAlignment="Left" Margin="6,165,0,0" VerticalAlignment="Top" Height="26" Width="104"/>
+                    <TextBox x:Name="needleLengthProbSumText" Grid.Column="1" HorizontalAlignment="Left" Margin="115,169,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="40"  IsReadOnly="True" Height="22"/>
+                    <Grid HorizontalAlignment="Left" Height="79" Margin="10,7,0,0" VerticalAlignment="Top" Width="460" Grid.ColumnSpan="2">
+                        <Label x:Name="TPXpsPathLabel" Content="Inte vald" HorizontalAlignment="Left" Margin="120,0,0,0" VerticalAlignment="Top" Height="26" Width="330"/>
+                        <Button x:Name="BtnOpenTPFile" Click="BtnOpenTPFile_Click" Content="Treatment plan file:" HorizontalAlignment="Left" Margin="0,3,0,0" VerticalAlignment="Top" Width="115" Height="23"/>
+                        <Button x:Name="BtnOpenDVHFile" Click="BtnOpenDVHFile_Click" Content="DVH file:" HorizontalAlignment="Left" Margin="0,31,0,0" VerticalAlignment="Top" Height="20" Width="50"/>
+                        <Label x:Name="DVHXpsPathLabel" Content="Inte vald" HorizontalAlignment="Left" Margin="56,28,0,0" VerticalAlignment="Top" Height="26" Width="394"/>
+                        <Button x:Name="BtnOpenTCCFile" Click="BtnOpenTCCFile_Click" Content="TCC file:" HorizontalAlignment="Left" Margin="0,56,0,0" VerticalAlignment="Top" Height="20" Width="46"/>
+                        <Label x:Name="TCCXpsPathLabel" Content="Inte vald" HorizontalAlignment="Left" Margin="56,53,0,0" VerticalAlignment="Top" Height="26" Width="394"/>
+                    </Grid>
+                    <Label x:Name="needleLengthLabel" Content="Nållängd [mm]: " HorizontalAlignment="Left" Margin="5,96,0,0" VerticalAlignment="Top" Height="26" Width="95"/>
+                    <TextBox x:Name="needleLengthText" HorizontalAlignment="Left" Margin="106,100,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="45" Height="22"/>
+                    <Label x:Name="probeDistanceLabel" Content="Avst. prob [mm]: " HorizontalAlignment="Left" Margin="5,128,0,0" VerticalAlignment="Top" Height="26" Width="101"/>
+                    <TextBox x:Name="probeDistanceText" HorizontalAlignment="Left" Margin="106,132,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="45" Height="22"/>
+                    <Label x:Name="calculatedLabel" Content="Beräknat:" Grid.Column="1" HorizontalAlignment="Left" Margin="6,83,0,0" VerticalAlignment="Top" FontStyle="Italic"/>
+                    <Label x:Name="instructionLabel" Content="Tryck alltid Kontrollera efter att något har ändrats!" Grid.Column="1" HorizontalAlignment="Left" Margin="170,137,0,0" VerticalAlignment="Top" FontStyle="Italic" Grid.ColumnSpan="2" FontSize="11" Width="250" FontWeight="Normal"/>
+                    <Label x:Name="prescribedDoseLabel" Content="Ordinerad dos [Gy]:" HorizontalAlignment="Left" Margin="3,160,0,0" VerticalAlignment="Top" Height="26" Width="118" RenderTransformOrigin="0.5,0.5">
+                        <Label.RenderTransform>
+                            <TransformGroup>
+                                <ScaleTransform/>
+                                <SkewTransform AngleY="0"/>
+                                <RotateTransform/>
+                                <TranslateTransform Y="0"/>
+                            </TransformGroup>
+                        </Label.RenderTransform>
+                    </Label>
+                    <TextBox x:Name="prescribedDoseText" HorizontalAlignment="Left" Margin="116,164,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="44" Height="22"/>
+                    <Label x:Name="resultSummaryLabel" Content="label" HorizontalAlignment="Left" Margin="178,404,0,0" VerticalAlignment="Top" Width="135" Grid.ColumnSpan="2"/>
+                </Grid>
+
+            </TabItem>
+            <TabItem x:Name="CylinderTab" Header="Cylinder">
+                <Label Content="Detta är inte klart ännu..." />
+            </TabItem>
+            <TabItem x:Name="IntrauterinTab" Header="Intrauterin">
+                <Label Content="Detta är inte klart ännu..." />
+            </TabItem>
+
+        </TabControl>
+        <Button x:Name="BtnExit" Click="BtnExit_Click" Content="Avsluta" HorizontalAlignment="Center" Margin="0,474,0,0" VerticalAlignment="Top" Width="57" Height="26" Grid.Column="2"/>
+
+
     </Grid>
 </Window>
