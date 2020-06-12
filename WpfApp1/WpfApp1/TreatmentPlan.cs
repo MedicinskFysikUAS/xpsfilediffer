@@ -77,7 +77,11 @@ namespace WpfApp1
             {
                 fractiondoseStr = fractiondoseStr.Replace('.', ',');
             }
-            Decimal fractiondoseFl = Convert.ToDecimal(fractiondoseStr);
+            Decimal fractiondoseFl = -1m;
+            if (fractiondoseStr.Length > 0)
+            {
+                fractiondoseFl = Convert.ToDecimal(fractiondoseStr);
+            }
             return String.Format("{0:0.00}", Convert.ToDecimal(fractiondoseFl));
         }
 
@@ -89,6 +93,10 @@ namespace WpfApp1
             {
                 stringValue = stringValue.Replace('.', ',');
             }
+            if (stringValue.Length == 0)
+            {
+                stringValue = "-1";
+            }
             return Convert.ToDecimal(stringValue);
         }
 
@@ -99,6 +107,10 @@ namespace WpfApp1
             if (fractiondoseStr.Contains('.'))
             {
                 fractiondoseStr = fractiondoseStr.Replace('.', ',');
+            }
+            if (fractiondoseStr.Length == 0)
+            {
+                fractiondoseStr = "-1";
             }
             Decimal fractiondoseFl = Convert.ToDecimal(fractiondoseStr);
             Decimal zeroDecfractiondose = Math.Round(fractiondoseFl, 0);
@@ -113,6 +125,10 @@ namespace WpfApp1
             {
                 fractiondoseStr = fractiondoseStr.Replace('.', ',');
             }
+            if (fractiondoseStr.Length == 0)
+            {
+                fractiondoseStr = "-1";
+            }
             return Convert.ToDecimal(fractiondoseStr);
         }
 
@@ -124,6 +140,10 @@ namespace WpfApp1
             if (totalTreatmentTimeStr.Contains('.'))
             {
                 totalTreatmentTimeStr = totalTreatmentTimeStr.Replace('.', ',');
+            }
+            if (totalTreatmentTimeStr.Length == 0)
+            {
+                totalTreatmentTimeStr = "-1";
             }
             Decimal totalTreatmentTime = Convert.ToDecimal(totalTreatmentTimeStr);
             Decimal totalTreatmentTimeOneDec = Math.Round(totalTreatmentTime, 1);
@@ -137,6 +157,10 @@ namespace WpfApp1
             if (totalTreatmentTimeStr.Contains('.'))
             {
                 totalTreatmentTimeStr = totalTreatmentTimeStr.Replace('.', ',');
+            }
+            if (totalTreatmentTimeStr.Length == 0)
+            {
+                totalTreatmentTimeStr = "-1";
             }
             return Convert.ToDecimal(totalTreatmentTimeStr);
         }

@@ -158,7 +158,9 @@ namespace WpfApp1
 
         public int columnFromOrigX(string originX)
         {
-            int startOrigin = 6849;
+            //int startOrigin = 6849; // Prostate
+            int startOrigin = 6750; // Cylinder
+            
             int deltaWidth = 1833;
             int margin = 50;
             int originXint = stringToInt(originX);

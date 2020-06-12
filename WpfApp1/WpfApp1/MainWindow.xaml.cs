@@ -179,15 +179,11 @@ namespace WpfApp1
                 TreatmentPlan treatmentPlan = new TreatmentPlan(treatmentPlanPageList);
                 Comparator comparator = new Comparator(_specifications);
                 comparator.treatmentPlan = treatmentPlan;
-                //PageReader dvhPageReader = new PageReader(_dvhXpsFilePath);
-                //List<List<string>> dvhPageList = dvhPageReader.getPages();
-                //dvh dvh = new dvh(treatmentPlanPageList);
                 PageReader tccPlanPageReader = new PageReader(_tccPlanXpsFilePath);
                 List<List<string>> tccPlanPageList = tccPlanPageReader.getPages();
                 List<LiveCatheter> tccLiveCatheters = tccPlanPageReader.tccLiveCatheters();
                 TccPlan tccPlan = new TccPlan(tccPlanPageList, tccLiveCatheters);
                 comparator.tccPlan = tccPlan;
-                //_resultRows = comparator.resultRows();
                 _resultRows.AddRange(comparator.resultRows());
             }
 
