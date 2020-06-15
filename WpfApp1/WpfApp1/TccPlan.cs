@@ -74,10 +74,10 @@ namespace WpfApp1
             return Convert.ToDecimal(_stringExtractor.getValueBeforeSearchStringSplitOnSpace(_pageList[pageIndex], "Planerad TRAK", 0));
         }
 
-        public string plannedSourceStrength()
+        public decimal plannedSourceStrength()
         {
             int pageIndex = 0;
-            return String.Format("{0:0}", Convert.ToDecimal(_stringExtractor.getValueAfterSearchStringSplitOnSpace(_pageList[pageIndex], "Planerad AK-styrka", 0)));
+            return Convert.ToDecimal(_stringExtractor.getValueAfterSearchStringSplitOnSpace(_pageList[pageIndex], "Planerad AK-styrka", 0));
         }
 
         public string totalTreatmentTime()

@@ -12,37 +12,78 @@ namespace WpfApp1
     {
         private List<List<string>> _pageList;
         private StringExtractor _stringExtractor = new StringExtractor();
+        private TabType _tabType;
 
-        public TreatmentPlan(List<List<string>> pageList)
+        public TreatmentPlan(List<List<string>> pageList, TabType tabType)
         {
             _pageList = pageList;
+            _tabType = tabType;
         }
 
 
         public string patientFirstName()
         {
             int pageIndex = 0;
-            return _stringExtractor.getValueFromSpaceSeparetedString(_pageList[pageIndex], "Patient name:", 0);
+            string stringValue = "";
+            if (_tabType == TabType.PROSTATE)
+            {
+                stringValue = _stringExtractor.getValueFromSpaceSeparetedString(_pageList[pageIndex], "Patient name:", 0);
+            }
+            else if (_tabType == TabType.CYLINDER)
+            {
+                stringValue = _stringExtractor.getValueAtIndex(_pageList[pageIndex], 11, 1);
+            }
+
+            return stringValue;
         }
 
         public string patientLastName()
         {
             int pageIndex = 0;
-            return _stringExtractor.getValueFromSpaceSeparetedString(_pageList[pageIndex], "Patient name:", 1);
+            string stringValue = "";
+            if (_tabType == TabType.PROSTATE)
+            {
+                stringValue = _stringExtractor.getValueFromSpaceSeparetedString(_pageList[pageIndex], "Patient name:", 1);
+            }
+            else if (_tabType == TabType.CYLINDER)
+            {
+                stringValue = _stringExtractor.getValueAtIndex(_pageList[pageIndex], 11, 0);
+            }
+            return stringValue;
         }
 
         public string patientId()
         {
             int pageIndex = 0;
-            return _stringExtractor.getValueFromSpaceSeparetedString(_pageList[pageIndex], "Patient ID:", 0);
+            string stringValue = "";
+            if (_tabType == TabType.PROSTATE)
+            {
+                stringValue = _stringExtractor.getValueFromSpaceSeparetedString(_pageList[pageIndex], "Patient ID:", 0);
+            }
+            else if (_tabType == TabType.CYLINDER)
+            {
+                stringValue = _stringExtractor.getValueAtIndex(_pageList[pageIndex], 10, 0);
+            }
+            return stringValue;
         }
 
         public string planCode()
         {
             int pageIndex = 0;
-            return _stringExtractor.getValueFromSpaceSeparetedString(_pageList[pageIndex], "Plan Code:", 0);
+
+            string stringValue = "";
+            if (_tabType == TabType.PROSTATE)
+            {
+                stringValue = _stringExtractor.getValueFromSpaceSeparetedString(_pageList[pageIndex], "Plan Code:", 0);
+            }
+            else if (_tabType == TabType.CYLINDER)
+            {
+                stringValue = _stringExtractor.getValueAtIndex(_pageList[pageIndex], 1, 0);
+            }
+            return stringValue;
         }
 
+        // For Oncentra Brach is the plan status a png image and cannot be tested.
         public string planStatus()
         {
             int pageIndex = 0;
@@ -72,15 +113,26 @@ namespace WpfApp1
         public string fractionDose()
         {
             int pageIndex = 1;
-            string fractiondoseStr = _stringExtractor.getValueFromSpaceSeparetedString(_pageList[pageIndex], "Prescribed Dose:", 0);
-            if (fractiondoseStr.Contains('.'))
+
+            string stringValue = "";
+            if (_tabType == TabType.PROSTATE)
             {
-                fractiondoseStr = fractiondoseStr.Replace('.', ',');
+                stringValue = _stringExtractor.getValueFromSpaceSeparetedString(_pageList[pageIndex], "Prescribed Dose:", 0);
+            }
+            else if (_tabType == TabType.CYLINDER)
+            {
+                pageIndex = 0;
+                stringValue = _stringExtractor.getValueBeforeSearchString(_pageList[pageIndex], "Prescription dose per fraction/pulse (Gy):", pageIndex);
+            }
+
+            if (stringValue.Contains('.'))
+            {
+                stringValue = stringValue.Replace('.', ',');
             }
             Decimal fractiondoseFl = -1m;
-            if (fractiondoseStr.Length > 0)
+            if (stringValue.Length > 0)
             {
-                fractiondoseFl = Convert.ToDecimal(fractiondoseStr);
+                fractiondoseFl = Convert.ToDecimal(stringValue);
             }
             return String.Format("{0:0.00}", Convert.ToDecimal(fractiondoseFl));
         }
@@ -88,7 +140,16 @@ namespace WpfApp1
         public decimal PrescribedDose()
         {
             int pageIndex = 1;
-            string stringValue = _stringExtractor.getValueBetweenSearchStrings(_pageList[pageIndex], "Prescribed Dose:", "Gy");
+            string stringValue = "";
+            if (_tabType == TabType.PROSTATE)
+            {
+                stringValue = _stringExtractor.getValueBetweenSearchStrings(_pageList[pageIndex], "Prescribed Dose:", "Gy");
+            }
+            else if (_tabType == TabType.CYLINDER)
+            {
+                stringValue = _stringExtractor.getValueBeforeSearchString(_pageList[pageIndex], "Prescription dose per fraction/pulse (Gy):", pageIndex);
+            }
+
             if (stringValue.Contains('.'))
             {
                 stringValue = stringValue.Replace('.', ',');
@@ -100,43 +161,70 @@ namespace WpfApp1
             return Convert.ToDecimal(stringValue);
         }
 
-        public string plannedSourceStrength()
+        public string plannedSourceStrengthStrValue()
         {
             int pageIndex = 0;
-            string fractiondoseStr = _stringExtractor.getValueFromSpaceSeparetedString(_pageList[pageIndex], "Planned Source Strength:", 0);
-            if (fractiondoseStr.Contains('.'))
+            string stringValue = "";
+            if (_tabType == TabType.PROSTATE)
             {
-                fractiondoseStr = fractiondoseStr.Replace('.', ',');
+                stringValue = _stringExtractor.getValueFromSpaceSeparetedString(_pageList[pageIndex], "Planned Source Strength:", 0);
             }
-            if (fractiondoseStr.Length == 0)
+            else if (_tabType == TabType.CYLINDER)
             {
-                fractiondoseStr = "-1";
+                stringValue = _stringExtractor.getValueAfterSearchString(_pageList[pageIndex], "and treatment date and time (days):", pageIndex);
             }
-            Decimal fractiondoseFl = Convert.ToDecimal(fractiondoseStr);
-            Decimal zeroDecfractiondose = Math.Round(fractiondoseFl, 0);
-            return String.Format("{0:0}", Convert.ToDecimal(zeroDecfractiondose));
+            return stringValue;
+        }
+
+            public decimal plannedSourceStrength()
+        {
+            string stringValue = plannedSourceStrengthStrValue();
+            if (stringValue.Contains('.'))
+            {
+                stringValue = stringValue.Replace('.', ',');
+            }
+            if (stringValue.Length == 0)
+            {
+                stringValue = "-1";
+            }
+            return Convert.ToDecimal(stringValue) * 1000.0m;
         }
 
         public decimal plannedSourceStrengthValue()
         {
-            int pageIndex = 0;
-            string fractiondoseStr = _stringExtractor.getValueFromSpaceSeparetedString(_pageList[pageIndex], "Planned Source Strength:", 0);
-            if (fractiondoseStr.Contains('.'))
+            string stringValue = plannedSourceStrengthStrValue();
+
+            if (stringValue.Contains('.'))
             {
-                fractiondoseStr = fractiondoseStr.Replace('.', ',');
+                stringValue = stringValue.Replace('.', ',');
             }
-            if (fractiondoseStr.Length == 0)
+            if (stringValue.Length == 0)
             {
-                fractiondoseStr = "-1";
+                stringValue = "-1";
             }
-            return Convert.ToDecimal(fractiondoseStr);
+            return Convert.ToDecimal(stringValue);
         }
 
 
+        public string totalTreatmentTimeStrValue()
+        {
+            int pageIndex = 0;
+            string stringValue = "";
+            if (_tabType == TabType.PROSTATE)
+            {
+                stringValue = _stringExtractor.getValueFromSpaceSeparetedString(_pageList[pageIndex], "Total Treatment Time:", 0);
+            }
+            else if (_tabType == TabType.CYLINDER)
+            {
+                pageIndex = 1;
+                stringValue = _stringExtractor.getStringAfterStartWithSearchString(_pageList[pageIndex], "Total treatment time (sec.):");
+            }
+            return stringValue;
+        }
+
         public string totalTreatmentTime()
         {
-            int pageIndex = 1;
-            string totalTreatmentTimeStr = _stringExtractor.getValueFromSpaceSeparetedString(_pageList[pageIndex], "Total Treatment Time:", 0);
+            string totalTreatmentTimeStr = totalTreatmentTimeStrValue();
             if (totalTreatmentTimeStr.Contains('.'))
             {
                 totalTreatmentTimeStr = totalTreatmentTimeStr.Replace('.', ',');
@@ -152,8 +240,7 @@ namespace WpfApp1
 
         public decimal totalTreatmentTimeValue()
         {
-            int pageIndex = 1;
-            string totalTreatmentTimeStr = _stringExtractor.getValueFromSpaceSeparetedString(_pageList[pageIndex], "Total Treatment Time:", 0);
+            string totalTreatmentTimeStr = totalTreatmentTimeStrValue();
             if (totalTreatmentTimeStr.Contains('.'))
             {
                 totalTreatmentTimeStr = totalTreatmentTimeStr.Replace('.', ',');

@@ -53,9 +53,9 @@ namespace WpfApp1
             return (_treatmentPlan.fractionDose() == _tccPlan.fractionDose());
         }
 
-        public bool hasSamePlannedSourceStrength()
+        public bool hasSamePlannedSourceStrength(decimal airKermaStrengthEpsilon)
         {
-            return (_treatmentPlan.plannedSourceStrength() == _tccPlan.plannedSourceStrength());
+            return (Math.Abs((_treatmentPlan.plannedSourceStrength()) - _tccPlan.plannedSourceStrength()) < airKermaStrengthEpsilon);
         }
 
         bool hasSameTotalTreatmentTime()
@@ -283,11 +283,11 @@ namespace WpfApp1
             return resultRow;
         }
 
-        public List<string> checkPlannedSourceStrength()
+        public List<string> checkPlannedSourceStrength(decimal airKermaStrengthEpsilon)
         {
             List<string> resultRow = new List<string>();
             resultRow.Add("Dosplanens källstyrka");
-            if (hasSamePlannedSourceStrength())
+            if (hasSamePlannedSourceStrength(airKermaStrengthEpsilon))
             {
                 resultRow.Add("OK");
             }
@@ -485,7 +485,7 @@ namespace WpfApp1
             resultRows.Add(checkApproval());
             resultRows.Add(checkApproveDateTime());
             resultRows.Add(checkFractionDose());
-            resultRows.Add(checkPlannedSourceStrength());
+            resultRows.Add(checkPlannedSourceStrength(_specifications.AirKermaStrengthEpsilon));
             resultRows.Add(checkTotalTreatmentTime()); 
             resultRows.Add(checkCatheterPositionTimePairs(_specifications.TimeEpsilon));
             return resultRows;

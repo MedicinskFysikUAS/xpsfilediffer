@@ -62,6 +62,21 @@ namespace WpfApp1
             return stringValue.Trim();
         }
 
+        public string getValueAtIndex(List<string> stringsOnPage, int lineIndex, int stringIndex)
+        {
+            string stringValue = "";
+            if (lineIndex != -1 && lineIndex < stringsOnPage.Count)
+            {
+                stringValue = stringsOnPage[lineIndex];
+            }
+
+            if (stringValue.Split(',').Length == 2)
+            {
+                stringValue = stringValue.Split(',')[stringIndex];
+            }
+            return stringValue.Trim();
+        }
+
         public string getValueBeforeSearchString(List<string> stringsOnPage, string searchedString, int stringIndex)
         {
             int foundIndex = stringsOnPage.FindIndex(x => x == searchedString);
@@ -125,6 +140,19 @@ namespace WpfApp1
         public int getIndexOnPage(List<string> stringsOnPage, string searchedString)
         {
             return stringsOnPage.FindIndex(x => x.StartsWith(searchedString));
+        }
+
+        public string getStringAfterStartWithSearchString(List<string> stringsOnPage, string searchedString)
+        {
+            int foundIndex = stringsOnPage.FindIndex(x => x.StartsWith(searchedString));
+            string stringValue = "";
+            if (foundIndex != -1)
+            {
+                string fullString = stringsOnPage[foundIndex];
+                int subStringLength = fullString.Length - searchedString.Length;
+                stringValue = fullString.Substring(searchedString.Length, subStringLength);
+            }
+            return stringValue;
         }
 
         public int getIndexOnPageForSearchedStringFromIndex(List<string> stringsOnPage, int startIndex, string searchedString)

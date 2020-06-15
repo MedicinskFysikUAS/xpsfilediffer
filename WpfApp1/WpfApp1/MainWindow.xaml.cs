@@ -40,6 +40,7 @@ namespace WpfApp1
         string _treatmentPlanXpsFilePathIntraUterine;
         string _dvhXpsFilePathIntraUterine;
         string _tccPlanXpsFilePathIntraUterine;
+        private TabType _tabType;
 
         Specifications _specifications;
         public MainWindow()
@@ -143,17 +144,14 @@ namespace WpfApp1
 
         }
 
-        void buildResultDataGrid()
+        private void addProstateResultRows()
         {
-            _resultRows.Clear();
-            resultSummaryLabel.Content = "";
-
             if (_treatmentPlanXpsFilePath != null && needleDepthAndFreeLengthIsSet())
             {
                 PageReader treatmentPlanPageReader = new PageReader(_treatmentPlanXpsFilePath);
                 List<List<string>> treatmentPlanPageList = treatmentPlanPageReader.getPages();
-                TreatmentPlan treatmentPlan = new TreatmentPlan(treatmentPlanPageList);
-                Comparator comparator = new Comparator(_specifications); 
+                TreatmentPlan treatmentPlan = new TreatmentPlan(treatmentPlanPageList, _tabType);
+                Comparator comparator = new Comparator(_specifications);
                 comparator.treatmentPlan = treatmentPlan;
                 _resultRows.AddRange(comparator.treatmentPlanResultRows());
             }
@@ -162,7 +160,7 @@ namespace WpfApp1
             {
                 PageReader treatmentPlanPageReader = new PageReader(_treatmentPlanXpsFilePath);
                 List<List<string>> treatmentPlanPageList = treatmentPlanPageReader.getPages();
-                TreatmentPlan treatmentPlan = new TreatmentPlan(treatmentPlanPageList);
+                TreatmentPlan treatmentPlan = new TreatmentPlan(treatmentPlanPageList, _tabType);
                 PageReader treatmentDvhPageReader = new PageReader(_dvhXpsFilePath);
                 List<List<string>> treatmentPlanDvhPageList = treatmentDvhPageReader.getPages();
                 TreatmentDvh treatmentDvh = new TreatmentDvh(treatmentPlanDvhPageList);
@@ -176,12 +174,12 @@ namespace WpfApp1
             {
                 PageReader treatmentPlanPageReader = new PageReader(_treatmentPlanXpsFilePath);
                 List<List<string>> treatmentPlanPageList = treatmentPlanPageReader.getPages();
-                TreatmentPlan treatmentPlan = new TreatmentPlan(treatmentPlanPageList);
+                TreatmentPlan treatmentPlan = new TreatmentPlan(treatmentPlanPageList, _tabType);
                 Comparator comparator = new Comparator(_specifications);
                 comparator.treatmentPlan = treatmentPlan;
                 PageReader tccPlanPageReader = new PageReader(_tccPlanXpsFilePath);
                 List<List<string>> tccPlanPageList = tccPlanPageReader.getPages();
-                List<LiveCatheter> tccLiveCatheters = tccPlanPageReader.tccLiveCatheters();
+                List<LiveCatheter> tccLiveCatheters = tccPlanPageReader.tccLiveCatheters(_tabType);
                 TccPlan tccPlan = new TccPlan(tccPlanPageList, tccLiveCatheters);
                 comparator.tccPlan = tccPlan;
                 _resultRows.AddRange(comparator.resultRows());
@@ -191,13 +189,13 @@ namespace WpfApp1
             {
                 PageReader treatmentPlanPageReader = new PageReader(_treatmentPlanXpsFilePath);
                 List<List<string>> treatmentPlanPageList = treatmentPlanPageReader.getPages();
-                TreatmentPlan treatmentPlan = new TreatmentPlan(treatmentPlanPageList);
+                TreatmentPlan treatmentPlan = new TreatmentPlan(treatmentPlanPageList, _tabType);
                 PageReader treatmentDvhPageReader = new PageReader(_dvhXpsFilePath);
                 List<List<string>> treatmentPlanDvhPageList = treatmentDvhPageReader.getPages();
                 TreatmentDvh treatmentDvh = new TreatmentDvh(treatmentPlanDvhPageList);
                 PageReader tccPlanPageReader = new PageReader(_tccPlanXpsFilePath);
                 List<List<string>> tccPlanPageList = tccPlanPageReader.getPages();
-                List<LiveCatheter> tccLiveCatheters = tccPlanPageReader.tccLiveCatheters();
+                List<LiveCatheter> tccLiveCatheters = tccPlanPageReader.tccLiveCatheters(_tabType);
                 TccPlan tccPlan = new TccPlan(tccPlanPageList, tccLiveCatheters);
                 Comparator comparator = new Comparator(_specifications);
                 comparator.treatmentPlan = treatmentPlan;
@@ -205,6 +203,42 @@ namespace WpfApp1
                 comparator.tccPlan = tccPlan;
                 _resultRows.AddRange(comparator.allXpsResultRows());
             }
+
+        }
+
+        private void addCylinderResultRows()
+        {
+            if (_treatmentPlanXpsFilePath != null && _tccPlanXpsFilePath != null)
+            {
+                PageReader treatmentPlanPageReader = new PageReader(_treatmentPlanXpsFilePath);
+                List<List<string>> treatmentPlanPageList = treatmentPlanPageReader.getPages();
+                TreatmentPlan treatmentPlan = new TreatmentPlan(treatmentPlanPageList, _tabType);
+                Comparator comparator = new Comparator(_specifications);
+                comparator.treatmentPlan = treatmentPlan;
+                PageReader tccPlanPageReader = new PageReader(_tccPlanXpsFilePath);
+                List<List<string>> tccPlanPageList = tccPlanPageReader.getPages();
+                List<LiveCatheter> tccLiveCatheters = tccPlanPageReader.tccLiveCatheters(_tabType);
+                TccPlan tccPlan = new TccPlan(tccPlanPageList, tccLiveCatheters);
+                comparator.tccPlan = tccPlan;
+                _resultRows.AddRange(comparator.resultRows());
+            }
+
+        }
+
+        void buildResultDataGrid()
+        {
+            _resultRows.Clear();
+            resultSummaryLabel.Content = "";
+            if (_tabType == TabType.PROSTATE)
+            {
+                addProstateResultRows();
+            }
+            else if (_tabType == TabType.CYLINDER)
+            {
+                addCylinderResultRows();
+            }
+
+
             DataColumn testCase= new DataColumn("Test", typeof(string));
             DataColumn testResult = new DataColumn("Result", typeof(string));
             DataColumn resultDescripton = new DataColumn("Beskriving", typeof(string));
@@ -277,16 +311,19 @@ namespace WpfApp1
                 {
                     TPXpsPathLabel0.Content = selectedFile;
                     _treatmentPlanXpsFilePathProstate = selectedFile;
+                    _tabType = TabType.PROSTATE;
                 }
                 else if (CylinderTab.IsSelected)
                 {
                     TPXpsPathLabel1.Content = selectedFile;
                     _treatmentPlanXpsFilePathCylinder = selectedFile;
+                    _tabType = TabType.CYLINDER;
                 }
                 else if (IntraUterineTab.IsSelected)
                 {
                     TPXpsPathLabel2.Content = selectedFile;
                     _treatmentPlanXpsFilePathIntraUterine = selectedFile;
+                    _tabType = TabType.INTRAUTERINE;
                 }
             }
         }

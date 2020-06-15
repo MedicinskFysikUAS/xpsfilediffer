@@ -38,6 +38,7 @@ namespace WpfApp1
             {
                 IXpsFixedPageReader _page = _document.FixedPages[pageCount];
                 System.Xml.XmlReader _pageContentReader = _page.XmlReader;
+                //WriteOutXml(_pageContentReader, "xmlFile" + pageCount + ".xml");
                 List<string> stringsOnPage = new List<string>();
                 string startPageString = "Page number " + pageCount;
                 stringsOnPage.Add(startPageString);
@@ -67,7 +68,7 @@ namespace WpfApp1
             return pageList;
         }
 
-        public void setTccLiveCatheters()
+        public void setTccLiveCatheters(TabType tabType)
         {
             XpsDocument _xpsDocument = new XpsDocument(xpsFilePath, System.IO.FileAccess.Read);
             IXpsFixedDocumentSequenceReader fixedDocSeqReader = _xpsDocument.FixedDocumentSequenceReader;
@@ -104,7 +105,7 @@ namespace WpfApp1
                                     {
                                         string originX = (_pageContentReader.
                                         GetAttribute("OriginX"));
-                                        int startColumn = columnFromOrigX(originX);
+                                        int startColumn = columnFromOrigX(originX, tabType);
                                         List<Tuple<int, double>> columnAndTimes = getColumnAndTimes(startColumn, _pageContentReader);
                                         setPositonTimePairs(channelNumber, catheterPositions, columnAndTimes);
                                         readCatheterPositions = false;
@@ -156,11 +157,18 @@ namespace WpfApp1
             }
         }
 
-        public int columnFromOrigX(string originX)
+        public int columnFromOrigX(string originX, TabType tabType)
         {
-            //int startOrigin = 6849; // Prostate
-            int startOrigin = 6750; // Cylinder
-            
+            int startOrigin = -1;
+            if (tabType == TabType.PROSTATE)
+            {
+                startOrigin = 6849; // Prostate
+            }
+            if (tabType == TabType.CYLINDER)
+            {
+                startOrigin = 6750; // Cylinder
+            }
+
             int deltaWidth = 1833;
             int margin = 50;
             int originXint = stringToInt(originX);
@@ -404,9 +412,9 @@ namespace WpfApp1
             addLiveCatheter(liveCatheter);
         }
 
-        public List<LiveCatheter> tccLiveCatheters()
+        public List<LiveCatheter> tccLiveCatheters(TabType tabType)
         {
-            this.setTccLiveCatheters();
+            this.setTccLiveCatheters(tabType);
             return _liveCatheters;
         }
 
