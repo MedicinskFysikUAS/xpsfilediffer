@@ -220,7 +220,7 @@ namespace WpfApp1
                 List<LiveCatheter> tccLiveCatheters = tccPlanPageReader.tccLiveCatheters(_tabType);
                 TccPlan tccPlan = new TccPlan(tccPlanPageList, tccLiveCatheters);
                 comparator.tccPlan = tccPlan;
-                _resultRows.AddRange(comparator.resultRows());
+                _resultRows.AddRange(comparator.resultRows(true));
             }
 
         }

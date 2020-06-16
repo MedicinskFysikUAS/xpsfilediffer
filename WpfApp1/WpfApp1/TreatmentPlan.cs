@@ -92,6 +92,23 @@ namespace WpfApp1
 
         public string statusSetDateTime()
         {
+            if (_tabType == TabType.PROSTATE)
+            {
+                return prostateStatusSetDateTime();
+            }
+            else if (_tabType == TabType.CYLINDER)
+            {
+                return cylindricStatusSetDateTime();
+            }
+            else
+            {
+                return "";
+            }
+
+        }
+
+            public string prostateStatusSetDateTime()
+        {
             int pageIndex = 0;
             string dateString = _stringExtractor.getValueFromSpaceSeparetedString(_pageList[pageIndex], "Status set at:", 0);
             string pattern = "HH:mm:ss, dd. MMMMM yyyy";
@@ -101,6 +118,22 @@ namespace WpfApp1
                                       DateTimeStyles.None, out parsedDate))
             {
                 stringFromDateTime = parsedDate.ToString("yyyy-MM-dd HH:mm");
+            }
+            return stringFromDateTime;
+        }
+
+        public string cylindricStatusSetDateTime()
+        {
+            int pageIndex = 0;
+            string dateAndUserString = _pageList[pageIndex][3];
+            int position = dateAndUserString.IndexOf("by otpuser");
+            string dateString = dateAndUserString.Substring(0, position).Trim();
+            string pattern = "dd MMM yyyy HH:mm:ss";
+            string stringFromDateTime = "";
+            DateTime result = DateTime.ParseExact(dateString, pattern, CultureInfo.InvariantCulture);
+            if (result != null)
+            {
+                stringFromDateTime = result.ToString();
             }
             return stringFromDateTime;
         }
@@ -255,6 +288,23 @@ namespace WpfApp1
 
         public List<LiveCatheter> liveCatheters()
         {
+            if (_tabType == TabType.PROSTATE)
+            {
+                return prostateLiveCatheters();
+            }
+            else if (_tabType == TabType.CYLINDER)
+            {
+                return cylindricLiveCatheters();
+            }
+            else
+            {
+                List<LiveCatheter> liveCatheters = new List<LiveCatheter>();
+                return liveCatheters;
+            }
+        }
+
+            public List<LiveCatheter> prostateLiveCatheters()
+        {
             List<CatheterPositonAndTimeTable> startPositonAndTimeTables = new List<CatheterPositonAndTimeTable>();
             List<CatheterPositonAndTimeTable> stopPositonAndTimeTables = new List<CatheterPositonAndTimeTable>();
 
@@ -400,6 +450,39 @@ namespace WpfApp1
 
         }
 
+        public int getCylindricCatheterTableEndIndex(List<string> page, int startIndex)
+        {
+            if (_stringExtractor.getIndexOnPageForSearchedStringFromIndex(page, startIndex, "Signed for approval") != -1 &&
+                _stringExtractor.getIndexOnPageForSearchedStringFromIndex(page, startIndex, "P1") == -1)
+            {
+                return _stringExtractor.getIndexOnPageForSearchedStringFromIndex(page, startIndex, "Signed for approval");
+            }
+            else if (_stringExtractor.getIndexOnPageForSearchedStringFromIndex(page, startIndex, "Signed for approval") == -1 &&
+                _stringExtractor.getIndexOnPageForSearchedStringFromIndex(page, startIndex, "P1") != -1)
+            {
+                return _stringExtractor.getIndexOnPageForSearchedStringFromIndex(page, startIndex, "Source");
+            }
+            else if (_stringExtractor.getIndexOnPageForSearchedStringFromIndex(page, startIndex, "Signed for approval") != -1 &&
+                _stringExtractor.getIndexOnPageForSearchedStringFromIndex(page, startIndex, "P1") != -1)
+            {
+                if (_stringExtractor.getIndexOnPageForSearchedStringFromIndex(page, startIndex, "Signed for approval") <
+                    _stringExtractor.getIndexOnPageForSearchedStringFromIndex(page, startIndex, "P1"))
+                {
+                    return _stringExtractor.getIndexOnPageForSearchedStringFromIndex(page, startIndex, "Signed for approval");
+                }
+                else
+                {
+                    return _stringExtractor.getIndexOnPageForSearchedStringFromIndex(page, startIndex, "P1");
+                }
+            }
+            else
+            {
+                return -1;
+            }
+
+
+        }
+
         public List<TreatmentPlanCatheter> treatmentPlanCatheters()
         {
             List<TreatmentPlanCatheter> catheters = new List<TreatmentPlanCatheter>();
@@ -422,7 +505,7 @@ namespace WpfApp1
                         startTableIndex = lockedStringIndex;
                         endTableIndex = getCatheterTableEndIndex(page, currentIndex);
                         List<string> allValues = _stringExtractor.allValuesInInterval(page, startTableIndex, endTableIndex);
-                        List<List<string>> catheterTableLines = _stringExtractor.tenItemsRowsInInterval(allValues);
+                        List<List<string>> catheterTableLines = _stringExtractor.nColumnsRowsInInterval(10, allValues);
                         foreach (var catheterTableLine in catheterTableLines)
                         {
                             TreatmentPlanCatheter treatmentPlanCatheter = new TreatmentPlanCatheter();
@@ -463,5 +546,47 @@ namespace WpfApp1
             }
             return catheters;
         }
+
+
+        public List<LiveCatheter> cylindricLiveCatheters()
+        {
+            List<LiveCatheter> liveCatheters = new List<LiveCatheter>();
+            LiveCatheter liveCatheter = new LiveCatheter();
+            liveCatheter.setCatheterNumber(1); // Assume that only one catheter is used.
+            List<Tuple<string, string>> positonTimePairs = new List<Tuple<string, string>>();
+            int startTableIndex = -1;
+            int endTableIndex = -1;
+            foreach (var page in _pageList)
+            {
+                int currentIndex = 0;
+                while (currentIndex != -1)
+                {
+                    int offsetIndex = _stringExtractor.getIndexOnPageForStartWithStringFromIndex(page, currentIndex, "Offset (mm):");
+                    if (offsetIndex != -1)
+                    {
+                        startTableIndex = offsetIndex;
+                        endTableIndex = getCylindricCatheterTableEndIndex(page, currentIndex);
+                        List<string> allValues = _stringExtractor.allValuesInInterval(page, startTableIndex, endTableIndex);
+                        List<List<string>> catheterTableLines = _stringExtractor.nColumnsRowsInInterval(6, allValues);
+                        foreach (var catheterTableLine in catheterTableLines)
+                        {
+                            List<Tuple<string, string>> tuples;
+                            Tuple<string, string> tuple = new Tuple<string, string>(catheterTableLine[5], catheterTableLine[0]);
+                            positonTimePairs.Add(tuple);
+                        }
+                        currentIndex = endTableIndex;
+                    }
+                    else
+                    {
+                        currentIndex = -1;
+                    }
+                }
+            }
+            liveCatheter.setPositonTimePairs(positonTimePairs);
+            liveCatheters.Add(liveCatheter);
+            return liveCatheters;
+        }
+
+
     }
 }

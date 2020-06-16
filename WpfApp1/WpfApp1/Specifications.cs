@@ -13,7 +13,7 @@ namespace WpfApp1
         private decimal _timeEpsilon = 0.051m;
         private decimal _expectedChannelLength = 1190.0m;
         private decimal _treatmentTimeEpsilon = 0.1m;
-        private decimal _airKermaStrengthEpsilon = 0.1m;
+        private decimal _airKermaStrengthEpsilon = 0.06m;
         private decimal _prescriptionDose;
 
         public decimal NeedleDepth { get => _needleDepth; set => _needleDepth = value; }

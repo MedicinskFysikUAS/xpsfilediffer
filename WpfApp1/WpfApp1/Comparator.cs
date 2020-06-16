@@ -40,8 +40,13 @@ namespace WpfApp1
         public bool hasApprovedStatus()
         {
             return (_treatmentPlan.planIsApproved() && _tccPlan.planIsApproved());
-
         }
+
+        public bool tccPlanHasApprovedStatus()
+        {
+            return (_tccPlan.planIsApproved());
+        }
+
 
         public bool hasSameStatusSetDateTime()
         {
@@ -215,31 +220,49 @@ namespace WpfApp1
         }
 
 
-        public List<string> checkApproval()
+        public List<string> checkApproval(bool skipApprovalTest = false)
         {
             List<string> resultRow = new List<string>();
             resultRow.Add("Planerna är godkända");
-            if (hasApprovedStatus())
+            if (!skipApprovalTest)
             {
-                resultRow.Add("OK");
+                if (hasApprovedStatus())
+                {
+                    resultRow.Add("OK");
+                }
+                else
+                {
+                    resultRow.Add("Inte OK");
+                }
+                string TPStatus = "Inte godkänd";
+                if (_treatmentPlan.planIsApproved())
+                {
+                    TPStatus = "Godkänd";
+                }
+                string TCCStatus = "Inte godkänd";
+                if (_tccPlan.planIsApproved())
+                {
+                    TCCStatus = "Godkänd";
+                }
+
+                resultRow.Add("plan är : " + TPStatus +
+                    " TCC-planen är : " + TCCStatus);
             }
             else
             {
-                resultRow.Add("Inte OK");
-            }
-            string TPStatus = "Inte godkänd";
-            if (_treatmentPlan.planIsApproved())
-            {
-                TPStatus = "Godkänd";
-            }
-            string TCCStatus = "Inte godkänd";
-            if (_tccPlan.planIsApproved())
-            {
-                TCCStatus = "Godkänd";
+                resultRow.Add(" ");
+                string description = "Planens status kan inte testas. TCC-planen är ";
+                if (tccPlanHasApprovedStatus())
+                {
+                    description += "godkänd.";
+                }
+                else
+                {
+                    description += "INTE godkänd.";
+                }
+                resultRow.Add(description);
             }
 
-            resultRow.Add("plan är : " + TPStatus +
-                " TCC-planen är : " + TCCStatus);
 
             return resultRow;
         }
@@ -296,7 +319,7 @@ namespace WpfApp1
                 resultRow.Add("Inte OK");
             }
             resultRow.Add("Planned Source Strength i plan: " + _treatmentPlan.plannedSourceStrength() +
-                " planerad AK-styrka i TCC: " + _tccPlan.plannedSourceStrength());
+                " planerad AK-styrka i TCC: " + _tccPlan.plannedSourceStrength() + " +- " + airKermaStrengthEpsilon + " )");
 
             return resultRow;
         }
@@ -475,14 +498,14 @@ namespace WpfApp1
             return resultRows;
         }
 
-            public List<List<string>> resultRows()
+            public List<List<string>> resultRows(bool skipApprovalTest = false)
         {
             List<List<string>> resultRows = new List<List<string>>();
             resultRows.Add(headerResultRow("Plan & TCC"));
             resultRows.Add(checkPatientName());
             resultRows.Add(checkPatientId());
             resultRows.Add(checkPlanCode());
-            resultRows.Add(checkApproval());
+            resultRows.Add(checkApproval(skipApprovalTest));
             resultRows.Add(checkApproveDateTime());
             resultRows.Add(checkFractionDose());
             resultRows.Add(checkPlannedSourceStrength(_specifications.AirKermaStrengthEpsilon));

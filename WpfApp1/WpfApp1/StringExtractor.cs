@@ -160,15 +160,19 @@ namespace WpfApp1
             return stringsOnPage.FindIndex(startIndex, x => x == searchedString);
         }
 
+        public int getIndexOnPageForStartWithStringFromIndex(List<string> stringsOnPage, int startIndex, string searchedString)
+        {
+            return stringsOnPage.FindIndex(startIndex, x => x.StartsWith(searchedString));
+        }
+
         public int getIndexOnPageForStartWithSearchedStringFromIndex(List<string> stringsOnPage, int startIndex, string searchedString, string containString)
         {
             return stringsOnPage.FindIndex(startIndex, x => x.StartsWith(searchedString) && x.Contains(containString));
         }
 
-        public List<List<string>> tenItemsRowsInInterval(List<string> stringsInIntervall)
+        public List<List<string>> nColumnsRowsInInterval(int nColumns, List<string> stringsInIntervall)
         {
             List<List<string>> allItems = new List<List<string>>();
-            int nColumns = 10;
             int nRows = stringsInIntervall.Count / nColumns;
 
             for (int row = 0; row < nRows; row++)
