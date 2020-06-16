@@ -22,6 +22,7 @@
                         <ColumnDefinition Width="9*"/>
                     </Grid.ColumnDefinitions>
                     <Button x:Name="BtnCheck" Click="BtnCheck_Click" Content="Kontrollera" HorizontalAlignment="Left" Margin="61,169,0,0" VerticalAlignment="Top" Width="64" Height="26" RenderTransformOrigin="0.469,-2.114" Grid.Column="2"/>
+
                     <TextBox x:Name="needleDepthText" VerticalAlignment="Top" RenderTransformOrigin="2.125,0.281" Margin="115,110,140,0" Grid.Column="1"  IsReadOnly="True" Height="22"/>
                     <Label x:Name="needleDepthLabel" Content="Nåldjup [mm]: " Grid.Column="1" HorizontalAlignment="Left" Margin="6,106,0,0" VerticalAlignment="Top" Height="26" Width="89"/>
                     <Label x:Name="freeLengthLabel" Content="Free Length [mm]: " Grid.Column="1" HorizontalAlignment="Left" Margin="6,136,0,0" VerticalAlignment="Top" Height="26" Width="109"/>
@@ -71,21 +72,19 @@
                     <TextBox x:Name="freeLengthText2" Grid.Column="1" HorizontalAlignment="Left" Margin="115,140,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="40"  IsReadOnly="True" Height="22"/>
                     <Label x:Name="needleLengthProbSumLabel2" Content="Nållängd + prob:" Grid.Column="1" HorizontalAlignment="Left" Margin="6,165,0,0" VerticalAlignment="Top" Height="26" Width="104"/>
                     <TextBox x:Name="needleLengthProbSumText2" Grid.Column="1" HorizontalAlignment="Left" Margin="115,169,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="40"  IsReadOnly="True" Height="22"/>
-                    <Grid HorizontalAlignment="Left" Height="79" Margin="10,7,0,0" VerticalAlignment="Top" Width="460" Grid.ColumnSpan="2">
+                    <Grid HorizontalAlignment="Left" Height="71" Margin="10,7,0,0" VerticalAlignment="Top" Width="460" Grid.ColumnSpan="2">
                         <Label x:Name="TPXpsPathLabel1" Content="Inte vald" HorizontalAlignment="Left" Margin="120,0,0,0" VerticalAlignment="Top" Height="26" Width="330"/>
                         <Button x:Name="BtnOpenTPFile1" Click="BtnOpenTPFile_Click" Content="Treatment plan file:" HorizontalAlignment="Left" Margin="0,3,0,0" VerticalAlignment="Top" Width="115" Height="23"/>
-                        <Button x:Name="BtnOpenDVHFile1" Click="BtnOpenDVHFile_Click" Content="DVH file:" HorizontalAlignment="Left" Margin="0,31,0,0" VerticalAlignment="Top" Height="20" Width="50"/>
-                        <Label x:Name="DVHXpsPathLabel1" Content="Inte vald" HorizontalAlignment="Left" Margin="56,28,0,0" VerticalAlignment="Top" Height="26" Width="394"/>
-                        <Button x:Name="BtnOpenTCCFile1" Click="BtnOpenTCCFile_Click" Content="TCC file:" HorizontalAlignment="Left" Margin="0,56,0,0" VerticalAlignment="Top" Height="20" Width="46"/>
-                        <Label x:Name="TCCXpsPathLabel1" Content="Inte vald" HorizontalAlignment="Left" Margin="56,53,0,0" VerticalAlignment="Top" Height="26" Width="394"/>
+                        <Button x:Name="BtnOpenTCCFile1" Click="BtnOpenTCCFile_Click" Content="TCC file:" HorizontalAlignment="Left" Margin="0,37,0,0" VerticalAlignment="Top" Height="20" Width="46"/>
+                        <Label x:Name="TCCXpsPathLabel1" Content="Inte vald" HorizontalAlignment="Left" Margin="56,34,0,0" VerticalAlignment="Top" Height="26" Width="394"/>
                     </Grid>
-                    <Label x:Name="needleLengthLabel1" Content="Nållängd [mm]: " HorizontalAlignment="Left" Margin="5,96,0,0" VerticalAlignment="Top" Height="26" Width="95"/>
-                    <TextBox x:Name="needleLengthText1" HorizontalAlignment="Left" Margin="106,100,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="45" Height="22"/>
-                    <Label x:Name="probeDistanceLabel1" Content="Avst. prob [mm]: " HorizontalAlignment="Left" Margin="5,128,0,0" VerticalAlignment="Top" Height="26" Width="101"/>
-                    <TextBox x:Name="probeDistanceText1" HorizontalAlignment="Left" Margin="106,132,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="45" Height="22"/>
+                    <Label x:Name="cylinderDiameterLabel" Content="Cylinderdiameter [mm]: " HorizontalAlignment="Left" Margin="5,96,0,0" VerticalAlignment="Top" Height="26" Width="136"/>
+                    <TextBox x:Name="cylinderDiameterText" HorizontalAlignment="Left" Margin="146,100,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="45" Height="22"/>
+                    <Label x:Name="treatmentLengthLabel" Content="Behandlingslängd [mm]: " HorizontalAlignment="Left" Margin="5,128,0,0" VerticalAlignment="Top" Height="26" Width="138"/>
+                    <TextBox x:Name="treatmentLengthText" HorizontalAlignment="Left" Margin="143,132,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="45" Height="22"/>
                     <Label x:Name="calculatedLabel1" Content="Beräknat:" Grid.Column="1" HorizontalAlignment="Left" Margin="6,83,0,0" VerticalAlignment="Top" FontStyle="Italic"/>
                     <Label x:Name="instructionLabel1" Content="Tryck alltid Kontrollera efter att något har ändrats!" Grid.Column="1" HorizontalAlignment="Left" Margin="170,137,0,0" VerticalAlignment="Top" FontStyle="Italic" Grid.ColumnSpan="2" FontSize="11" Width="250" FontWeight="Normal"/>
-                    <Label x:Name="prescribedDoseLabel1" Content="Ordinerad dos [Gy]:" HorizontalAlignment="Left" Margin="3,160,0,0" VerticalAlignment="Top" Height="26" Width="118" RenderTransformOrigin="0.5,0.5">
+                    <Label x:Name="cylindricPrescribedDoseLabel1" Content="Ordinerad dos [Gy]:" HorizontalAlignment="Left" Margin="3,160,0,0" VerticalAlignment="Top" Height="26" Width="118" RenderTransformOrigin="0.5,0.5">
                         <Label.RenderTransform>
                             <TransformGroup>
                                 <ScaleTransform/>
@@ -95,7 +94,7 @@
                             </TransformGroup>
                         </Label.RenderTransform>
                     </Label>
-                    <TextBox x:Name="prescribedDoseText1" HorizontalAlignment="Left" Margin="116,164,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="44" Height="22"/>
+                    <TextBox x:Name="cylindricPrescribedDoseText" HorizontalAlignment="Left" Margin="116,164,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="44" Height="22"/>
                     <Label x:Name="resultSummaryLabel1" Content="label" HorizontalAlignment="Left" Margin="177,404,0,0" VerticalAlignment="Top" Width="124" Grid.ColumnSpan="2"/>
                 </Grid>
 

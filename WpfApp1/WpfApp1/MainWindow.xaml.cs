@@ -16,6 +16,7 @@ using System.Windows.Xps.Packaging;
 using System.Data;
 using Microsoft.Win32;
 using System.Windows.Controls.Primitives;
+using System.Configuration;
 
 namespace WpfApp1
 {
@@ -34,7 +35,6 @@ namespace WpfApp1
         string _tccPlanXpsFilePathProstate;
 
         string _treatmentPlanXpsFilePathCylinder;
-        string _dvhXpsFilePathCylinder;
         string _tccPlanXpsFilePathCylinder; 
 
         string _treatmentPlanXpsFilePathIntraUterine;
@@ -49,7 +49,11 @@ namespace WpfApp1
             setLabelAndTextboxVisable(false);
             resultSummaryLabel.Content = "";
             _specifications = new Specifications();
+            //string[] lengths = ConfigurationManager.VC20["lengths"].Split(';');
+            //string[] times = ConfigurationManager.VC20["times"].Split(';');
+            
         }
+        // https://stackoverflow.com/questions/23499105/c-sharp-app-config-with-array-or-list-like-data
 
         public void setLabelAndTextboxVisable(bool setLabelAndTextboxVisable)
         {
@@ -114,11 +118,17 @@ namespace WpfApp1
             {
                 _specifications.PrescriptionDose = stringExtractor.decimalStringToDecimal(prescribedDoseText.Text);
             }
+         
         }
 
         public bool needleDepthAndFreeLengthIsSet()
         {
             return ((needleDepthText.Visibility == Visibility.Visible) && (freeLengthText.Visibility == Visibility.Visible));
+        }
+
+        public bool prescriptionDoseIsSet()
+        {
+            return (prescribedDoseText.Text.Length > 0);
         }
 
         private void updateInputFilePaths()
@@ -132,7 +142,7 @@ namespace WpfApp1
             else if (CylinderTab.IsSelected)
             {
                 _treatmentPlanXpsFilePath = _treatmentPlanXpsFilePathCylinder;
-                _dvhXpsFilePath = _dvhXpsFilePathCylinder;
+                _dvhXpsFilePath = "";
                 _tccPlanXpsFilePath = _tccPlanXpsFilePathCylinder;
             }
             else if (IntraUterineTab.IsSelected)
@@ -185,7 +195,7 @@ namespace WpfApp1
                 _resultRows.AddRange(comparator.resultRows());
             }
 
-            if (_treatmentPlanXpsFilePath != null && _dvhXpsFilePath != null && _tccPlanXpsFilePath != null)
+            if (_treatmentPlanXpsFilePath != null && _dvhXpsFilePath != null && _tccPlanXpsFilePath != null && prescriptionDoseIsSet())
             {
                 PageReader treatmentPlanPageReader = new PageReader(_treatmentPlanXpsFilePath);
                 List<List<string>> treatmentPlanPageList = treatmentPlanPageReader.getPages();
@@ -228,7 +238,7 @@ namespace WpfApp1
         void buildResultDataGrid()
         {
             _resultRows.Clear();
-            resultSummaryLabel.Content = "";
+            resultSummaryLabel.Visibility = Visibility.Hidden;
             if (_tabType == TabType.PROSTATE)
             {
                 addProstateResultRows();
@@ -288,6 +298,7 @@ namespace WpfApp1
 
             if (nOk + nErrors > 0)
             {
+                resultSummaryLabel.Visibility = Visibility.Visible;
                 if (nErrors == 0)
                 {
                     resultSummaryLabel.Content = "Alla test var OK";
@@ -339,11 +350,6 @@ namespace WpfApp1
                     DVHXpsPathLabel0.Content = selectedFile;
                     _dvhXpsFilePathProstate = selectedFile;
                 }
-                else if (CylinderTab.IsSelected)
-                {
-                    DVHXpsPathLabel1.Content = selectedFile;
-                    _dvhXpsFilePathCylinder = selectedFile;
-                }
                 else if (IntraUterineTab.IsSelected)
                 {
                     DVHXpsPathLabel2.Content = selectedFile;
@@ -380,6 +386,7 @@ namespace WpfApp1
         private void BtnCheck_Click(object sender, RoutedEventArgs e)
         {
             updateSpecifications();
+            setLabelAndTextboxVisable(false);
             calculateLengthAndFreeLength();
             updateInputFilePaths();
             this.buildResultDataGrid();
@@ -392,21 +399,25 @@ namespace WpfApp1
 
         private void TabControl_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            //if (ProstateTab.IsSelected)
-            //{
-            //    TPXpsPathLabel0.Content = _treatmentPlanXpsFilePath;
-            //    TPXpsPathLabel1.Content = "Inte vald";
-            //}
-            //    if (CylinderTab.IsSelected)
-            //{
-            //    TPXpsPathLabel0.Content = "";
-            //    TPXpsPathLabel1.Content = _treatmentPlanXpsFilePath; 
-            //}
-            //        if (IntraUterine.IsSelected)
-            //{
-            //    TPXpsPathLabel0.Content = "";
-            //    TPXpsPathLabel1.Content = _treatmentPlanXpsFilePath;
-            //}
+            if (ProstateTab.IsSelected)
+            {
+                _tabType = TabType.PROSTATE;
+            }
+            else if (CylinderTab.IsSelected)
+            {
+                _tabType = TabType.CYLINDER;
+            }
+            else if (IntraUterineTab.IsSelected)
+            {
+                _tabType = TabType.INTRAUTERINE;
+            }
+
+            setLabelAndTextboxVisable(false);
+            _resultRows.Clear();
+            resultSummaryLabel.Content = "";
+            resultSummaryLabel.Visibility = Visibility.Hidden;
+            DataTable dataTable = new DataTable();
+            ResultDataGrid.ItemsSource = dataTable.DefaultView;
         }
     }
 }

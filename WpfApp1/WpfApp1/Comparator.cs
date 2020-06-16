@@ -173,7 +173,7 @@ namespace WpfApp1
                 resultRow.Add("Inte OK");
                 
             }
-            resultRow.Add("Patientnamn i TP: " + _treatmentPlan.patientFirstName() + " " + _treatmentPlan.patientLastName() +
+            resultRow.Add("Patientnamn i plan: " + _treatmentPlan.patientFirstName() + " " + _treatmentPlan.patientLastName() +
                 " i TCC: " + _tccPlan.patientFirstName() + " " + _tccPlan.patientLastName());
 
             return resultRow;
@@ -319,7 +319,7 @@ namespace WpfApp1
                 resultRow.Add("Inte OK");
             }
             resultRow.Add("Planned Source Strength i plan: " + _treatmentPlan.plannedSourceStrength() +
-                " planerad AK-styrka i TCC: " + _tccPlan.plannedSourceStrength() + " +- " + airKermaStrengthEpsilon + " )");
+                " planerad AK-styrka i TCC: " + _tccPlan.plannedSourceStrength() + " ( +- " + airKermaStrengthEpsilon + " )");
 
             return resultRow;
         }

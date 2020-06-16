@@ -23,7 +23,6 @@ C:\work\git\xpsfilediffer\WpfApp1\WpfApp1\bin\Debug\netcoreapp3.1\WpfApp1.runtim
 C:\work\git\xpsfilediffer\WpfApp1\WpfApp1\bin\Debug\netcoreapp3.1\WpfApp1.runtimeconfig.dev.json
 C:\work\git\xpsfilediffer\WpfApp1\WpfApp1\bin\Debug\netcoreapp3.1\WpfApp1.dll
 C:\work\git\xpsfilediffer\WpfApp1\WpfApp1\bin\Debug\netcoreapp3.1\WpfApp1.pdb
-C:\work\git\xpsfilediffer\WpfApp1\WpfApp1\obj\Debug\netcoreapp3.1\WpfApp1.csprojAssemblyReference.cache
 C:\work\git\xpsfilediffer\WpfApp1\WpfApp1\obj\Debug\netcoreapp3.1\MainWindow.g.cs
 C:\work\git\xpsfilediffer\WpfApp1\WpfApp1\obj\Debug\netcoreapp3.1\App.g.cs
 C:\work\git\xpsfilediffer\WpfApp1\WpfApp1\obj\Debug\netcoreapp3.1\WpfApp1_MarkupCompile.cache
@@ -36,5 +35,5 @@ C:\work\git\xpsfilediffer\WpfApp1\WpfApp1\obj\Debug\netcoreapp3.1\WpfApp1.Assemb
 C:\work\git\xpsfilediffer\WpfApp1\WpfApp1\obj\Debug\netcoreapp3.1\WpfApp1.dll
 C:\work\git\xpsfilediffer\WpfApp1\WpfApp1\obj\Debug\netcoreapp3.1\WpfApp1.pdb
 C:\work\git\xpsfilediffer\WpfApp1\WpfApp1\obj\Debug\netcoreapp3.1\WpfApp1.genruntimeconfig.cache
-C:\work\git\xpsfilediffer\WpfApp1\WpfApp1\obj\Debug\netcoreapp3.1\ResultWindow.g.cs
-C:\work\git\xpsfilediffer\WpfApp1\WpfApp1\obj\Debug\netcoreapp3.1\ResultWindow.baml
+C:\work\git\xpsfilediffer\WpfApp1\WpfApp1\obj\Debug\netcoreapp3.1\WpfApp1.csprojAssemblyReference.cache
+C:\work\git\xpsfilediffer\WpfApp1\WpfApp1\bin\Debug\netcoreapp3.1\WpfApp1.dll.config

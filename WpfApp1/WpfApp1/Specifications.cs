@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Configuration;
+using System.Linq;
 using System.Text;
 
 namespace WpfApp1
@@ -13,7 +15,7 @@ namespace WpfApp1
         private decimal _timeEpsilon = 0.051m;
         private decimal _expectedChannelLength = 1190.0m;
         private decimal _treatmentTimeEpsilon = 0.1m;
-        private decimal _airKermaStrengthEpsilon = 0.06m;
+        private decimal _airKermaStrengthEpsilon = 0.3m;
         private decimal _prescriptionDose;
 
         public decimal NeedleDepth { get => _needleDepth; set => _needleDepth = value; }
@@ -25,5 +27,7 @@ namespace WpfApp1
         public decimal TreatmentTimeEpsilon { get => _treatmentTimeEpsilon; set => _treatmentTimeEpsilon = value; }
         public decimal PrescriptionDose { get => _prescriptionDose; set => _prescriptionDose = value; }
         public decimal AirKermaStrengthEpsilon { get => _airKermaStrengthEpsilon; set => _airKermaStrengthEpsilon = value; }
+
+       
     }
 }

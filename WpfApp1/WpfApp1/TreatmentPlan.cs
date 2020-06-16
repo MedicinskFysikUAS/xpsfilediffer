@@ -133,7 +133,7 @@ namespace WpfApp1
             DateTime result = DateTime.ParseExact(dateString, pattern, CultureInfo.InvariantCulture);
             if (result != null)
             {
-                stringFromDateTime = result.ToString();
+                stringFromDateTime = result.ToString("yyyy-MM-dd HH:mm");
             }
             return stringFromDateTime;
         }
@@ -220,7 +220,12 @@ namespace WpfApp1
             {
                 stringValue = "-1";
             }
-            return Convert.ToDecimal(stringValue) * 1000.0m;
+            decimal decimalValue = Convert.ToDecimal(stringValue);
+            if (_tabType == TabType.CYLINDER)
+            {
+                decimalValue *= 1000.0m;
+            }
+            return decimalValue;
         }
 
         public decimal plannedSourceStrengthValue()
@@ -241,7 +246,7 @@ namespace WpfApp1
 
         public string totalTreatmentTimeStrValue()
         {
-            int pageIndex = 0;
+            int pageIndex = 1;
             string stringValue = "";
             if (_tabType == TabType.PROSTATE)
             {
@@ -570,7 +575,6 @@ namespace WpfApp1
                         List<List<string>> catheterTableLines = _stringExtractor.nColumnsRowsInInterval(6, allValues);
                         foreach (var catheterTableLine in catheterTableLines)
                         {
-                            List<Tuple<string, string>> tuples;
                             Tuple<string, string> tuple = new Tuple<string, string>(catheterTableLine[5], catheterTableLine[0]);
                             positonTimePairs.Add(tuple);
                         }
