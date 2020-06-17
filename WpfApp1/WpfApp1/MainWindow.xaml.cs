@@ -49,9 +49,7 @@ namespace WpfApp1
             setLabelAndTextboxVisable(false);
             resultSummaryLabel.Content = "";
             _specifications = new Specifications();
-            //string[] lengths = ConfigurationManager.VC20["lengths"].Split(';');
-            //string[] times = ConfigurationManager.VC20["times"].Split(';');
-            
+            initiateCylinderTypeComboBox();
         }
         // https://stackoverflow.com/questions/23499105/c-sharp-app-config-with-array-or-list-like-data
 
@@ -77,6 +75,12 @@ namespace WpfApp1
                 needleLengthProbSumText.Visibility = Visibility.Hidden;
                 calculatedLabel.Visibility = Visibility.Hidden;
             }
+        }
+
+        public void initiateCylinderTypeComboBox()
+        {
+            cylinderTypeComboBox.Items.Add("VC");
+            cylinderTypeComboBox.Items.Add("SVC/AVC");
         }
 
         public void calculateLengthAndFreeLength()
@@ -418,6 +422,27 @@ namespace WpfApp1
             resultSummaryLabel.Visibility = Visibility.Hidden;
             DataTable dataTable = new DataTable();
             ResultDataGrid.ItemsSource = dataTable.DefaultView;
+        }
+
+        private void cylinderTypeComboBox_DropDownClosed(object sender, EventArgs e)
+        {
+            cylinderDiameterComboBox.Items.Clear();
+
+            if (cylinderTypeComboBox.SelectedIndex == 0) //sel ind already updated
+            {
+                cylinderDiameterComboBox.Items.Add("20");
+                cylinderDiameterComboBox.Items.Add("25");
+                cylinderDiameterComboBox.Items.Add("30");
+                cylinderDiameterComboBox.Items.Add("35");
+                cylinderDiameterComboBox.Items.Add("40");
+            }
+            if (cylinderTypeComboBox.SelectedIndex == 1)
+            {
+                cylinderDiameterComboBox.Items.Add("25");
+                cylinderDiameterComboBox.Items.Add("30");
+                cylinderDiameterComboBox.Items.Add("35");
+                cylinderDiameterComboBox.Items.Add("40");
+            }
         }
     }
 }
