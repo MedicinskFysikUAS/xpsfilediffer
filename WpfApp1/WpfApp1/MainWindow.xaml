@@ -67,12 +67,8 @@
                     </Grid.ColumnDefinitions>
                     <Grid Grid.ColumnSpan="3" HorizontalAlignment="Left" Height="151" Margin="3,83,0,0" VerticalAlignment="Top" Width="637">
                         <Button x:Name="BtnCheck2" Click="BtnCheck_Click" Content="Kontrollera" HorizontalAlignment="Left" Margin="573,86,0,0" VerticalAlignment="Top" Width="64" Height="26" RenderTransformOrigin="0.469,-2.114"/>
-                        <TextBox x:Name="needleDepthText2" VerticalAlignment="Top" RenderTransformOrigin="2.125,0.281" Margin="311,27,265,0"  IsReadOnly="True" Height="22"/>
-                        <Label x:Name="needleDepthLabel2" Content="Nåldjup [mm]: " HorizontalAlignment="Left" Margin="202,23,0,0" VerticalAlignment="Top" Height="26" Width="89"/>
-                        <Label x:Name="freeLengthLabel2" Content="Free Length [mm]: " HorizontalAlignment="Left" Margin="202,53,0,0" VerticalAlignment="Top" Height="26" Width="109"/>
-                        <TextBox x:Name="freeLengthText2" HorizontalAlignment="Left" Margin="311,57,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="40"  IsReadOnly="True" Height="22"/>
-                        <Label x:Name="needleLengthProbSumLabel2" Content="Nållängd + prob:" HorizontalAlignment="Left" Margin="202,82,0,0" VerticalAlignment="Top" Height="26" Width="104"/>
-                        <TextBox x:Name="needleLengthProbSumText2" HorizontalAlignment="Left" Margin="311,86,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="40"  IsReadOnly="True" Height="22"/>
+                        <TextBox x:Name="estimatedTreatmentTimeText" VerticalAlignment="Top" RenderTransformOrigin="2.125,0.281" Margin="363,27,233,0"  IsReadOnly="True" Height="22"/>
+                        <Label x:Name="estimatedTreatmentTimeLabel" Content="Uppsk. behandlingstid [sek]:" HorizontalAlignment="Left" Margin="202,23,0,0" VerticalAlignment="Top" Height="26" Width="166"/>
                         <Label x:Name="cylinderTypeLabel" Content="Cylindertyp: " HorizontalAlignment="Left" Margin="2,13,0,0" VerticalAlignment="Top" Height="26" Width="136"/>
                         <Label x:Name="treatmentLengthLabel" Content="Behandlingslängd [mm]: " HorizontalAlignment="Left" Margin="2,80,0,0" VerticalAlignment="Top" Height="26" Width="138"/>
                         <TextBox x:Name="treatmentLengthText" HorizontalAlignment="Left" Margin="140,84,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="45" Height="22"/>

@@ -91,30 +91,32 @@ namespace WpfApp1
            return getTableTime(tableTuples, treatmentLength);
         }
 
-        public decimal estimateCylindricTreatmentTime()
+        public decimal estimateCylindricTreatmentTime(CylinderType cylinderType, int cylinderDiameter, 
+            decimal prescriptionDose, decimal currentSourceStrength, decimal treatmentLength)
         {
-            CylinderType cylinderType = CylinderType.VC; // from GUI and plan?
-            int cylinderDiameter = 20; // from GUI and plan?
-            decimal prescribedDose = 1.0m; // from the treatment plan
-            decimal tableDose = 1.0m; // from the app.config file
-            decimal tableSourceStrength = 1.0m; // from the app.config file
-            decimal currentSourceStrength = 1.0m; // from the treatment plan
-            decimal treatmentLength = 10.0m; // GUI and plan
-            decimal tableTime = timeFromTable(cylinderType, cylinderDiameter, treatmentLength);
+            return timeFromTable(cylinderType, cylinderDiameter, treatmentLength);
+            ////CylinderType cylinderType = CylinderType.VC; // from GUI and plan?
+            ////int cylinderDiameter = 20; // from GUI and plan?
+            ////decimal prescriptionDose = 1.0m; // from the treatment plan
+            ////decimal tableDose = 1.0m; // from the app.config file
+            ////decimal tableSourceStrength = 1.0m; // from the app.config file
+            ////decimal currentSourceStrength = 1.0m; // from the treatment plan
+            ////decimal treatmentLength = 10.0m; // GUI and plan
+            //decimal tableTime = timeFromTable(cylinderType, cylinderDiameter, treatmentLength);
 
-            treatmentLength = 5.0m; // GUI and plan
-            tableTime = timeFromTable(cylinderType, cylinderDiameter, treatmentLength);
-
-
-            treatmentLength = 55.0m; // GUI and plan
-            tableTime = timeFromTable(cylinderType, cylinderDiameter, treatmentLength);
-
-            treatmentLength = 91.0m; // GUI and plan
-            tableTime = timeFromTable(cylinderType, cylinderDiameter, treatmentLength);
+            //treatmentLength = 5.0m; // GUI and plan
+            //tableTime = timeFromTable(cylinderType, cylinderDiameter, treatmentLength);
 
 
-            decimal estimatedTime = tableTime * (prescribedDose / tableDose) * (tableSourceStrength / currentSourceStrength);
-            return estimatedTime;
+            //treatmentLength = 55.0m; // GUI and plan
+            //tableTime = timeFromTable(cylinderType, cylinderDiameter, treatmentLength);
+
+            //treatmentLength = 91.0m; // GUI and plan
+            //tableTime = timeFromTable(cylinderType, cylinderDiameter, treatmentLength);
+
+
+            //decimal estimatedTime = tableTime * (prescribedDose / tableDose) * (tableSourceStrength / currentSourceStrength);
+            //return estimatedTime;
         }
 
 

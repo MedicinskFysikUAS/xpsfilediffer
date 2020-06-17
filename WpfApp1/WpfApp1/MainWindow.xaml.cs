@@ -41,21 +41,24 @@ namespace WpfApp1
         string _dvhXpsFilePathIntraUterine;
         string _tccPlanXpsFilePathIntraUterine;
         private TabType _tabType;
+        private List<int> _comboboxDiameters;
 
         Specifications _specifications;
         public MainWindow()
         {
             InitializeComponent();
-            setLabelAndTextboxVisable(false);
+            setProstateCalculationsVisable(false);
+            setCylinderCalculationsVisable(false);
             resultSummaryLabel.Content = "";
             _specifications = new Specifications();
             initiateCylinderTypeComboBox();
-        }
-        // https://stackoverflow.com/questions/23499105/c-sharp-app-config-with-array-or-list-like-data
+             _comboboxDiameters = new List<int>();
+    }
+    // https://stackoverflow.com/questions/23499105/c-sharp-app-config-with-array-or-list-like-data
 
-        public void setLabelAndTextboxVisable(bool setLabelAndTextboxVisable)
+    public void setProstateCalculationsVisable(bool setVisable)
         {
-            if (setLabelAndTextboxVisable)
+            if (setVisable)
             {
                 needleDepthLabel.Visibility = Visibility.Visible;
                 needleDepthText.Visibility = Visibility.Visible;
@@ -74,6 +77,22 @@ namespace WpfApp1
                 needleLengthProbSumLabel.Visibility = Visibility.Hidden;
                 needleLengthProbSumText.Visibility = Visibility.Hidden;
                 calculatedLabel.Visibility = Visibility.Hidden;
+            }
+        }
+
+        public void setCylinderCalculationsVisable(bool setVisable)
+        {
+            if (setVisable)
+            {
+                estimatedTreatmentTimeLabel.Visibility = Visibility.Visible;
+                needleDepthText.Visibility = Visibility.Visible;
+                calculatedLabel1.Visibility = Visibility.Visible;
+            }
+            else
+            {
+                estimatedTreatmentTimeLabel.Visibility = Visibility.Hidden;
+                estimatedTreatmentTimeText.Visibility = Visibility.Hidden;
+                calculatedLabel1.Visibility = Visibility.Hidden;
             }
         }
 
@@ -102,8 +121,31 @@ namespace WpfApp1
                 {
                     needleLengthProbSumText.Background = Brushes.Red;
                 }
-                setLabelAndTextboxVisable(true);
+                setProstateCalculationsVisable(true);
             }
+        }
+
+        public void calculateEstimatedTreatmetTime()
+        {
+            Calculator calculator = new Calculator();
+            StringExtractor stringExtractor = new StringExtractor();
+            // public decimal estimateCylindricTreatmentTime(CylinderType cylinderType, decimal cylinderDiameter,
+            //decimal prescriptionDose, decimal, decimal currentSourceStrength, decimal treatmentLength)
+            CylinderType cylinderType = CylinderType.VC;
+            if (cylinderTypeComboBox.SelectedIndex == 0)
+            {
+                cylinderType = CylinderType.VC; 
+            }
+            else if (cylinderTypeComboBox.SelectedIndex == 1)
+            {
+                cylinderType = CylinderType.SVC;
+            }
+            int cylinderDiameter = _comboboxDiameters[cylinderDiameterComboBox.SelectedIndex];
+            decimal prescriptionDose = stringExtractor.decimalStringToDecimal(cylindricPrescribedDoseText.Text);
+            decimal currentSourceStrength = 100.0m; // TODO!!
+            decimal treatmentLength = stringExtractor.decimalStringToDecimal(treatmentLengthText.Text);
+            decimal estimatedTreatmentTime = 
+                calculator.estimateCylindricTreatmentTime(cylinderType, cylinderDiameter, prescriptionDose, currentSourceStrength, treatmentLength);
         }
 
         public void updateSpecifications()
@@ -390,8 +432,10 @@ namespace WpfApp1
         private void BtnCheck_Click(object sender, RoutedEventArgs e)
         {
             updateSpecifications();
-            setLabelAndTextboxVisable(false);
+            setProstateCalculationsVisable(false);
             calculateLengthAndFreeLength();
+            setCylinderCalculationsVisable(false);
+            calculateEstimatedTreatmetTime();
             updateInputFilePaths();
             this.buildResultDataGrid();
         }
@@ -416,7 +460,8 @@ namespace WpfApp1
                 _tabType = TabType.INTRAUTERINE;
             }
 
-            setLabelAndTextboxVisable(false);
+            setProstateCalculationsVisable(false);
+            setCylinderCalculationsVisable(false);
             _resultRows.Clear();
             resultSummaryLabel.Content = "";
             resultSummaryLabel.Visibility = Visibility.Hidden;
@@ -430,18 +475,28 @@ namespace WpfApp1
 
             if (cylinderTypeComboBox.SelectedIndex == 0) //sel ind already updated
             {
+
                 cylinderDiameterComboBox.Items.Add("20");
+                _comboboxDiameters.Add(20);
                 cylinderDiameterComboBox.Items.Add("25");
+                _comboboxDiameters.Add(25);
                 cylinderDiameterComboBox.Items.Add("30");
+                _comboboxDiameters.Add(30);
                 cylinderDiameterComboBox.Items.Add("35");
+                _comboboxDiameters.Add(35);
                 cylinderDiameterComboBox.Items.Add("40");
+                _comboboxDiameters.Add(40);
             }
             if (cylinderTypeComboBox.SelectedIndex == 1)
             {
                 cylinderDiameterComboBox.Items.Add("25");
+                _comboboxDiameters.Add(25);
                 cylinderDiameterComboBox.Items.Add("30");
+                _comboboxDiameters.Add(30);
                 cylinderDiameterComboBox.Items.Add("35");
+                _comboboxDiameters.Add(35);
                 cylinderDiameterComboBox.Items.Add("40");
+                _comboboxDiameters.Add(40);
             }
         }
     }
