@@ -138,6 +138,13 @@ namespace WpfApp1
             return stringFromDateTime;
         }
 
+        public string cylindricPlanName()
+        {
+            int pageIndex = 0;
+            string stringValue = _pageList[pageIndex][5];
+            return stringValue.Trim();
+        }
+
         public bool planIsApproved()
         {
             return planStatus() == "APPROVED";
@@ -490,6 +497,39 @@ namespace WpfApp1
 
         public List<TreatmentPlanCatheter> treatmentPlanCatheters()
         {
+            if (_tabType == TabType.PROSTATE)
+            {
+                return prostateTreatmentPlanCatheters();
+            }
+            else if (_tabType == TabType.CYLINDER)
+            {
+                return cylinderTreatmentPlanCatheters();
+            }
+            else
+            {
+                List <TreatmentPlanCatheter> emptyList = new List<TreatmentPlanCatheter>();
+                return emptyList;
+            }
+
+        }
+
+        public List<TreatmentPlanCatheter> cylinderTreatmentPlanCatheters()
+        {
+            // Only set the Selector that is the Chanell length in the cylinder protocol //before "Cathet..."
+            TreatmentPlanCatheter treatmentPlanCatheter = new TreatmentPlanCatheter();
+            int pageIndex = 1;
+            //getValueBeforeSearchString(List<string> stringsOnPage, string searchedString, int stringIndex)
+            string stringValue = _stringExtractor.getValueBeforeSearchString(_pageList[pageIndex], "Cathet...", 0);
+            int position = stringValue.IndexOf("(mm)");
+            treatmentPlanCatheter.selector = _stringExtractor.decimalStringToDecimal(stringValue.Substring(0, position).Trim());
+            List<TreatmentPlanCatheter> treatmentPlanCatheters = new List<TreatmentPlanCatheter>();
+            treatmentPlanCatheters.Add(treatmentPlanCatheter);
+            return treatmentPlanCatheters;
+
+        }
+
+            public List<TreatmentPlanCatheter> prostateTreatmentPlanCatheters()
+        {
             List<TreatmentPlanCatheter> catheters = new List<TreatmentPlanCatheter>();
             int startTableIndex = -1;
             int endTableIndex = -1;
@@ -531,23 +571,6 @@ namespace WpfApp1
                         currentIndex = -1;
                     }
                 }
-
-
-                //foreach (var line in page)
-                //{
-                //    if (isLineAfterLastCatheterTable(line))
-                //    {
-                //        startRead = false;
-                //    }
-                //    if (startRead)
-                //    {
-                //        catheters.Add(catheterFromLine(line));
-                //    }
-                //    if (isCatheterTableHeader(line))
-                //    {
-                //        startRead = true;
-                //    }
-                //}
             }
             return catheters;
         }

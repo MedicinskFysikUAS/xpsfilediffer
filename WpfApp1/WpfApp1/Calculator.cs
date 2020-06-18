@@ -87,6 +87,41 @@ namespace WpfApp1
                 {
                     tableTuples = tableFromConfig("VC_20_Lengths", "VC_20_Times");
                 }
+                else if (cylinderDiameter == 25)
+                {
+                    tableTuples = tableFromConfig("VC_25_Lengths", "VC_25_Times");
+                }
+                else if (cylinderDiameter == 30)
+                {
+                    tableTuples = tableFromConfig("VC_30_Lengths", "VC_30_Times");
+                }
+                else if (cylinderDiameter == 35)
+                {
+                    tableTuples = tableFromConfig("VC_35_Lengths", "VC_35_Times");
+                }
+                else if (cylinderDiameter == 40)
+                {
+                    tableTuples = tableFromConfig("VC_40_Lengths", "VC_40_Times");
+                }
+            }
+            else if (cylinderType == CylinderType.SVC)
+            {
+                if (cylinderDiameter == 25)
+                {
+                    tableTuples = tableFromConfig("SVC_25_Lengths", "SVC_25_Times");
+                }
+                else if (cylinderDiameter == 30)
+                {
+                    tableTuples = tableFromConfig("SVC_30_Lengths", "SVC_30_Times");
+                }
+                else if (cylinderDiameter == 35)
+                {
+                    tableTuples = tableFromConfig("SVC_35_Lengths", "SVC_35_Times");
+                }
+                else if (cylinderDiameter == 40)
+                {
+                    tableTuples = tableFromConfig("SVC_40_Lengths", "SVC_40_Times");
+                }
             }
            return getTableTime(tableTuples, treatmentLength);
         }
@@ -94,29 +129,9 @@ namespace WpfApp1
         public decimal estimateCylindricTreatmentTime(CylinderType cylinderType, int cylinderDiameter, 
             decimal prescriptionDose, decimal currentSourceStrength, decimal treatmentLength)
         {
-            return timeFromTable(cylinderType, cylinderDiameter, treatmentLength);
-            ////CylinderType cylinderType = CylinderType.VC; // from GUI and plan?
-            ////int cylinderDiameter = 20; // from GUI and plan?
-            ////decimal prescriptionDose = 1.0m; // from the treatment plan
-            ////decimal tableDose = 1.0m; // from the app.config file
-            ////decimal tableSourceStrength = 1.0m; // from the app.config file
-            ////decimal currentSourceStrength = 1.0m; // from the treatment plan
-            ////decimal treatmentLength = 10.0m; // GUI and plan
-            //decimal tableTime = timeFromTable(cylinderType, cylinderDiameter, treatmentLength);
-
-            //treatmentLength = 5.0m; // GUI and plan
-            //tableTime = timeFromTable(cylinderType, cylinderDiameter, treatmentLength);
-
-
-            //treatmentLength = 55.0m; // GUI and plan
-            //tableTime = timeFromTable(cylinderType, cylinderDiameter, treatmentLength);
-
-            //treatmentLength = 91.0m; // GUI and plan
-            //tableTime = timeFromTable(cylinderType, cylinderDiameter, treatmentLength);
-
-
-            //decimal estimatedTime = tableTime * (prescribedDose / tableDose) * (tableSourceStrength / currentSourceStrength);
-            //return estimatedTime;
+            return timeFromTable(cylinderType, cylinderDiameter, treatmentLength) *
+                (prescriptionDose / 1.0m) *
+                (40.0m / currentSourceStrength); 
         }
 
 

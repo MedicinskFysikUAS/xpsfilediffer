@@ -37,8 +37,8 @@ namespace WpfApp1
         string _treatmentPlanXpsFilePathCylinder;
         string _tccPlanXpsFilePathCylinder; 
 
-        string _treatmentPlanXpsFilePathIntraUterine;
-        string _dvhXpsFilePathIntraUterine;
+        //string _treatmentPlanXpsFilePathIntraUterine;
+        //string _dvhXpsFilePathIntraUterine;
         string _tccPlanXpsFilePathIntraUterine;
         private TabType _tabType;
         private List<int> _comboboxDiameters;
@@ -125,9 +125,10 @@ namespace WpfApp1
             }
         }
 
-        public void calculateEstimatedTreatmetTime()
+        // Returns all data needed to estimate treatment time expect current source strength
+        public DataForTreatmentTimeEstimate getDataForTreatmentTimeEstimate()
         {
-            Calculator calculator = new Calculator();
+            //Calculator calculator = new Calculator();
             StringExtractor stringExtractor = new StringExtractor();
             // public decimal estimateCylindricTreatmentTime(CylinderType cylinderType, decimal cylinderDiameter,
             //decimal prescriptionDose, decimal, decimal currentSourceStrength, decimal treatmentLength)
@@ -142,27 +143,41 @@ namespace WpfApp1
             }
             int cylinderDiameter = _comboboxDiameters[cylinderDiameterComboBox.SelectedIndex];
             decimal prescriptionDose = stringExtractor.decimalStringToDecimal(cylindricPrescribedDoseText.Text);
-            decimal currentSourceStrength = 100.0m; // TODO!!
             decimal treatmentLength = stringExtractor.decimalStringToDecimal(treatmentLengthText.Text);
-            decimal estimatedTreatmentTime = 
-                calculator.estimateCylindricTreatmentTime(cylinderType, cylinderDiameter, prescriptionDose, currentSourceStrength, treatmentLength);
+           
+            DataForTreatmentTimeEstimate dataForTreatmentTimeEstimate = new DataForTreatmentTimeEstimate();
+            dataForTreatmentTimeEstimate.CylinderType = cylinderType;
+            dataForTreatmentTimeEstimate.CylinderDiameter = cylinderDiameter;
+            dataForTreatmentTimeEstimate.PrescriptionDose = prescriptionDose;
+            dataForTreatmentTimeEstimate.TreatmentLength = treatmentLength;
+
+
+            return dataForTreatmentTimeEstimate;
         }
 
         public void updateSpecifications()
         {
             Calculator calculator = new Calculator();
             StringExtractor stringExtractor = new StringExtractor();
-            if (needleLengthText.Text.Length > 0 && probeDistanceText.Text.Length > 0)
+            if (_tabType == TabType.PROSTATE)
             {
-                calculator.NeedleLength = stringExtractor.decimalStringToDecimal(needleLengthText.Text);
-                calculator.ProbeDistance = stringExtractor.decimalStringToDecimal(probeDistanceText.Text);
-                _specifications.NeedleDepth = calculator.needleDepth();
-                _specifications.FreeLength = calculator.freeLength();
-            }
+                _specifications.ExpectedChannelLength = 1190.0m;
+                if (needleLengthText.Text.Length > 0 && probeDistanceText.Text.Length > 0)
+                {
+                    calculator.NeedleLength = stringExtractor.decimalStringToDecimal(needleLengthText.Text);
+                    calculator.ProbeDistance = stringExtractor.decimalStringToDecimal(probeDistanceText.Text);
+                    _specifications.NeedleDepth = calculator.needleDepth();
+                    _specifications.FreeLength = calculator.freeLength();
+                }
 
-            if (prescribedDoseText.Text.Length > 0)
+                if (prescribedDoseText.Text.Length > 0)
+                {
+                    _specifications.PrescriptionDose = stringExtractor.decimalStringToDecimal(prescribedDoseText.Text);
+                }
+            }
+            else if (_tabType == TabType.CYLINDER)
             {
-                _specifications.PrescriptionDose = stringExtractor.decimalStringToDecimal(prescribedDoseText.Text);
+                _specifications.ExpectedChannelLength = 1300.0m;
             }
          
         }
@@ -175,6 +190,13 @@ namespace WpfApp1
         public bool prescriptionDoseIsSet()
         {
             return (prescribedDoseText.Text.Length > 0);
+        }
+
+        public bool cylinderTypeDiamterLengthAndDoseIsSet()
+        {
+            bool typIsSet = cylinderTypeComboBox.SelectedIndex != -1;
+            bool diameterIsSet = cylinderDiameterComboBox.SelectedIndex != -1;
+            return (typIsSet && diameterIsSet && treatmentLengthText.Text.Length > 0 && cylindricPrescribedDoseText.Text.Length > 0);
         }
 
         private void updateInputFilePaths()
@@ -193,15 +215,20 @@ namespace WpfApp1
             }
             else if (IntraUterineTab.IsSelected)
             {
-                _treatmentPlanXpsFilePath = _treatmentPlanXpsFilePathIntraUterine;
-                _dvhXpsFilePath = _dvhXpsFilePathIntraUterine;
-                _tccPlanXpsFilePath = _tccPlanXpsFilePathIntraUterine;
+                //_treatmentPlanXpsFilePath = _treatmentPlanXpsFilePathIntraUterine;
+                //_dvhXpsFilePath = _dvhXpsFilePathIntraUterine;
+                //_tccPlanXpsFilePath = _tccPlanXpsFilePathIntraUterine;
             }
 
         }
 
         private void addProstateResultRows()
         {
+            // TODO Add a check if the selected file is of correct format
+            // For instance correctFileType(TabType tabType)
+            // Check the treatmentPlanPageList and look for "Oncentra Prostate" on page 0
+            // If not make the file path red.
+            // TODO Move the initalization code to a common place
             if (_treatmentPlanXpsFilePath != null && needleDepthAndFreeLengthIsSet())
             {
                 PageReader treatmentPlanPageReader = new PageReader(_treatmentPlanXpsFilePath);
@@ -209,7 +236,7 @@ namespace WpfApp1
                 TreatmentPlan treatmentPlan = new TreatmentPlan(treatmentPlanPageList, _tabType);
                 Comparator comparator = new Comparator(_specifications);
                 comparator.treatmentPlan = treatmentPlan;
-                _resultRows.AddRange(comparator.treatmentPlanResultRows());
+                _resultRows.AddRange(comparator.prostateTreatmentPlanResultRows());
             }
 
             if (_treatmentPlanXpsFilePath != null && _dvhXpsFilePath != null)
@@ -264,7 +291,34 @@ namespace WpfApp1
 
         private void addCylinderResultRows()
         {
-            if (_treatmentPlanXpsFilePath != null && _tccPlanXpsFilePath != null)
+            // TODO Add a check if the selected file is of correct format
+            // TODO Move the initalization code to a common place
+            if ( _treatmentPlanXpsFilePath != null)
+            {
+                PageReader treatmentPlanPageReader = new PageReader(_treatmentPlanXpsFilePath);
+                List<List<string>> treatmentPlanPageList = treatmentPlanPageReader.getPages();
+                TreatmentPlan treatmentPlan = new TreatmentPlan(treatmentPlanPageList, _tabType);
+                Comparator comparator = new Comparator(_specifications);
+                comparator.treatmentPlan = treatmentPlan;
+                _resultRows.AddRange(comparator.cylinderTreatmentPlanResultRows());
+            }
+
+            if (cylinderTypeDiamterLengthAndDoseIsSet() && _treatmentPlanXpsFilePath != null)
+            {
+                PageReader treatmentPlanPageReader = new PageReader(_treatmentPlanXpsFilePath);
+                List<List<string>> treatmentPlanPageList = treatmentPlanPageReader.getPages();
+                TreatmentPlan treatmentPlan = new TreatmentPlan(treatmentPlanPageList, _tabType);
+                Comparator comparator = new Comparator(_specifications);
+                comparator.treatmentPlan = treatmentPlan;
+                DataForTreatmentTimeEstimate dataForTreatmentTimeEstimate = getDataForTreatmentTimeEstimate();
+                _resultRows.AddRange(comparator.cylinderTreatmentPlanAndCylinderSettingsResultRows(dataForTreatmentTimeEstimate));
+            }
+
+
+                //calculateEstimatedTreatmetTime();
+
+
+                if (_treatmentPlanXpsFilePath != null && _tccPlanXpsFilePath != null)
             {
                 PageReader treatmentPlanPageReader = new PageReader(_treatmentPlanXpsFilePath);
                 List<List<string>> treatmentPlanPageList = treatmentPlanPageReader.getPages();
@@ -378,9 +432,9 @@ namespace WpfApp1
                 }
                 else if (IntraUterineTab.IsSelected)
                 {
-                    TPXpsPathLabel2.Content = selectedFile;
-                    _treatmentPlanXpsFilePathIntraUterine = selectedFile;
-                    _tabType = TabType.INTRAUTERINE;
+                    //TPXpsPathLabel2.Content = selectedFile;
+                    //_treatmentPlanXpsFilePathIntraUterine = selectedFile;
+                    //_tabType = TabType.INTRAUTERINE;
                 }
             }
         }
@@ -398,8 +452,8 @@ namespace WpfApp1
                 }
                 else if (IntraUterineTab.IsSelected)
                 {
-                    DVHXpsPathLabel2.Content = selectedFile;
-                    _dvhXpsFilePathIntraUterine = selectedFile;
+                    //DVHXpsPathLabel2.Content = selectedFile;
+                    //_dvhXpsFilePathIntraUterine = selectedFile;
                 }
             }
         }
@@ -435,9 +489,8 @@ namespace WpfApp1
             setProstateCalculationsVisable(false);
             calculateLengthAndFreeLength();
             setCylinderCalculationsVisable(false);
-            calculateEstimatedTreatmetTime();
             updateInputFilePaths();
-            this.buildResultDataGrid();
+            buildResultDataGrid();
         }
 
         private void BtnExit_Click(object sender, RoutedEventArgs e)

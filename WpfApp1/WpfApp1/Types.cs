@@ -5,7 +5,7 @@
     INTRAUTERINE = 2
 }
 
-enum CylinderType
+public enum CylinderType
 {
     VC = 0,
     SVC = 1

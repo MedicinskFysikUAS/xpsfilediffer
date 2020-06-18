@@ -107,6 +107,10 @@ namespace WpfApp1
 
         public bool treatmentPlanHasSameChannelLength(decimal channelLength)
         {
+            if (_treatmentPlan.treatmentPlanCatheters().Count == 0)
+            {
+                return false;
+            }
             foreach (var catheter in _treatmentPlan.treatmentPlanCatheters())
             {
                 if (catheter.selector != channelLength)
@@ -475,6 +479,24 @@ namespace WpfApp1
             return resultRow;
         }
 
+        public List<string> checkPlanName(string expectedPlanName)
+        {
+            List<string> resultRow = new List<string>();
+            resultRow.Add("Plannamn");
+            string descriptionString = "";
+            descriptionString = "Det förväntade plannamnet är: " + expectedPlanName + " planens plannamn är " + _treatmentPlan.cylindricPlanName();
+            if (expectedPlanName == _treatmentPlan.cylindricPlanName())
+            {
+                resultRow.Add("OK");
+            }
+            else
+            {
+                resultRow.Add("Inte OK");
+            }
+            resultRow.Add(descriptionString);
+            return resultRow;
+        }
+
         public List<List<string>> treatmentPlanAndDvhResultRows()
         {
             List<List<string>> resultRows = new List<List<string>>();
@@ -488,7 +510,7 @@ namespace WpfApp1
             return resultRows;
         }
 
-        public List<List<string>> treatmentPlanResultRows()
+        public List<List<string>> prostateTreatmentPlanResultRows()
         {
             List<List<string>> resultRows = new List<List<string>>();
             resultRows.Add(headerResultRow("Plan"));
@@ -498,7 +520,37 @@ namespace WpfApp1
             return resultRows;
         }
 
-            public List<List<string>> resultRows(bool skipApprovalTest = false)
+        public List<List<string>> cylinderTreatmentPlanResultRows()
+        {
+            List<List<string>> resultRows = new List<List<string>>();
+            resultRows.Add(headerResultRow("Plan"));
+            resultRows.Add(checkTreatmentPlanChannelLength(_specifications.ExpectedChannelLength));
+            return resultRows;
+        }
+
+        public List<List<string>> cylinderTreatmentPlanAndCylinderSettingsResultRows(DataForTreatmentTimeEstimate dataForTreatmentTimeEstimate)
+        {
+            List<List<string>> resultRows = new List<List<string>>();
+            resultRows.Add(headerResultRow("Plan & info"));
+            Calculator calculator = new Calculator();
+            decimal estimatedTreatmentTime =
+                calculator.estimateCylindricTreatmentTime(dataForTreatmentTimeEstimate.CylinderType,
+                dataForTreatmentTimeEstimate.CylinderDiameter,
+                dataForTreatmentTimeEstimate.PrescriptionDose,
+                _treatmentPlan.plannedSourceStrengthValue(),
+                dataForTreatmentTimeEstimate.TreatmentLength);
+            decimal reportedTreatmentTime = _treatmentPlan.totalTreatmentTimeValue();
+            resultRows.Add(checkTreatmentTime(estimatedTreatmentTime, reportedTreatmentTime, _specifications.CylinderTreatmentTimeEpsilon));
+            string expectedPlanName = dataForTreatmentTimeEstimate.CylinderType.ToString() + 
+                dataForTreatmentTimeEstimate.CylinderDiameter.ToString() + 
+                "0" +
+                dataForTreatmentTimeEstimate.TreatmentLength.ToString() +
+                "flex";
+            resultRows.Add(checkPlanName(expectedPlanName));
+            return resultRows;
+        }
+
+        public List<List<string>> resultRows(bool skipApprovalTest = false)
         {
             List<List<string>> resultRows = new List<List<string>>();
             resultRows.Add(headerResultRow("Plan & TCC"));

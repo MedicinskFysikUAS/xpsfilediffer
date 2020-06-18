@@ -13,8 +13,10 @@ namespace WpfApp1
         private decimal _freeLengthEpsilon = 0.1m;
         private decimal _needleDepthEpsilon = 0.1m;
         private decimal _timeEpsilon = 0.051m;
-        private decimal _expectedChannelLength = 1190.0m;
+        //private decimal _expectedChannelLength = 1190.0m;
+        private decimal _expectedChannelLength;
         private decimal _treatmentTimeEpsilon = 0.1m;
+        private decimal _cylinderTreatmentTimeEpsilon = 0.01m;
         private decimal _airKermaStrengthEpsilon = 0.3m;
         private decimal _prescriptionDose;
 
@@ -27,7 +29,6 @@ namespace WpfApp1
         public decimal TreatmentTimeEpsilon { get => _treatmentTimeEpsilon; set => _treatmentTimeEpsilon = value; }
         public decimal PrescriptionDose { get => _prescriptionDose; set => _prescriptionDose = value; }
         public decimal AirKermaStrengthEpsilon { get => _airKermaStrengthEpsilon; set => _airKermaStrengthEpsilon = value; }
-
-       
+        public decimal CylinderTreatmentTimeEpsilon { get => _cylinderTreatmentTimeEpsilon; set => _cylinderTreatmentTimeEpsilon = value; }
     }
 }
