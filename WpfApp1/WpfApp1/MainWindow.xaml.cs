@@ -229,12 +229,17 @@ namespace WpfApp1
             // Check the treatmentPlanPageList and look for "Oncentra Prostate" on page 0
             // If not make the file path red.
             // TODO Move the initalization code to a common place
+            Comparator comparator = new Comparator(_specifications);
             if (_treatmentPlanXpsFilePath != null && needleDepthAndFreeLengthIsSet())
             {
                 PageReader treatmentPlanPageReader = new PageReader(_treatmentPlanXpsFilePath);
+                if (!treatmentPlanPageReader.isFileType(XpsFileType.ONCENTRA_PROSTATE_TREATMENT_PLAN))
+                {
+                    _resultRows.AddRange(comparator.informationResultRows("", "Inte OK", "Felaktig Oncentra Prostate fil."));
+                    return;
+                }
                 List<List<string>> treatmentPlanPageList = treatmentPlanPageReader.getPages();
                 TreatmentPlan treatmentPlan = new TreatmentPlan(treatmentPlanPageList, _tabType);
-                Comparator comparator = new Comparator(_specifications);
                 comparator.treatmentPlan = treatmentPlan;
                 _resultRows.AddRange(comparator.prostateTreatmentPlanResultRows());
             }
@@ -242,12 +247,22 @@ namespace WpfApp1
             if (_treatmentPlanXpsFilePath != null && _dvhXpsFilePath != null)
             {
                 PageReader treatmentPlanPageReader = new PageReader(_treatmentPlanXpsFilePath);
+                if (!treatmentPlanPageReader.isFileType(XpsFileType.ONCENTRA_PROSTATE_TREATMENT_PLAN))
+                {
+                    _resultRows.AddRange(comparator.informationResultRows("", "Inte OK", "Felaktig Oncentra Prostate fil."));
+                    return;
+                }
                 List<List<string>> treatmentPlanPageList = treatmentPlanPageReader.getPages();
                 TreatmentPlan treatmentPlan = new TreatmentPlan(treatmentPlanPageList, _tabType);
                 PageReader treatmentDvhPageReader = new PageReader(_dvhXpsFilePath);
+                if (!treatmentDvhPageReader.isFileType(XpsFileType.ONCENTRA_PROSTATE_DVH))
+                {
+                    _resultRows.AddRange(comparator.informationResultRows("", "Inte OK", "Felaktig Oncentra DVH fil."));
+                    return;
+                }
                 List<List<string>> treatmentPlanDvhPageList = treatmentDvhPageReader.getPages();
                 TreatmentDvh treatmentDvh = new TreatmentDvh(treatmentPlanDvhPageList);
-                Comparator comparator = new Comparator(_specifications);
+                //Comparator comparator = new Comparator(_specifications);
                 comparator.treatmentPlan = treatmentPlan;
                 comparator.treatmentDvh = treatmentDvh;
                 _resultRows.AddRange(comparator.treatmentPlanAndDvhResultRows());
@@ -256,11 +271,21 @@ namespace WpfApp1
             if (_treatmentPlanXpsFilePath != null && _tccPlanXpsFilePath != null)
             {
                 PageReader treatmentPlanPageReader = new PageReader(_treatmentPlanXpsFilePath);
+                if (!treatmentPlanPageReader.isFileType(XpsFileType.ONCENTRA_PROSTATE_TREATMENT_PLAN))
+                {
+                    _resultRows.AddRange(comparator.informationResultRows("", "Inte OK", "Felaktig Oncentra Prostate fil."));
+                    return;
+                }
                 List<List<string>> treatmentPlanPageList = treatmentPlanPageReader.getPages();
                 TreatmentPlan treatmentPlan = new TreatmentPlan(treatmentPlanPageList, _tabType);
-                Comparator comparator = new Comparator(_specifications);
+                //Comparator comparator = new Comparator(_specifications);
                 comparator.treatmentPlan = treatmentPlan;
                 PageReader tccPlanPageReader = new PageReader(_tccPlanXpsFilePath);
+                if (!tccPlanPageReader.isFileType(XpsFileType.PROSTATE_CCS))
+                {
+                    _resultRows.AddRange(comparator.informationResultRows("", "Inte OK", "Felaktig Prostate TCC fil."));
+                    return;
+                }
                 List<List<string>> tccPlanPageList = tccPlanPageReader.getPages();
                 List<LiveCatheter> tccLiveCatheters = tccPlanPageReader.tccLiveCatheters(_tabType);
                 TccPlan tccPlan = new TccPlan(tccPlanPageList, tccLiveCatheters);
@@ -280,7 +305,7 @@ namespace WpfApp1
                 List<List<string>> tccPlanPageList = tccPlanPageReader.getPages();
                 List<LiveCatheter> tccLiveCatheters = tccPlanPageReader.tccLiveCatheters(_tabType);
                 TccPlan tccPlan = new TccPlan(tccPlanPageList, tccLiveCatheters);
-                Comparator comparator = new Comparator(_specifications);
+                //Comparator comparator = new Comparator(_specifications);
                 comparator.treatmentPlan = treatmentPlan;
                 comparator.treatmentDvh = treatmentDvh;
                 comparator.tccPlan = tccPlan;

@@ -396,6 +396,16 @@ namespace WpfApp1
             return resultRow;
         }
 
+        public List<string> informationResultRow(string testColumnString, string resultColumnString, string descriptonColumnString)
+        {
+            List<string> resultRow = new List<string>();
+            resultRow.Add(testColumnString);
+            resultRow.Add(resultColumnString);
+            resultRow.Add(descriptonColumnString);
+            return resultRow;
+
+        }
+
         public List<string> checkTreatmentPlanDepth(decimal expectedDepth, decimal needleDepthEpsilon)
         {
             List<string> resultRow = new List<string>();
@@ -517,6 +527,13 @@ namespace WpfApp1
             resultRows.Add(checkTreatmentPlanChannelLength(_specifications.ExpectedChannelLength));
             resultRows.Add(checkTreatmentPlanDepth(_specifications.NeedleDepth, _specifications.NeedleDepthEpsilon)); 
             resultRows.Add(checkTreatmentFreeLength(_specifications.FreeLength, _specifications.FreeLengthEpsilon)); 
+            return resultRows;
+        }
+
+        public List<List<string>> informationResultRows(string testColumnString, string resultColumnString, string descriptonColumnString)
+        {
+            List<List<string>> resultRows = new List<List<string>>();
+            resultRows.Add(informationResultRow(testColumnString, resultColumnString, descriptonColumnString));
             return resultRows;
         }
 

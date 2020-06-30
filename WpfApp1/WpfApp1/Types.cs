@@ -10,3 +10,13 @@ public enum CylinderType
     VC = 0,
     SVC = 1
 }
+
+public enum XpsFileType
+{
+    ONCENTRA_PROSTATE_TREATMENT_PLAN = 0,
+    ONCENTRA_PROSTATE_DVH = 1,
+    PROSTATE_CCS = 2,
+    ONCENTRA_CYLINDER_TREATMENT_PLAN = 3,
+    CYLINDER_CCS = 4
+    // ONCENTRA_INTRAUTERIN_TREATMENT_PLAN 
+}

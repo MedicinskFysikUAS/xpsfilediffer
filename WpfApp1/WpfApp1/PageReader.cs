@@ -27,6 +27,52 @@ namespace WpfApp1
             writer.WriteNode(xmlReader, true);
         }
 
+        public bool isFileType(XpsFileType xpsFileType)
+        {
+            XpsDocument _xpsDocument = new XpsDocument(xpsFilePath, System.IO.FileAccess.Read);
+            IXpsFixedDocumentSequenceReader fixedDocSeqReader = _xpsDocument.FixedDocumentSequenceReader;
+            IXpsFixedDocumentReader _document = fixedDocSeqReader.FixedDocuments[0];
+            FixedDocumentSequence sequence = _xpsDocument.GetFixedDocumentSequence();
+            List<List<string>> pageList = new List<List<string>>();
+            IXpsFixedPageReader _page = _document.FixedPages[0];
+            System.Xml.XmlReader _pageContentReader = _page.XmlReader;
+            List<string> stringsOnPage = new List<string>();
+
+            if (_pageContentReader != null)
+            {
+                while (_pageContentReader.Read())
+                {
+                    if (_pageContentReader.Name == "Glyphs")
+                    {
+                        if (_pageContentReader.HasAttributes)
+                        {
+                            if (_pageContentReader.GetAttribute("UnicodeString") != null)
+                            {
+                                stringsOnPage.Add(_pageContentReader.
+                                  GetAttribute("UnicodeString"));
+                            }
+                        }
+                    }
+                }
+            }
+            if (xpsFileType == XpsFileType.ONCENTRA_PROSTATE_TREATMENT_PLAN&& stringsOnPage.Count > 1 && stringsOnPage[0].StartsWith("Oncentra Prostate") && stringsOnPage[1] == "Treatment Plan")
+            {
+                return true;
+            }
+            else if (xpsFileType == XpsFileType.ONCENTRA_PROSTATE_DVH && stringsOnPage.Count > 1 && stringsOnPage[0].StartsWith("Oncentra Prostate") && stringsOnPage[1] == "DVH Evaluation")
+            {
+                return true;
+            }
+            else if (xpsFileType == XpsFileType.PROSTATE_CCS && stringsOnPage.Count > 90 && stringsOnPage[90] == "Förbehandlingsrapport")
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
+
         public List<List<string>> getPages()
         {
             XpsDocument _xpsDocument = new XpsDocument(xpsFilePath, System.IO.FileAccess.Read);
@@ -47,9 +93,6 @@ namespace WpfApp1
                 {
                     while (_pageContentReader.Read())
                     {
-                        string tmp = _pageContentReader.Name;
-                        string tmp2 = _pageContentReader.Value;
-
                         if (_pageContentReader.Name == "Glyphs")
                         {
                             if (_pageContentReader.HasAttributes)
@@ -399,11 +442,14 @@ namespace WpfApp1
             List<Tuple<string, string>> positonTimePairs = new List<Tuple<string, string>>();
             foreach (var item in columnAndTimes)
             {
-                string position = catheterPositions[item.Item1];
-                double timeDouble = Math.Round(item.Item2, 1);
-                string time = String.Format("{0:0.0}", Convert.ToDecimal(timeDouble));
-                Tuple<string, string> tuple = new Tuple<string, string>(position, time);
-                positonTimePairs.Add(tuple);
+                if (item.Item1 != -1)
+                {
+                    string position = catheterPositions[item.Item1];
+                    double timeDouble = Math.Round(item.Item2, 1);
+                    string time = String.Format("{0:0.0}", Convert.ToDecimal(timeDouble));
+                    Tuple<string, string> tuple = new Tuple<string, string>(position, time);
+                    positonTimePairs.Add(tuple);
+                }
             }
 
             LiveCatheter liveCatheter = new LiveCatheter();
