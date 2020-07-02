@@ -243,6 +243,30 @@ namespace WpfApp1
             {
                 return 6;
             }
+            else if ((originXint > ((startOrigin + deltaWidth * 7) - margin)) && (originXint < ((startOrigin + deltaWidth * 7) + margin)))
+            {
+                return 7;
+            }
+            else if ((originXint > ((startOrigin + deltaWidth * 8) - margin)) && (originXint < ((startOrigin + deltaWidth * 8) + margin)))
+            {
+                return 8;
+            }
+            else if ((originXint > ((startOrigin + deltaWidth * 9) - margin)) && (originXint < ((startOrigin + deltaWidth * 9) + margin)))
+            {
+                return 9;
+            }
+            else if ((originXint > ((startOrigin + deltaWidth * 10) - margin)) && (originXint < ((startOrigin + deltaWidth * 10) + margin)))
+            {
+                return 10;
+            }
+            else if ((originXint > ((startOrigin + deltaWidth * 11) - margin)) && (originXint < ((startOrigin + deltaWidth * 11) + margin)))
+            {
+                return 11;
+            }
+            else if ((originXint > ((startOrigin + deltaWidth * 12) - margin)) && (originXint < ((startOrigin + deltaWidth * 12) + margin)))
+            {
+                return 12;
+            }
             else
             {
                 return -1;

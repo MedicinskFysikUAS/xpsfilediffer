@@ -43,6 +43,10 @@ namespace WpfApp1
         private TabType _tabType;
         private List<int> _comboboxDiameters;
 
+
+        List<LiveCatheter> _treatmentPlanLiveCatheters = new List<LiveCatheter>();
+        List<LiveCatheter> _tccPlanLiveCatheters = new List<LiveCatheter>();
+
         Specifications _specifications;
         public MainWindow()
         {
@@ -309,6 +313,8 @@ namespace WpfApp1
                 comparator.treatmentPlan = treatmentPlan;
                 comparator.treatmentDvh = treatmentDvh;
                 comparator.tccPlan = tccPlan;
+                _treatmentPlanLiveCatheters = comparator.treatmentPlanLiveCatheters();
+                _tccPlanLiveCatheters = comparator.tccPlanLiveCatheters();
                 _resultRows.AddRange(comparator.allXpsResultRows());
             }
 
@@ -392,6 +398,69 @@ namespace WpfApp1
             ResultDataGrid.ItemsSource = dataTable.DefaultView;
             updateResultSummaryLabel();
 
+        }
+
+        public DataTable buildResultDataGridTest()
+        {
+            DataColumn testCase = new DataColumn("Test", typeof(string));
+            DataColumn testResult = new DataColumn("Result", typeof(string));
+            DataColumn resultDescripton = new DataColumn("Beskriving", typeof(string));
+            DataTable dataTable = new DataTable();
+            dataTable.Columns.Add(testCase);
+            dataTable.Columns.Add(testResult);
+            dataTable.Columns.Add(resultDescripton);
+            foreach (var item in _treatmentPlanLiveCatheters)
+            {
+                //DataRow dataRow = dataTable.NewRow();
+                //dataRow[0] = "zero";
+                //dataRow[1] = "first";
+                //dataRow[2] = "second";
+                //dataTable.Rows.Add(dataRow);
+                foreach (var subItem in item.positonTimePairs())
+                {
+                    DataRow dataRow = dataTable.NewRow();
+                    dataRow[0] = item.catheterNumber();
+                    dataRow[1] = subItem.Item1;
+                    dataRow[2] = subItem.Item2;
+                    dataTable.Rows.Add(dataRow);
+                }
+
+            }
+            return dataTable;
+        }
+
+        public DataTable buildTreatmentPlanCatheterInfoDataTable()
+        {
+            DataColumn testCase = new DataColumn("Kanal", typeof(string));
+            DataColumn testResult = new DataColumn("Position", typeof(string));
+            DataColumn resultDescripton = new DataColumn("Tid [s]", typeof(string));
+            DataTable dataTable = new DataTable();
+            dataTable.Columns.Add(testCase);
+            dataTable.Columns.Add(testResult);
+            dataTable.Columns.Add(resultDescripton);
+
+            foreach (var item in _treatmentPlanLiveCatheters)
+            {
+
+
+                DataRow dataRow = dataTable.NewRow();
+                dataRow[0] = item.catheterNumber();
+                dataRow[1] = "first";
+                dataRow[2] = "second";
+                dataTable.Rows.Add(dataRow);
+
+                //foreach (var subItem in item.positonTimePairs())
+                //{
+                //    DataRow dataRow = dataTable.NewRow();
+                //    dataRow[0] = item.catheterNumber();
+                //    //dataRow[1] = subItem.Item1;
+                //    //dataRow[2] = subItem.Item2;
+                //    dataRow[2] = "test string";
+                //    dataTable.Rows.Add(dataRow);
+                //}
+            }
+            ResultDataGrid.ItemsSource = dataTable.DefaultView;
+            return dataTable;
         }
 
         private void updateResultSummaryLabel()
@@ -516,6 +585,9 @@ namespace WpfApp1
             setCylinderCalculationsVisable(false);
             updateInputFilePaths();
             buildResultDataGrid();
+            //DataTable tmp = buildResultDataGridTest();
+            //ResultDataGrid.ItemsSource = tmp.DefaultView;
+
         }
 
         private void BtnExit_Click(object sender, RoutedEventArgs e)
@@ -577,6 +649,17 @@ namespace WpfApp1
                 _comboboxDiameters.Add(40);
             }
         }
+
+        private void catheterInfo_Click(object sender, RoutedEventArgs e)
+        {
+            //DataTable treatmentPlanDataTable = buildTreatmentPlanCatheterInfoDataTable();
+            DataTable tmp = buildResultDataGridTest();
+            //ResultDataGrid.ItemsSource = treatmentPlanDataTable.DefaultView;
+            //CatheterInfoWindow catheterInfoWindow = new CatheterInfoWindow(treatmentPlanDataTable);
+            CatheterInfoWindow catheterInfoWindow = new CatheterInfoWindow(tmp);
+            catheterInfoWindow.Show();
+        }
+
     }
 }
 

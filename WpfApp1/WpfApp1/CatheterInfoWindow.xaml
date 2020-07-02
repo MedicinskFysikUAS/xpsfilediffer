@@ -1,0 +1,16 @@
+﻿<Window x:Class="WpfApp1.CatheterInfoWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:WpfApp1"
+        mc:Ignorable="d"
+        Title="CatheterInfoWindow" Height="450" Width="800">
+    <Grid>
+        <Button Content="Button" HorizontalAlignment="Left" Margin="1010,279,0,0" VerticalAlignment="Top" Width="0"/>
+        <Button x:Name="CatheterInfoExitButton" Click="CatheterInfoExit_click" Content="Stäng" HorizontalAlignment="Left" Margin="721,359,0,0" VerticalAlignment="Top" RenderTransformOrigin="3.528,2.758"/>
+        <DataGrid x:Name="treatmentPlanDataGrid" Margin="0,0,495,0"/>
+        <DataGrid x:Name="tccPlanDataGrid" Margin="330,0,155,0"/>
+
+    </Grid>
+</Window>

@@ -122,6 +122,7 @@
         <DataGrid x:Name="ResultDataGrid" Margin="0,289,0,68" Grid.ColumnSpan="4" EnableRowVirtualization="False" VirtualizingStackPanel.IsVirtualizing="False" />
         <Button x:Name="BtnExit" Click="BtnExit_Click" Content="Avsluta" HorizontalAlignment="Center" Margin="0,474,0,0" VerticalAlignment="Top" Width="57" Height="26" Grid.Column="3"/>
         <Label x:Name="resultSummaryLabel" Content="label" HorizontalAlignment="Left" Margin="152,462,0,0" VerticalAlignment="Top" Width="124" Grid.Column="1"/>
+        <Button x:Name="catheterInfoButton" Click="catheterInfo_Click" Content="KateterInfo" Grid.Column="2" HorizontalAlignment="Left" Margin="65,477,0,0" VerticalAlignment="Top"/>
 
 
     </Grid>

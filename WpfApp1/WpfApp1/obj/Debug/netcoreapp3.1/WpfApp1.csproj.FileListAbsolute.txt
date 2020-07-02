@@ -37,3 +37,5 @@ C:\work\git\xpsfilediffer\WpfApp1\WpfApp1\obj\Debug\netcoreapp3.1\WpfApp1.pdb
 C:\work\git\xpsfilediffer\WpfApp1\WpfApp1\obj\Debug\netcoreapp3.1\WpfApp1.genruntimeconfig.cache
 C:\work\git\xpsfilediffer\WpfApp1\WpfApp1\obj\Debug\netcoreapp3.1\WpfApp1.csprojAssemblyReference.cache
 C:\work\git\xpsfilediffer\WpfApp1\WpfApp1\bin\Debug\netcoreapp3.1\WpfApp1.dll.config
+C:\work\git\xpsfilediffer\WpfApp1\WpfApp1\obj\Debug\netcoreapp3.1\CatheterInfoWindow.g.cs
+C:\work\git\xpsfilediffer\WpfApp1\WpfApp1\obj\Debug\netcoreapp3.1\CatheterInfoWindow.baml

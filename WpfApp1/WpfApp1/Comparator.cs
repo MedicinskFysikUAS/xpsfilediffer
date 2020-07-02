@@ -86,11 +86,18 @@ namespace WpfApp1
                     int subCounter = 0;
                     foreach (var subItem in item.positonTimePairs())
                     {
+                        if (stringExtractor.decimalStringToDecimal(subItem.Item2) < timeEpsilon)
+                        {
+                            continue;
+                        }
                         decimal deltaTime = Math.Abs(stringExtractor.decimalStringToDecimal(subItem.Item2) -
                             stringExtractor.decimalStringToDecimal(tccLiveCatheters[counter].positonTimePairs()[subCounter].Item2));
                         if (subItem.Item1 != stringExtractor.decimalStringToZeroDecimalString(tccLiveCatheters[counter].positonTimePairs()[subCounter].Item1) ||
                             deltaTime > timeEpsilon)
                         {
+                            // Debug
+                            var debugItem = item;
+                            string debugStr = tccLiveCatheters[counter].positonTimePairs()[subCounter].Item1;
                             return false;
                         }
                         ++subCounter;
@@ -592,7 +599,16 @@ namespace WpfApp1
 
             return resultRows;
         }
-        
+
+        public List<LiveCatheter> treatmentPlanLiveCatheters()
+        {
+            return _treatmentPlan.liveCatheters();
+        }
+
+        public List<LiveCatheter> tccPlanLiveCatheters()
+        {
+            return _tccPlan.liveCatheters();
+        }
     }
 
 }
