@@ -5,15 +5,16 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:WpfApp1"
         mc:Ignorable="d"
-        Title="jmfXps" Height="548" Width="684">
+        Title="jmfXps" Height="590" Width="684">
     <Grid Margin="0,0,0,7">
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="25*"/>
             <ColumnDefinition Width="370*"/>
             <ColumnDefinition Width="130*"/>
-            <ColumnDefinition Width="159*"/>
+            <ColumnDefinition Width="155*"/>
+            <ColumnDefinition Width="4*"/>
         </Grid.ColumnDefinitions>
-        <TabControl Grid.ColumnSpan="4" Height="274" VerticalAlignment="Top" SelectionChanged="TabControl_SelectionChanged">
+        <TabControl Grid.ColumnSpan="5" Height="274" VerticalAlignment="Top" SelectionChanged="TabControl_SelectionChanged">
             <TabItem x:Name="ProstateTab" Header="Prostata">
                 <Grid Margin="10,10,-2,-10" Height="215">
                     <Grid.ColumnDefinitions>
@@ -119,10 +120,10 @@
             </TabItem>
 
         </TabControl>
-        <DataGrid x:Name="ResultDataGrid" Margin="0,289,0,68" Grid.ColumnSpan="4" EnableRowVirtualization="False" VirtualizingStackPanel.IsVirtualizing="False" />
-        <Button x:Name="BtnExit" Click="BtnExit_Click" Content="Avsluta" HorizontalAlignment="Center" Margin="0,474,0,0" VerticalAlignment="Top" Width="57" Height="26" Grid.Column="3"/>
-        <Label x:Name="resultSummaryLabel" Content="label" HorizontalAlignment="Left" Margin="152,462,0,0" VerticalAlignment="Top" Width="124" Grid.Column="1"/>
-        <Button x:Name="catheterInfoButton" Click="catheterInfo_Click" Content="KateterInfo" Grid.Column="2" HorizontalAlignment="Left" Margin="65,477,0,0" VerticalAlignment="Top"/>
+        <DataGrid x:Name="ResultDataGrid" Margin="0,289,0,62" Grid.ColumnSpan="5" EnableRowVirtualization="False" VirtualizingStackPanel.IsVirtualizing="False" />
+        <Button x:Name="BtnExit" Click="BtnExit_Click" Content="Avsluta" HorizontalAlignment="Left" Margin="51,510,0,0" VerticalAlignment="Top" Width="57" Height="26" Grid.Column="3"/>
+        <Label x:Name="resultSummaryLabel" Content="label" HorizontalAlignment="Left" Margin="152,510,0,0" VerticalAlignment="Top" Width="124" Grid.Column="1" Height="26"/>
+        <Button x:Name="catheterInfoButton" Click="catheterInfo_Click" Content="KateterInfo" Grid.Column="2" HorizontalAlignment="Left" Margin="65,510,0,0" VerticalAlignment="Top" Height="26"/>
 
 
     </Grid>

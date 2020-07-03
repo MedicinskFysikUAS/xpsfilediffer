@@ -9,7 +9,7 @@ namespace WpfApp1
     {
         private List<List<string>> _pageList;
         private StringExtractor _stringExtractor = new StringExtractor();
-        private List<LiveCatheter> _liveCatheters;
+        private List<LiveCatheter> _liveCatheters = new List<LiveCatheter>();
 
 
         public TccPlan(List<List<string>> pageList, List<LiveCatheter> liveCatheters)

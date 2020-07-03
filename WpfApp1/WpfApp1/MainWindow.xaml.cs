@@ -53,6 +53,7 @@ namespace WpfApp1
             InitializeComponent();
             setProstateCalculationsVisable(false);
             setCylinderCalculationsVisable(false);
+            catheterInfoButton.Visibility = Visibility.Hidden;
             resultSummaryLabel.Content = "";
             _specifications = new Specifications();
             initiateCylinderTypeComboBox();
@@ -228,10 +229,6 @@ namespace WpfApp1
 
         private void addProstateResultRows()
         {
-            // TODO Add a check if the selected file is of correct format
-            // For instance correctFileType(TabType tabType)
-            // Check the treatmentPlanPageList and look for "Oncentra Prostate" on page 0
-            // If not make the file path red.
             // TODO Move the initalization code to a common place
             Comparator comparator = new Comparator(_specifications);
             if (_treatmentPlanXpsFilePath != null && needleDepthAndFreeLengthIsSet())
@@ -300,12 +297,27 @@ namespace WpfApp1
             if (_treatmentPlanXpsFilePath != null && _dvhXpsFilePath != null && _tccPlanXpsFilePath != null && prescriptionDoseIsSet())
             {
                 PageReader treatmentPlanPageReader = new PageReader(_treatmentPlanXpsFilePath);
+                if (!treatmentPlanPageReader.isFileType(XpsFileType.ONCENTRA_PROSTATE_TREATMENT_PLAN))
+                {
+                    _resultRows.AddRange(comparator.informationResultRows("", "Inte OK", "Felaktig Oncentra Prostate fil."));
+                    return;
+                }
                 List<List<string>> treatmentPlanPageList = treatmentPlanPageReader.getPages();
                 TreatmentPlan treatmentPlan = new TreatmentPlan(treatmentPlanPageList, _tabType);
                 PageReader treatmentDvhPageReader = new PageReader(_dvhXpsFilePath);
+                if (!treatmentDvhPageReader.isFileType(XpsFileType.ONCENTRA_PROSTATE_DVH))
+                {
+                    _resultRows.AddRange(comparator.informationResultRows("", "Inte OK", "Felaktig Prostate DVH fil."));
+                    return;
+                }
                 List<List<string>> treatmentPlanDvhPageList = treatmentDvhPageReader.getPages();
                 TreatmentDvh treatmentDvh = new TreatmentDvh(treatmentPlanDvhPageList);
-                PageReader tccPlanPageReader = new PageReader(_tccPlanXpsFilePath);
+                PageReader tccPlanPageReader = new PageReader(_tccPlanXpsFilePath); 
+                if (!tccPlanPageReader.isFileType(XpsFileType.PROSTATE_CCS))
+                {
+                    _resultRows.AddRange(comparator.informationResultRows("", "Inte OK", "Felaktig Prostate TCC fil."));
+                    return;
+                }
                 List<List<string>> tccPlanPageList = tccPlanPageReader.getPages();
                 List<LiveCatheter> tccLiveCatheters = tccPlanPageReader.tccLiveCatheters(_tabType);
                 TccPlan tccPlan = new TccPlan(tccPlanPageList, tccLiveCatheters);
@@ -346,10 +358,10 @@ namespace WpfApp1
             }
 
 
-                //calculateEstimatedTreatmetTime();
+            //calculateEstimatedTreatmetTime();
 
 
-                if (_treatmentPlanXpsFilePath != null && _tccPlanXpsFilePath != null)
+            if (_treatmentPlanXpsFilePath != null && _tccPlanXpsFilePath != null)
             {
                 PageReader treatmentPlanPageReader = new PageReader(_treatmentPlanXpsFilePath);
                 List<List<string>> treatmentPlanPageList = treatmentPlanPageReader.getPages();
@@ -400,22 +412,48 @@ namespace WpfApp1
 
         }
 
-        public DataTable buildResultDataGridTest()
+        private void updateCatheters()
         {
-            DataColumn testCase = new DataColumn("Test", typeof(string));
-            DataColumn testResult = new DataColumn("Result", typeof(string));
-            DataColumn resultDescripton = new DataColumn("Beskriving", typeof(string));
+            _treatmentPlanLiveCatheters.Clear();
+            _tccPlanLiveCatheters.Clear();
+            catheterInfoButton.Visibility = Visibility.Hidden;
+            Comparator comparator = new Comparator(_specifications);
+
+            if (_treatmentPlanXpsFilePath != null)
+            {
+                PageReader treatmentPlanPageReader = new PageReader(_treatmentPlanXpsFilePath);
+                List<List<string>> treatmentPlanPageList = treatmentPlanPageReader.getPages();
+                TreatmentPlan treatmentPlan = new TreatmentPlan(treatmentPlanPageList, _tabType);
+                comparator.treatmentPlan = treatmentPlan;
+                _treatmentPlanLiveCatheters = comparator.treatmentPlanLiveCatheters();
+                catheterInfoButton.Visibility = Visibility.Visible;
+            }
+
+            if (_tccPlanXpsFilePath != null)
+            {
+                PageReader tccPlanPageReader = new PageReader(_tccPlanXpsFilePath);
+                List<List<string>> tccPlanPageList = tccPlanPageReader.getPages();
+                List<LiveCatheter> tccLiveCatheters = tccPlanPageReader.tccLiveCatheters(_tabType);
+                TccPlan tccPlan = new TccPlan(tccPlanPageList, tccLiveCatheters);
+                comparator.tccPlan = tccPlan;
+                _tccPlanLiveCatheters = comparator.tccPlanLiveCatheters();
+                catheterInfoButton.Visibility = Visibility.Visible;
+            }
+
+        }
+
+
+        public DataTable treatmentPlanDataTable()
+        {
+            DataColumn testCase = new DataColumn("Kanal", typeof(string));
+            DataColumn testResult = new DataColumn("Position", typeof(string));
+            DataColumn resultDescripton = new DataColumn("Tid (s)", typeof(string));
             DataTable dataTable = new DataTable();
             dataTable.Columns.Add(testCase);
             dataTable.Columns.Add(testResult);
             dataTable.Columns.Add(resultDescripton);
             foreach (var item in _treatmentPlanLiveCatheters)
             {
-                //DataRow dataRow = dataTable.NewRow();
-                //dataRow[0] = "zero";
-                //dataRow[1] = "first";
-                //dataRow[2] = "second";
-                //dataTable.Rows.Add(dataRow);
                 foreach (var subItem in item.positonTimePairs())
                 {
                     DataRow dataRow = dataTable.NewRow();
@@ -429,37 +467,27 @@ namespace WpfApp1
             return dataTable;
         }
 
-        public DataTable buildTreatmentPlanCatheterInfoDataTable()
+        public DataTable tccPlanDataTable()
         {
             DataColumn testCase = new DataColumn("Kanal", typeof(string));
             DataColumn testResult = new DataColumn("Position", typeof(string));
-            DataColumn resultDescripton = new DataColumn("Tid [s]", typeof(string));
+            DataColumn resultDescripton = new DataColumn("Tid (s)", typeof(string));
             DataTable dataTable = new DataTable();
             dataTable.Columns.Add(testCase);
             dataTable.Columns.Add(testResult);
             dataTable.Columns.Add(resultDescripton);
-
-            foreach (var item in _treatmentPlanLiveCatheters)
+            foreach (var item in _tccPlanLiveCatheters)
             {
+                foreach (var subItem in item.positonTimePairs())
+                {
+                    DataRow dataRow = dataTable.NewRow();
+                    dataRow[0] = item.catheterNumber();
+                    dataRow[1] = subItem.Item1;
+                    dataRow[2] = subItem.Item2;
+                    dataTable.Rows.Add(dataRow);
+                }
 
-
-                DataRow dataRow = dataTable.NewRow();
-                dataRow[0] = item.catheterNumber();
-                dataRow[1] = "first";
-                dataRow[2] = "second";
-                dataTable.Rows.Add(dataRow);
-
-                //foreach (var subItem in item.positonTimePairs())
-                //{
-                //    DataRow dataRow = dataTable.NewRow();
-                //    dataRow[0] = item.catheterNumber();
-                //    //dataRow[1] = subItem.Item1;
-                //    //dataRow[2] = subItem.Item2;
-                //    dataRow[2] = "test string";
-                //    dataTable.Rows.Add(dataRow);
-                //}
             }
-            ResultDataGrid.ItemsSource = dataTable.DefaultView;
             return dataTable;
         }
 
@@ -585,9 +613,7 @@ namespace WpfApp1
             setCylinderCalculationsVisable(false);
             updateInputFilePaths();
             buildResultDataGrid();
-            //DataTable tmp = buildResultDataGridTest();
-            //ResultDataGrid.ItemsSource = tmp.DefaultView;
-
+            updateCatheters();
         }
 
         private void BtnExit_Click(object sender, RoutedEventArgs e)
@@ -652,12 +678,10 @@ namespace WpfApp1
 
         private void catheterInfo_Click(object sender, RoutedEventArgs e)
         {
-            //DataTable treatmentPlanDataTable = buildTreatmentPlanCatheterInfoDataTable();
-            DataTable tmp = buildResultDataGridTest();
-            //ResultDataGrid.ItemsSource = treatmentPlanDataTable.DefaultView;
-            //CatheterInfoWindow catheterInfoWindow = new CatheterInfoWindow(treatmentPlanDataTable);
-            CatheterInfoWindow catheterInfoWindow = new CatheterInfoWindow(tmp);
-            catheterInfoWindow.Show();
+            CatheterInfoWindow catheterInfoWindow = new CatheterInfoWindow();
+            catheterInfoWindow.setTreatmentPlanDataGrid(treatmentPlanDataTable());
+            catheterInfoWindow.setTccPlanDataGrid(tccPlanDataTable());
+            catheterInfoWindow.ShowDialog(); // use ShowDialog to make it modal. use show will make non modal
         }
 
     }
