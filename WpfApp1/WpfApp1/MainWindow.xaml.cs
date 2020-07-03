@@ -292,6 +292,7 @@ namespace WpfApp1
                 TccPlan tccPlan = new TccPlan(tccPlanPageList, tccLiveCatheters);
                 comparator.tccPlan = tccPlan;
                 _resultRows.AddRange(comparator.resultRows());
+                _resultRows.AddRange(comparator.sourceComparisonResultRows(true)); // TODO get same source or different source from GUI
             }
 
             if (_treatmentPlanXpsFilePath != null && _dvhXpsFilePath != null && _tccPlanXpsFilePath != null && prescriptionDoseIsSet())
@@ -374,6 +375,7 @@ namespace WpfApp1
                 TccPlan tccPlan = new TccPlan(tccPlanPageList, tccLiveCatheters);
                 comparator.tccPlan = tccPlan;
                 _resultRows.AddRange(comparator.resultRows(true));
+                _resultRows.AddRange(comparator.sourceComparisonResultRows(true)); // TODO get same source or different source from GUI
             }
 
         }
@@ -643,6 +645,8 @@ namespace WpfApp1
             resultSummaryLabel.Visibility = Visibility.Hidden;
             DataTable dataTable = new DataTable();
             ResultDataGrid.ItemsSource = dataTable.DefaultView;
+            catheterInfoButton.Visibility = Visibility.Hidden;
+
         }
 
         private void cylinderTypeComboBox_DropDownClosed(object sender, EventArgs e)

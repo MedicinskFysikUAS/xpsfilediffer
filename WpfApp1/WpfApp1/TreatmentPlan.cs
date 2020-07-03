@@ -104,10 +104,25 @@ namespace WpfApp1
             {
                 return "";
             }
-
         }
 
-            public string prostateStatusSetDateTime()
+        public string calibrationDateTime()
+        {
+            if (_tabType == TabType.PROSTATE)
+            {
+                return prostateCalibrationDateTime();
+            }
+            else if (_tabType == TabType.CYLINDER)
+            {
+                return "Not implemented";
+            }
+            else
+            {
+                return "";
+            }
+        }
+
+        public string prostateStatusSetDateTime()
         {
             int pageIndex = 0;
             string dateString = _stringExtractor.getValueFromSpaceSeparetedString(_pageList[pageIndex], "Status set at:", 0);
@@ -121,6 +136,22 @@ namespace WpfApp1
             }
             return stringFromDateTime;
         }
+
+        public string prostateCalibrationDateTime()
+        {
+            int pageIndex = 0;
+            string stringValue = _stringExtractor.getStringAfterStartWithSearchString(_pageList[pageIndex], "Calibration Date/Time:");
+            string pattern = "yyyy-MM-dd HH:mm:ss";
+            string stringFromDateTime = "";
+            DateTime parsedDate;
+            if (DateTime.TryParseExact(stringValue, pattern, null,
+                                      DateTimeStyles.None, out parsedDate))
+            {
+                stringFromDateTime = parsedDate.ToString("yyyy-MM-dd HH:mm");
+            }
+            return stringFromDateTime;
+        }
+
 
         public string cylindricStatusSetDateTime()
         {

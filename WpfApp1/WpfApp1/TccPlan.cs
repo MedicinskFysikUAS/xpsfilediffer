@@ -57,6 +57,22 @@ namespace WpfApp1
             return stringFromDateTime;
         }
 
+        public string calibrationDateTime()
+        {
+            int pageIndex = 0;
+            // index of "Kalibreringsdatum/-tid" + 4 will give the calibration time
+            string dateString = _stringExtractor.getValueAfterSearchString(_pageList[pageIndex], "Sparat datum/tid", 0);
+            string pattern = "dd MMM yyyy / HH:mm (UTC +2:00)";
+            string stringFromDateTime = "";
+            DateTime parsedDate;
+            if (DateTime.TryParseExact(dateString, pattern, null,
+                                      DateTimeStyles.None, out parsedDate))
+            {
+                stringFromDateTime = parsedDate.ToString("yyyy-MM-dd HH:mm");
+            }
+            return stringFromDateTime;
+        }
+
         public bool planIsApproved()
         {
             return _stringExtractor.foundKeyWord(_pageList[0], "Godkänd den");

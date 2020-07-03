@@ -53,6 +53,18 @@ namespace WpfApp1
             return (_treatmentPlan.statusSetDateTime() == _tccPlan.statusSetDateTime());
         }
 
+        public bool hasSameCalibrationDateTime(bool sameSource)
+        {
+            if (sameSource)
+            { // todo check if calibration date is empty
+                return (_treatmentPlan.calibrationDateTime() == _tccPlan.calibrationDateTime());
+            }
+            else
+            {
+                return (_treatmentPlan.calibrationDateTime() != _tccPlan.calibrationDateTime());
+            }
+        }
+
         public bool hasSameFractionDose()
         {
             return (_treatmentPlan.fractionDose() == _tccPlan.fractionDose());
@@ -295,6 +307,28 @@ namespace WpfApp1
                 info += "inte samma";
             }
             resultRow.Add("Tiden för godkännande i plan och TCC är " + info);
+
+            return resultRow;
+        }
+
+        public List<string> checkCalibrationDateTime(bool sameSource)
+        {
+            List<string> resultRow = new List<string>();
+            resultRow.Add("Kalibreringstidpunkt");
+            string info = "";
+            if (hasSameCalibrationDateTime(sameSource))
+            {
+                resultRow.Add("OK");
+
+                info += "samma";
+            }
+            else
+            {
+                resultRow.Add("Inte OK");
+                info += "inte samma";
+            }
+            resultRow.Add("Kalibreringstidpunkten i plan och TCC är " + info);
+            // TODO add info about the calibration date time
 
             return resultRow;
         }
@@ -587,6 +621,13 @@ namespace WpfApp1
             resultRows.Add(checkPlannedSourceStrength(_specifications.AirKermaStrengthEpsilon));
             resultRows.Add(checkTotalTreatmentTime()); 
             resultRows.Add(checkCatheterPositionTimePairs(_specifications.TimeEpsilon));
+            return resultRows;
+        }
+
+        public List<List<string>> sourceComparisonResultRows(bool sameSource)
+        {
+            List<List<string>> resultRows = new List<List<string>>();
+            resultRows.Add(checkCalibrationDateTime(sameSource));
             return resultRows;
         }
 
