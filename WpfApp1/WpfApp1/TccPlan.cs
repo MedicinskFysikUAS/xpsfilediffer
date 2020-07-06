@@ -45,7 +45,7 @@ namespace WpfApp1
         public string statusSetDateTime()
         {
             int pageIndex = 0;
-            string dateString = _stringExtractor.getValueAfterSearchString(_pageList[pageIndex], "Sparat datum/tid", 0);
+            string dateString = _stringExtractor.getValueNStepAfterSearchString(_pageList[pageIndex], "Godkänd den", 2);
             string pattern = "dd MMM yyyy / HH:mm (UTC +2:00)";
             string stringFromDateTime = "";
             DateTime parsedDate;
@@ -61,8 +61,8 @@ namespace WpfApp1
         {
             int pageIndex = 0;
             // index of "Kalibreringsdatum/-tid" + 4 will give the calibration time
-            string dateString = _stringExtractor.getValueAfterSearchString(_pageList[pageIndex], "Sparat datum/tid", 0);
-            string pattern = "dd MMM yyyy / HH:mm (UTC +2:00)";
+            string dateString = _stringExtractor.getValueNStepAfterSearchString(_pageList[pageIndex], "Kalibreringsdatum/-tid", 4);
+            string pattern = "dd MMM yyyy / HH:mm (UTC +1:00)";
             string stringFromDateTime = "";
             DateTime parsedDate;
             if (DateTime.TryParseExact(dateString, pattern, null,

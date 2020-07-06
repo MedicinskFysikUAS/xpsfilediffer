@@ -42,6 +42,8 @@ namespace WpfApp1
         string _tccPlanXpsFilePathIntraUterine;
         private TabType _tabType;
         private List<int> _comboboxDiameters;
+        private bool _isSameSource;
+        private bool _isSameSourceIsSet;
 
 
         List<LiveCatheter> _treatmentPlanLiveCatheters = new List<LiveCatheter>();
@@ -58,6 +60,7 @@ namespace WpfApp1
             _specifications = new Specifications();
             initiateCylinderTypeComboBox();
              _comboboxDiameters = new List<int>();
+            initiateSameSourceCombobox();
     }
     // https://stackoverflow.com/questions/23499105/c-sharp-app-config-with-array-or-list-like-data
 
@@ -105,6 +108,14 @@ namespace WpfApp1
         {
             cylinderTypeComboBox.Items.Add("VC");
             cylinderTypeComboBox.Items.Add("SVC/AVC");
+        }
+
+        public void initiateSameSourceCombobox()
+        {
+            sameSourceCombobox0.Items.Add("Ja");
+            sameSourceCombobox0.Items.Add("Nej");
+            sameSourceCombobox1.Items.Add("Ja");
+            sameSourceCombobox1.Items.Add("Nej");
         }
 
         public void calculateLengthAndFreeLength()
@@ -211,12 +222,54 @@ namespace WpfApp1
                 _treatmentPlanXpsFilePath = _treatmentPlanXpsFilePathProstate;
                 _dvhXpsFilePath = _dvhXpsFilePathProstate;
                 _tccPlanXpsFilePath = _tccPlanXpsFilePathProstate;
+
             }
             else if (CylinderTab.IsSelected)
             {
                 _treatmentPlanXpsFilePath = _treatmentPlanXpsFilePathCylinder;
                 _dvhXpsFilePath = "";
                 _tccPlanXpsFilePath = _tccPlanXpsFilePathCylinder;
+            }
+            else if (IntraUterineTab.IsSelected)
+            {
+                //_treatmentPlanXpsFilePath = _treatmentPlanXpsFilePathIntraUterine;
+                //_dvhXpsFilePath = _dvhXpsFilePathIntraUterine;
+                //_tccPlanXpsFilePath = _tccPlanXpsFilePathIntraUterine;
+            }
+
+        }
+
+        private bool sameSourceProstate()
+        {
+            return sameSourceCombobox0.SelectedIndex == 0;
+        }
+
+        private bool sameSourceSetProstate()
+        {
+            return sameSourceCombobox0.SelectedIndex != -1;
+        }
+
+        private bool sameSourceSetCylinder()
+        {
+            return sameSourceCombobox1.SelectedIndex != -1;
+        }
+
+        private bool sameSourceCylinder()
+        {
+            return sameSourceCombobox1.SelectedIndex == 0;
+        }
+
+        private void updateSameSourceSelected()
+        {
+            if (ProstateTab.IsSelected)
+            {
+                _isSameSource = sameSourceProstate();
+                _isSameSourceIsSet = sameSourceSetProstate();
+            }
+            else if (CylinderTab.IsSelected)
+            {
+                _isSameSource = sameSourceCylinder();
+                _isSameSourceIsSet = sameSourceSetCylinder();
             }
             else if (IntraUterineTab.IsSelected)
             {
@@ -292,7 +345,10 @@ namespace WpfApp1
                 TccPlan tccPlan = new TccPlan(tccPlanPageList, tccLiveCatheters);
                 comparator.tccPlan = tccPlan;
                 _resultRows.AddRange(comparator.resultRows());
-                _resultRows.AddRange(comparator.sourceComparisonResultRows(true)); // TODO get same source or different source from GUI
+                if (_isSameSourceIsSet)
+                {
+                    _resultRows.AddRange(comparator.sourceComparisonResultRows(_isSameSource));
+                }
             }
 
             if (_treatmentPlanXpsFilePath != null && _dvhXpsFilePath != null && _tccPlanXpsFilePath != null && prescriptionDoseIsSet())
@@ -614,6 +670,7 @@ namespace WpfApp1
             calculateLengthAndFreeLength();
             setCylinderCalculationsVisable(false);
             updateInputFilePaths();
+            updateSameSourceSelected();
             buildResultDataGrid();
             updateCatheters();
         }
@@ -655,7 +712,6 @@ namespace WpfApp1
 
             if (cylinderTypeComboBox.SelectedIndex == 0) //sel ind already updated
             {
-
                 cylinderDiameterComboBox.Items.Add("20");
                 _comboboxDiameters.Add(20);
                 cylinderDiameterComboBox.Items.Add("25");

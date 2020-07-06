@@ -62,6 +62,17 @@ namespace WpfApp1
             return stringValue.Trim();
         }
 
+        public string getValueNStepAfterSearchString(List<string> stringsOnPage, string searchedString, int steps)
+        {
+            int foundIndex = stringsOnPage.FindIndex(x => x == searchedString);
+            string stringValue = "";
+            if (foundIndex != -1)
+            {
+                stringValue = stringsOnPage[foundIndex + steps];
+            }
+            return stringValue.Trim();
+        }
+
         public string getValueAtIndex(List<string> stringsOnPage, int lineIndex, int stringIndex)
         {
             string stringValue = "";

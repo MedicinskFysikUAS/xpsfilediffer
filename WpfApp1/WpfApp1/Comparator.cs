@@ -24,16 +24,30 @@ namespace WpfApp1
         // has --------------------------
         public bool hasSamePatientName()
         {
+            if (_treatmentPlan.patientFirstName() == "" || _tccPlan.patientFirstName() == "" ||
+                _treatmentPlan.patientLastName() == "" || _tccPlan.patientLastName() == "")
+            {
+                return false;
+            }
             return (_treatmentPlan.patientFirstName() == _tccPlan.patientFirstName()) && (_treatmentPlan.patientLastName() == _tccPlan.patientLastName());
         }
 
         public bool hasSamePatientId()
         {
+            if (_treatmentPlan.patientId() == "" || _tccPlan.patientId() == "")
+            {
+                return false;
+            }
+
             return (_treatmentPlan.patientId() == _tccPlan.patientId());
         }
 
         public bool hasSamePlanCode()
         {
+            if (_treatmentPlan.planCode() == "" || _tccPlan.planCode() == "")
+            {
+                return false;
+            }
             return (_treatmentPlan.planCode() == _tccPlan.planCode());
         }
 
@@ -50,11 +64,19 @@ namespace WpfApp1
 
         public bool hasSameStatusSetDateTime()
         {
+            if (_treatmentPlan.statusSetDateTime() == "" || _tccPlan.statusSetDateTime() == "")
+            {
+                return false;
+            }
             return (_treatmentPlan.statusSetDateTime() == _tccPlan.statusSetDateTime());
         }
 
         public bool hasSameCalibrationDateTime(bool sameSource)
         {
+            if (_treatmentPlan.calibrationDateTime() == "" || _tccPlan.calibrationDateTime() == "")
+            {
+                return false;
+            }
             if (sameSource)
             { // todo check if calibration date is empty
                 return (_treatmentPlan.calibrationDateTime() == _tccPlan.calibrationDateTime());
@@ -67,6 +89,11 @@ namespace WpfApp1
 
         public bool hasSameFractionDose()
         {
+            if (_treatmentPlan.fractionDose() == "" || _tccPlan.fractionDose() == "")
+            {
+                return false;
+            }
+
             return (_treatmentPlan.fractionDose() == _tccPlan.fractionDose());
         }
 
@@ -77,6 +104,10 @@ namespace WpfApp1
 
         bool hasSameTotalTreatmentTime()
         {
+            if (_treatmentPlan.totalTreatmentTime() == "" || _tccPlan.totalTreatmentTime() == "")
+            {
+                return false;
+            }
             return (_treatmentPlan.totalTreatmentTime() == _tccPlan.totalTreatmentTime());
         }
 
@@ -268,7 +299,7 @@ namespace WpfApp1
                     TCCStatus = "Godkänd";
                 }
 
-                resultRow.Add("plan är : " + TPStatus +
+                resultRow.Add("Dosplanen är : " + TPStatus +
                     " TCC-planen är : " + TCCStatus);
             }
             else
@@ -306,6 +337,8 @@ namespace WpfApp1
                 resultRow.Add("Inte OK");
                 info += "inte samma";
             }
+            info += " dosplanens godkännande: " + _treatmentPlan.statusSetDateTime() +
+                " tcc planens godkännande: " + _tccPlan.statusSetDateTime();
             resultRow.Add("Tiden för godkännande i plan och TCC är " + info);
 
             return resultRow;
@@ -319,16 +352,30 @@ namespace WpfApp1
             if (hasSameCalibrationDateTime(sameSource))
             {
                 resultRow.Add("OK");
-
-                info += "samma";
+                if (sameSource)
+                {
+                    info += "samma";
+                }
+                else
+                {
+                    info += "inte samma";
+                }
             }
             else
             {
                 resultRow.Add("Inte OK");
-                info += "inte samma";
+                if (sameSource)
+                {
+                    info += "inte samma";
+                }
+                else
+                {
+                    info += "samma";
+                }
             }
+            info += " dosplanens kalibreringsdatum: " + _treatmentPlan.calibrationDateTime() +
+                " tcc planens kalibreringsdatum: " + _tccPlan.calibrationDateTime();
             resultRow.Add("Kalibreringstidpunkten i plan och TCC är " + info);
-            // TODO add info about the calibration date time
 
             return resultRow;
         }
