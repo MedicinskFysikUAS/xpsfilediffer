@@ -60,7 +60,6 @@ namespace WpfApp1
         public string calibrationDateTime()
         {
             int pageIndex = 0;
-            // index of "Kalibreringsdatum/-tid" + 4 will give the calibration time
             string dateString = _stringExtractor.getValueNStepAfterSearchString(_pageList[pageIndex], "Kalibreringsdatum/-tid", 4);
             string pattern = "dd MMM yyyy / HH:mm (UTC +1:00)";
             string stringFromDateTime = "";
@@ -94,6 +93,21 @@ namespace WpfApp1
         {
             int pageIndex = 0;
             return Convert.ToDecimal(_stringExtractor.getValueAfterSearchStringSplitOnSpace(_pageList[pageIndex], "Planerad AK-styrka", 0));
+        }
+
+        // TODO Test this function and use it to calculate the treatment time
+        public decimal realizedSourceStrength()
+        {
+            int pageIndex = 0;
+            return Convert.ToDecimal(_stringExtractor.getValueAfterSearchStringSplitOnSpace(_pageList[pageIndex], "Realiserad AK-styrka", 0));
+        }
+
+        // TODO Test this function and use it to calculate the treatment time
+
+        public decimal calibratedSourceStrength()
+        {
+            int pageIndex = 0;
+            return Convert.ToDecimal(_stringExtractor.getValueAfterSearchStringSplitOnSpace(_pageList[pageIndex], "Kalibrerad källstyrka", 0));
         }
 
         public string totalTreatmentTime()

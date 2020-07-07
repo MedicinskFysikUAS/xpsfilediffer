@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Configuration;
 using System.Linq;
 using System.Text;
@@ -134,6 +135,14 @@ namespace WpfApp1
                 (40.0m / currentSourceStrength); 
         }
 
+
+        public decimal decayFactor(DateTime calibrationDateTime, DateTime currentDateTime)
+        {
+            double decayConstant = 0.00000010866; // per second
+            TimeSpan duration = currentDateTime - calibrationDateTime;
+            double seconds = duration.TotalSeconds;
+            return Convert.ToDecimal(Math.Exp(-1.0 * decayConstant * seconds));
+        }
 
         private List<Tuple<decimal, decimal>> tableFromConfig(string tableLengthsName, string tableTimesName)
         {

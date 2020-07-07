@@ -114,7 +114,7 @@ namespace WpfApp1
             }
             else if (_tabType == TabType.CYLINDER)
             {
-                return "Not implemented";
+                return cylinderCalibrationDateTime();
             }
             else
             {
@@ -137,20 +137,7 @@ namespace WpfApp1
             return stringFromDateTime;
         }
 
-        public string prostateCalibrationDateTime()
-        {
-            int pageIndex = 0;
-            string stringValue = _stringExtractor.getStringAfterStartWithSearchString(_pageList[pageIndex], "Calibration Date/Time:");
-            string pattern = "yyyy-MM-dd HH:mm:ss";
-            string stringFromDateTime = "";
-            DateTime parsedDate;
-            if (DateTime.TryParseExact(stringValue, pattern, null,
-                                      DateTimeStyles.None, out parsedDate))
-            {
-                stringFromDateTime = parsedDate.ToString("yyyy-MM-dd HH:mm");
-            }
-            return stringFromDateTime;
-        }
+       
 
 
         public string cylindricStatusSetDateTime()
@@ -168,6 +155,37 @@ namespace WpfApp1
             }
             return stringFromDateTime;
         }
+
+        public string prostateCalibrationDateTime()
+        {
+            int pageIndex = 0;
+            string stringValue = _stringExtractor.getStringAfterStartWithSearchString(_pageList[pageIndex], "Calibration Date/Time:");
+            string pattern = "yyyy-MM-dd HH:mm:ss";
+            string stringFromDateTime = "";
+            DateTime parsedDate;
+            if (DateTime.TryParseExact(stringValue, pattern, null,
+                                      DateTimeStyles.None, out parsedDate))
+            {
+                stringFromDateTime = parsedDate.ToString("yyyy-MM-dd HH:mm");
+            }
+            return stringFromDateTime;
+        }
+
+        public string cylinderCalibrationDateTime()
+        {
+            int pageIndex = 0;
+            string stringValue = _stringExtractor.getValueNStepAfterSearchString(_pageList[pageIndex], "Calibration date/time:", -1);
+            string pattern = "dd MMM yyyy HH:mm:ss";
+            string stringFromDateTime = "";
+            DateTime parsedDate;
+            if (DateTime.TryParseExact(stringValue, pattern, null,
+                                      DateTimeStyles.None, out parsedDate))
+            {
+                stringFromDateTime = parsedDate.ToString("yyyy-MM-dd HH:mm");
+            }
+            return stringFromDateTime;
+        }
+
 
         public string cylindricPlanName()
         {

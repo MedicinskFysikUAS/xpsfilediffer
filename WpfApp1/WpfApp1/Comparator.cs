@@ -71,20 +71,13 @@ namespace WpfApp1
             return (_treatmentPlan.statusSetDateTime() == _tccPlan.statusSetDateTime());
         }
 
-        public bool hasSameCalibrationDateTime(bool sameSource)
+        public bool hasSameCalibrationDateTime()
         {
             if (_treatmentPlan.calibrationDateTime() == "" || _tccPlan.calibrationDateTime() == "")
             {
                 return false;
             }
-            if (sameSource)
-            { // todo check if calibration date is empty
-                return (_treatmentPlan.calibrationDateTime() == _tccPlan.calibrationDateTime());
-            }
-            else
-            {
-                return (_treatmentPlan.calibrationDateTime() != _tccPlan.calibrationDateTime());
-            }
+            return (_treatmentPlan.calibrationDateTime() == _tccPlan.calibrationDateTime());
         }
 
         public bool hasSameFractionDose()
@@ -349,31 +342,32 @@ namespace WpfApp1
             List<string> resultRow = new List<string>();
             resultRow.Add("Kalibreringstidpunkt");
             string info = "";
-            if (hasSameCalibrationDateTime(sameSource))
+            if (hasSameCalibrationDateTime())
             {
-                resultRow.Add("OK");
                 if (sameSource)
                 {
-                    info += "samma";
+                    resultRow.Add("OK");
                 }
                 else
                 {
-                    info += "inte samma";
+                    resultRow.Add("Inte OK");
                 }
+                info += "samma.";
             }
             else
             {
-                resultRow.Add("Inte OK");
-                if (sameSource)
+                if (!sameSource)
                 {
-                    info += "inte samma";
+                    resultRow.Add("OK");
+
                 }
                 else
                 {
-                    info += "samma";
+                    resultRow.Add("Inte OK");
                 }
+                info += "inte samma.";
             }
-            info += " dosplanens kalibreringsdatum: " + _treatmentPlan.calibrationDateTime() +
+            info += " Dosplanens kalibreringsdatum: " + _treatmentPlan.calibrationDateTime() +
                 " tcc planens kalibreringsdatum: " + _tccPlan.calibrationDateTime();
             resultRow.Add("Kalibreringstidpunkten i plan och TCC är " + info);
 
@@ -434,6 +428,9 @@ namespace WpfApp1
 
             return resultRow;
         }
+
+
+       
 
         public List<string> checkCatheterPositionTimePairs(decimal timeEpsilon)
         {

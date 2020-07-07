@@ -63,7 +63,15 @@ namespace WpfApp1
             {
                 return true;
             }
-            else if (xpsFileType == XpsFileType.PROSTATE_CCS && stringsOnPage.Count > 90 && stringsOnPage[90] == "Förbehandlingsrapport")
+            else if (xpsFileType == XpsFileType.PROSTATE_TCC && stringsOnPage.Count > 90 && stringsOnPage[90] == "Förbehandlingsrapport")
+            {
+                return true;
+            }
+            else if (xpsFileType == XpsFileType.ONCENTRA_CYLINDER_TREATMENT_PLAN && stringsOnPage.Count > 51 && stringsOnPage[51] == "Oncentra Brachy ")
+            {
+                return true;
+            }
+            else if (xpsFileType == XpsFileType.CYLINDER_TCC && stringsOnPage.Count > 90 && stringsOnPage[90] == "Förbehandlingsrapport")
             {
                 return true;
             }
