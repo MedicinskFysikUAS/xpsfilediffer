@@ -20,3 +20,9 @@ public enum XpsFileType
     CYLINDER_TCC = 4
     // ONCENTRA_INTRAUTERIN_TREATMENT_PLAN 
 }
+
+
+public static class Constants
+{
+    public const string DATE_AND_TIME_FORMAT = "yyyy-MM-dd HH:mm";
+}

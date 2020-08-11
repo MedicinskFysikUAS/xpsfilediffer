@@ -14,9 +14,11 @@
         <Button Content="Button" HorizontalAlignment="Left" Margin="280,0,0,0" VerticalAlignment="Center" Width="0" Grid.Column="1" Height="20"/>
         <Button x:Name="CatheterInfoExitButton" Click="CatheterInfoExit_click" Content="Stäng" HorizontalAlignment="Left" Margin="670,539,0,0" VerticalAlignment="Top" RenderTransformOrigin="3.528,2.758" Height="29" Width="50"/>
         <DataGrid x:Name="treatmentPlanDataGrid" Margin="0,59,570,0"/>
-        <DataGrid x:Name="tccPlanDataGrid" Margin="185,59,385,0"/>
+        <DataGrid x:Name="tccPlanDataGrid" Margin="415,59,155,0"/>
         <Label x:Name="treatmentPlanGridLabel" Content="Dosplan" HorizontalAlignment="Left" Margin="50,24,0,0" VerticalAlignment="Top" Height="26" Width="53"/>
-        <Label x:Name="tccPlanGridLabel" Content="TCC plan" HorizontalAlignment="Left" Margin="246,24,0,0" VerticalAlignment="Top" Height="26" Width="56"/>
+        <Label x:Name="tccPlanGridLabel" Content="TCC plan" HorizontalAlignment="Left" Margin="476,24,0,0" VerticalAlignment="Top" Height="26" Width="56"/>
+        <DataGrid x:Name="treatmentPlanDataGridCorr" Margin="210,59,360,0"/>
+        <Label x:Name="treatmentPlanGridLabelCorr" Content="Dosplan korrigerad" HorizontalAlignment="Left" Margin="260,24,0,0" VerticalAlignment="Top" Height="26" Width="120"/>
 
     </Grid>
 </Window>

@@ -47,6 +47,7 @@ namespace WpfApp1
 
 
         List<LiveCatheter> _treatmentPlanLiveCatheters = new List<LiveCatheter>();
+        List<LiveCatheter> _treatmentPlanLiveCathetersCorr = new List<LiveCatheter>();
         List<LiveCatheter> _tccPlanLiveCatheters = new List<LiveCatheter>();
 
         Specifications _specifications;
@@ -402,6 +403,7 @@ namespace WpfApp1
                 comparator.treatmentDvh = treatmentDvh;
                 comparator.tccPlan = tccPlan;
                 _treatmentPlanLiveCatheters = comparator.treatmentPlanLiveCatheters();
+                _treatmentPlanLiveCathetersCorr = comparator.treatmentPlanLiveCathetersDecayCorrected();
                 _tccPlanLiveCatheters = comparator.tccPlanLiveCatheters();
                 _resultRows.AddRange(comparator.allXpsResultRows());
             }
@@ -446,7 +448,8 @@ namespace WpfApp1
                 List<LiveCatheter> tccLiveCatheters = tccPlanPageReader.tccLiveCatheters(_tabType);
                 TccPlan tccPlan = new TccPlan(tccPlanPageList, tccLiveCatheters);
                 comparator.tccPlan = tccPlan;
-                _resultRows.AddRange(comparator.resultRows(true));
+                bool skipApprovalTest = true;
+                _resultRows.AddRange(comparator.resultRows(skipApprovalTest));
                 if (_sameSourceSet)
                 {
                     _resultRows.AddRange(comparator.sourceComparisonResultRows(_isSameSource));
@@ -489,11 +492,43 @@ namespace WpfApp1
 
         }
 
+        bool isXpsFile()
+        {
+            PageReader pageReader = new PageReader(_treatmentPlanXpsFilePath);
+            if (pageReader.isFileType(XpsFileType.ONCENTRA_CYLINDER_TREATMENT_PLAN) || 
+                pageReader.isFileType(XpsFileType.ONCENTRA_PROSTATE_TREATMENT_PLAN))
+            {
+                return true;
+            }
+
+            pageReader = new PageReader(_dvhXpsFilePath);
+            if (pageReader.isFileType(XpsFileType.ONCENTRA_PROSTATE_DVH))
+            {
+                return true;
+            }
+
+            pageReader = new PageReader(_tccPlanXpsFilePath);
+            if (pageReader.isFileType(XpsFileType.CYLINDER_TCC) || pageReader.isFileType(XpsFileType.PROSTATE_TCC))
+            {
+                return true;
+            }
+
+            return false;
+
+        }
+
         private void updateCatheters()
         {
+            // TODO: Add tab type and make the isXpsFile correct!!
             _treatmentPlanLiveCatheters.Clear();
+            _treatmentPlanLiveCathetersCorr.Clear();
             _tccPlanLiveCatheters.Clear();
             catheterInfoButton.Visibility = Visibility.Hidden;
+            if (!isXpsFile())
+            {
+                return;
+            }
+
             Comparator comparator = new Comparator(_specifications);
 
             if (_treatmentPlanXpsFilePath != null)
@@ -517,6 +552,27 @@ namespace WpfApp1
                 catheterInfoButton.Visibility = Visibility.Visible;
             }
 
+            if (_treatmentPlanXpsFilePath != null && _tccPlanXpsFilePath != null)
+            {
+                PageReader treatmentPlanPageReader = new PageReader(_treatmentPlanXpsFilePath);
+                List<List<string>> treatmentPlanPageList = treatmentPlanPageReader.getPages();
+                TreatmentPlan treatmentPlan = new TreatmentPlan(treatmentPlanPageList, _tabType);
+                comparator.treatmentPlan = treatmentPlan;
+                _treatmentPlanLiveCatheters = comparator.treatmentPlanLiveCatheters();
+                catheterInfoButton.Visibility = Visibility.Visible;
+
+                PageReader tccPlanPageReader = new PageReader(_tccPlanXpsFilePath);
+                List<List<string>> tccPlanPageList = tccPlanPageReader.getPages();
+                List<LiveCatheter> tccLiveCatheters = tccPlanPageReader.tccLiveCatheters(_tabType);
+                TccPlan tccPlan = new TccPlan(tccPlanPageList, tccLiveCatheters);
+                comparator.tccPlan = tccPlan;
+                _tccPlanLiveCatheters = comparator.tccPlanLiveCatheters();
+                catheterInfoButton.Visibility = Visibility.Visible;
+
+                // Both plan and tcc file must be loaded to be able to calculate decay correction.
+                _treatmentPlanLiveCathetersCorr = comparator.treatmentPlanLiveCathetersDecayCorrected();
+            }
+
         }
 
 
@@ -530,6 +586,30 @@ namespace WpfApp1
             dataTable.Columns.Add(testResult);
             dataTable.Columns.Add(resultDescripton);
             foreach (var item in _treatmentPlanLiveCatheters)
+            {
+                foreach (var subItem in item.positonTimePairs())
+                {
+                    DataRow dataRow = dataTable.NewRow();
+                    dataRow[0] = item.catheterNumber();
+                    dataRow[1] = subItem.Item1;
+                    dataRow[2] = subItem.Item2;
+                    dataTable.Rows.Add(dataRow);
+                }
+
+            }
+            return dataTable;
+        }
+
+        public DataTable treatmentPlanDataTableCorr()
+        {
+            DataColumn testCase = new DataColumn("Kanal", typeof(string));
+            DataColumn testResult = new DataColumn("Position", typeof(string));
+            DataColumn resultDescripton = new DataColumn("Tid (s)", typeof(string));
+            DataTable dataTable = new DataTable();
+            dataTable.Columns.Add(testCase);
+            dataTable.Columns.Add(testResult);
+            dataTable.Columns.Add(resultDescripton);
+            foreach (var item in _treatmentPlanLiveCathetersCorr)
             {
                 foreach (var subItem in item.positonTimePairs())
                 {
@@ -759,6 +839,7 @@ namespace WpfApp1
         {
             CatheterInfoWindow catheterInfoWindow = new CatheterInfoWindow();
             catheterInfoWindow.setTreatmentPlanDataGrid(treatmentPlanDataTable());
+            catheterInfoWindow.setTreatmentPlanDataGridCorr(treatmentPlanDataTableCorr());
             catheterInfoWindow.setTccPlanDataGrid(tccPlanDataTable());
             catheterInfoWindow.ShowDialog(); // use ShowDialog to make it modal. use show will make non modal
         }

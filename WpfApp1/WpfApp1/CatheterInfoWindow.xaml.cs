@@ -30,6 +30,11 @@ namespace WpfApp1
             treatmentPlanDataGrid.ItemsSource = treatmentPlanDataTable.DefaultView;
         }
 
+        public void setTreatmentPlanDataGridCorr(System.Data.DataTable treatmentPlanDataTable)
+        {
+            treatmentPlanDataGridCorr.ItemsSource = treatmentPlanDataTable.DefaultView;
+        }
+
         public void setTccPlanDataGrid(System.Data.DataTable tccPlanDataTable)
         {
             tccPlanDataGrid.ItemsSource = tccPlanDataTable.DefaultView;

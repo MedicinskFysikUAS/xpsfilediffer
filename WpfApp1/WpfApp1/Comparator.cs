@@ -104,6 +104,33 @@ namespace WpfApp1
             return (_treatmentPlan.totalTreatmentTime() == _tccPlan.totalTreatmentTime());
         }
 
+        decimal decayCorrectedValue(decimal inputValue)
+        {
+            StringExtractor stringExtractor = new StringExtractor();
+            Calculator calculator = new Calculator();
+            return inputValue *
+               (calculator.decayFactor(stringExtractor.stringToDateTime(_treatmentPlan.calibrationDateTime()),
+               stringExtractor.stringToDateTime(_treatmentPlan.statusSetDateTime())) /
+               calculator.decayFactor(stringExtractor.stringToDateTime(_treatmentPlan.calibrationDateTime()),
+               stringExtractor.stringToDateTime(tccPlan.realizationDateAndTime())));
+        }
+
+        bool hasCorrectRealizedTotalTreatmentTime(decimal totalTimeEpsilon)
+        {
+            if (_treatmentPlan.totalTreatmentTime() == "" || _tccPlan.totalTreatmentTime() == "" || _treatmentPlan.calibrationDateTime() == "")
+            {
+                return false;
+            }
+            return (Math.Abs(decayCorrectedValue(_treatmentPlan.totalTreatmentTimeValue()) - _tccPlan.realizedTotalTreatmentTime()) /
+                (decayCorrectedValue(_treatmentPlan.totalTreatmentTimeValue())) * 100 < totalTimeEpsilon);
+        }
+
+        decimal decayCorrectedDeltaTime(string treatmentPlanTimeStr, string tccPlanTimeStr)
+        {
+            StringExtractor stringExtractor = new StringExtractor();
+            decimal treatmentPlanTime = decayCorrectedValue(stringExtractor.decimalStringToDecimal(treatmentPlanTimeStr));
+            return Math.Abs(treatmentPlanTime - stringExtractor.decimalStringToDecimal(tccPlanTimeStr));
+        }
 
         bool hasSameCatheterPositionTimePairs(decimal timeEpsilon)
         {
@@ -128,6 +155,7 @@ namespace WpfApp1
                         }
                         decimal deltaTime = Math.Abs(stringExtractor.decimalStringToDecimal(subItem.Item2) -
                             stringExtractor.decimalStringToDecimal(tccLiveCatheters[counter].positonTimePairs()[subCounter].Item2));
+                        decimal deltaTime2 = decayCorrectedDeltaTime(subItem.Item2, tccLiveCatheters[counter].positonTimePairs()[subCounter].Item2);
                         if (subItem.Item1 != stringExtractor.decimalStringToZeroDecimalString(tccLiveCatheters[counter].positonTimePairs()[subCounter].Item1) ||
                             deltaTime > timeEpsilon)
                         {
@@ -331,7 +359,7 @@ namespace WpfApp1
                 info += "inte samma";
             }
             info += " dosplanens godkännande: " + _treatmentPlan.statusSetDateTime() +
-                " tcc planens godkännande: " + _tccPlan.statusSetDateTime();
+                " TCC planens godkännande: " + _tccPlan.statusSetDateTime();
             resultRow.Add("Tiden för godkännande i plan och TCC är " + info);
 
             return resultRow;
@@ -368,7 +396,7 @@ namespace WpfApp1
                 info += "inte samma.";
             }
             info += " Dosplanens kalibreringsdatum: " + _treatmentPlan.calibrationDateTime() +
-                " tcc planens kalibreringsdatum: " + _tccPlan.calibrationDateTime();
+                " TCC planens kalibreringsdatum: " + _tccPlan.calibrationDateTime();
             resultRow.Add("Kalibreringstidpunkten i plan och TCC är " + info);
 
             return resultRow;
@@ -429,8 +457,22 @@ namespace WpfApp1
             return resultRow;
         }
 
-
-       
+        public List<string> checkRealizedTotalTreatmentTime(decimal totalTimeEpsilon)
+        {
+            List<string> resultRow = new List<string>();
+            resultRow.Add("Dosplanen och TCC realiserade beh. tid");
+            if (hasCorrectRealizedTotalTreatmentTime(totalTimeEpsilon))
+            {
+                resultRow.Add("OK");
+            }
+            else
+            {
+                resultRow.Add("Inte OK");
+            }
+            resultRow.Add("Beräknad realiserad behandlingstid utifrån plan: " + Math.Round(decayCorrectedValue(_treatmentPlan.totalTreatmentTimeValue()), 2) +
+                " och i TCC: " + _tccPlan.realizedTotalTreatmentTime() + " (tolerans:  " + totalTimeEpsilon + " % ).");
+            return resultRow;
+        }
 
         public List<string> checkCatheterPositionTimePairs(decimal timeEpsilon)
         {
@@ -447,6 +489,7 @@ namespace WpfApp1
                 resultRow.Add("Inte OK");
                 descriptionString = "Någon/några positioner/tider är olika.";
             }
+            descriptionString += " (korrigerat för sönderfall)";
             resultRow.Add(descriptionString);
 
             return resultRow;
@@ -563,12 +606,12 @@ namespace WpfApp1
             if (prescriptionDoseIsTheSame(guiPresciptionDose, treatmentPlanPrescriptionDose, dvhPrescriptionDose))
             {
                 resultRow.Add("OK");
-                descriptionString = "Den angivna ordinerade dosen är den samma som i planen, dvh och tcc-rapporten";
+                descriptionString = "Den angivna ordinerade dosen är den samma som i planen, DVH och TCC planen";
             }
             else
             {
                 resultRow.Add("Inte OK");
-                descriptionString = "Den angivna ordinerade dosen är INTE den samma som i planen, dvh och tcc-rapporten";
+                descriptionString = "Den angivna ordinerade dosen är INTE den samma som i planen, dvh och TCC planen";
             }
             resultRow.Add(descriptionString);
             return resultRow;
@@ -664,6 +707,7 @@ namespace WpfApp1
             resultRows.Add(checkFractionDose());
             resultRows.Add(checkPlannedSourceStrength(_specifications.AirKermaStrengthEpsilon));
             resultRows.Add(checkTotalTreatmentTime()); 
+            resultRows.Add(checkRealizedTotalTreatmentTime(_specifications.TotalTimeEpsilon)); 
             resultRows.Add(checkCatheterPositionTimePairs(_specifications.TimeEpsilon));
             return resultRows;
         }
@@ -688,6 +732,27 @@ namespace WpfApp1
         public List<LiveCatheter> treatmentPlanLiveCatheters()
         {
             return _treatmentPlan.liveCatheters();
+        }
+
+        public List<LiveCatheter> treatmentPlanLiveCathetersDecayCorrected()
+        {
+            List<LiveCatheter> LiveCatheters = new List<LiveCatheter>();
+            StringExtractor stringExtractor = new StringExtractor();
+            foreach (var item in _treatmentPlan.liveCatheters())
+            {
+                List<Tuple<string, string>> positionTimePairs = new List<Tuple<string, string>>();
+                foreach (var subItem in item.positonTimePairs())
+                {
+                    decimal correctedTime = decayCorrectedValue(stringExtractor.decimalStringToDecimal(subItem.Item2));
+                    Tuple<string, string> tuple = new Tuple<string, string>(subItem.Item1, stringExtractor.decimalToTwoDecimalString(correctedTime));
+                    positionTimePairs.Add(tuple);
+                }
+                LiveCatheter liveCatheter = new LiveCatheter();
+                liveCatheter.appendPositionTimePairs(positionTimePairs);
+                liveCatheter.setCatheterNumber(item.catheterNumber());
+                LiveCatheters.Add(liveCatheter);
+            }
+            return LiveCatheters;
         }
 
         public List<LiveCatheter> tccPlanLiveCatheters()

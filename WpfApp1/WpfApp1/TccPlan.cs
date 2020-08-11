@@ -115,6 +115,26 @@ namespace WpfApp1
             int pageIndex = 0;
             return String.Format("{0:0.0}", Convert.ToDecimal(_stringExtractor.getValueAfterSearchStringSplitOnSpace(_pageList[pageIndex], "Total strålningstid", 0)));
         }
+        public decimal realizedTotalTreatmentTime()
+        {
+            int pageIndex = 0;
+            return _stringExtractor.decimalStringToDecimal((_stringExtractor.getValueNStepAfterSearchStringTwoTimes(_pageList[pageIndex], "Total strålningstid", 1)));
+        }
+
+        public string realizationDateAndTime()
+        {
+            int pageIndex = 0;
+            string dateString = _stringExtractor.getValueNStepAfterSearchString(_pageList[pageIndex], "Datum/tid", 1);
+            string pattern = "dd MMM yyyy / HH:mm (UTC +2:00)";
+            string stringFromDateTime = "";
+            DateTime parsedDate;
+            if (DateTime.TryParseExact(dateString, pattern, null,
+                                      DateTimeStyles.None, out parsedDate))
+            {
+                stringFromDateTime = parsedDate.ToString("yyyy-MM-dd HH:mm");
+            }
+            return stringFromDateTime;
+        }
 
         public List<LiveCatheter> liveCatheters()
         {

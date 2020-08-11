@@ -138,10 +138,18 @@ namespace WpfApp1
 
         public decimal decayFactor(DateTime calibrationDateTime, DateTime currentDateTime)
         {
-            double decayConstant = 0.00000010866; // per second
+            // It was found that each individual iridium-192 source has a 
+            // single decay constant and half-life ranging from 
+            // 73.81 to 73.84 days with a mean value of 73.825 days.
+            // The standard deviation was found to be± 0.0084.
+            // decayConstant. However a half tim of 73.81 days is used
+            // as it is used on the tcc plan.
+
+            double halfTimeSec = 73.81 * 24.0 * 60.0 * 60.0;
+            double decayConstant = Math.Log(2) / halfTimeSec;
             TimeSpan duration = currentDateTime - calibrationDateTime;
             double seconds = duration.TotalSeconds;
-            return Convert.ToDecimal(Math.Exp(-1.0 * decayConstant * seconds));
+            return Convert.ToDecimal(Math.Exp(-1.0 * seconds * decayConstant));
         }
 
         private List<Tuple<decimal, decimal>> tableFromConfig(string tableLengthsName, string tableTimesName)

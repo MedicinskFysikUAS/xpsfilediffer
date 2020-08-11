@@ -73,6 +73,25 @@ namespace WpfApp1
             return stringValue.Trim();
         }
 
+        public string getValueNStepAfterSearchStringTwoTimes(List<string> stringsOnPage, string searchedString, int steps)
+        {
+            int foundIndex = stringsOnPage.FindIndex(x => x == searchedString);
+            string stringValue = "";
+            if (foundIndex != -1)
+            {
+                foundIndex = stringsOnPage.FindIndex(foundIndex + 1, x => x == searchedString);
+                if (foundIndex != -1)
+                {
+                    stringValue = stringsOnPage[foundIndex + steps];
+                    if (stringValue.Split(' ').Length == 2)
+                    {
+                        stringValue = stringValue.Split(' ')[0];
+                    }
+                }
+            }
+            return stringValue.Trim();
+        }
+
         public string getValueAtIndex(List<string> stringsOnPage, int lineIndex, int stringIndex)
         {
             string stringValue = "";
@@ -283,6 +302,11 @@ namespace WpfApp1
             return String.Format("{0:0.00}", Convert.ToDecimal(decimalValueOneDec));
         }
 
+        public string decimalToTwoDecimalString(decimal decimalValue)
+        {   
+            return String.Format("{0:0.00}", decimalValue);
+        }
+
         public decimal decimalStringToDecimal(string decimalString)
         {
             string localDecimalString = decimalString;
@@ -308,6 +332,14 @@ namespace WpfApp1
         {
             return inputString.Trim().ToLower() == "no";
         }
+        // TODO: Date time format string is hard coded in lots of places
+        // TODO: it should be defined in on place. For instance in Tyhpes.cs
+        public DateTime stringToDateTime(string inputString)
+        {
+            return DateTime.ParseExact(inputString, Constants.DATE_AND_TIME_FORMAT,
+                                           System.Globalization.CultureInfo.InvariantCulture);
+        }
+
     }
 
     

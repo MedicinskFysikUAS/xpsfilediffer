@@ -6,7 +6,7 @@ namespace WpfApp1
 {
     class LiveCatheter
     {
-        private List<Tuple<string, string>> _positonTimePairs;
+        private List<Tuple<string, string>> _positonTimePairs = new List<Tuple<string, string>>();
         private int _catheterNumber;
 
         public void setPositonTimePairs(List<Tuple<string, string>> positonTimePairs)
