@@ -227,11 +227,18 @@ namespace WpfApp1
         }
 
 
-        public bool prescriptionDoseIsTheSame(decimal guiPresciptionDose, decimal treatmentPlanPrescriptionDose, decimal dvhPrescriptionDose)
+        public bool prescriptionDoseIsTheSame(decimal guiPresciptionDose, decimal treatmentPlanPrescriptionDose, decimal dvhPrescriptionDose, decimal tccPrescriptionDose)
         {
-            return ((guiPresciptionDose == treatmentPlanPrescriptionDose) && (treatmentPlanPrescriptionDose == dvhPrescriptionDose));
+            return ((guiPresciptionDose == treatmentPlanPrescriptionDose) && 
+                (treatmentPlanPrescriptionDose == dvhPrescriptionDose) && 
+                (treatmentPlanPrescriptionDose == tccPrescriptionDose));
         }
 
+        public bool guiPlanTccPresciptionDoseIsTheSame(decimal guiPresciptionDose, decimal treatmentPlanPrescriptionDose, decimal tccPrescriptionDose)
+        {
+            return ((guiPresciptionDose == treatmentPlanPrescriptionDose) &&
+                (treatmentPlanPrescriptionDose == tccPrescriptionDose));
+        }
         // check -----------------------
 
         public List<string> checkPatientName()
@@ -603,7 +610,7 @@ namespace WpfApp1
             List<string> resultRow = new List<string>();
             resultRow.Add("Ordinerad dos");
             string descriptionString = "";
-            if (prescriptionDoseIsTheSame(guiPresciptionDose, treatmentPlanPrescriptionDose, dvhPrescriptionDose))
+            if (prescriptionDoseIsTheSame(guiPresciptionDose, treatmentPlanPrescriptionDose, dvhPrescriptionDose, tccPrescriptionDose))
             {
                 resultRow.Add("OK");
                 descriptionString = "Den angivna ordinerade dosen är den samma som i planen, DVH och TCC planen";
@@ -612,6 +619,25 @@ namespace WpfApp1
             {
                 resultRow.Add("Inte OK");
                 descriptionString = "Den angivna ordinerade dosen är INTE den samma som i planen, dvh och TCC planen";
+            }
+            resultRow.Add(descriptionString);
+            return resultRow;
+        }
+        public List<string> checkGuiPlanTccPresciptionDose(decimal guiPresciptionDose, decimal treatmentPlanPrescriptionDose, 
+           decimal tccPrescriptionDose)
+        {
+            List<string> resultRow = new List<string>();
+            resultRow.Add("Ordinerad dos");
+            string descriptionString = "";
+            if (guiPlanTccPresciptionDoseIsTheSame(guiPresciptionDose, treatmentPlanPrescriptionDose, tccPrescriptionDose))
+            {
+                resultRow.Add("OK");
+                descriptionString = "Den angivna ordinerade dosen är den samma som i planen och TCC planen";
+            }
+            else
+            {
+                resultRow.Add("Inte OK");
+                descriptionString = "Den angivna ordinerade dosen är INTE den samma som i planen och TCC planen";
             }
             resultRow.Add(descriptionString);
             return resultRow;
@@ -726,6 +752,14 @@ namespace WpfApp1
             resultRows.Add(checkPresciptionDose(_specifications.PrescriptionDose, _treatmentPlan.PrescribedDose(), 
                 _treatmentDvh.PrescribedDose(), _tccPlan.PrescribedDose()));
 
+            return resultRows;
+        }
+
+        public List<List<string>>  prescriptionDoseResultRows()
+        {
+            List<List<string>> resultRows = new List<List<string>>();
+            resultRows.Add(checkGuiPlanTccPresciptionDose(_specifications.PrescriptionDose, _treatmentPlan.PrescribedDose(),
+                _tccPlan.PrescribedDose()));
             return resultRows;
         }
 

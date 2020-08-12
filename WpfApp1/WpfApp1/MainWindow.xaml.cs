@@ -341,10 +341,7 @@ namespace WpfApp1
 
             private void addProstateResultRows()
         {
-            if (!correctProstateFileType())
-            {
-                return;
-            }
+            
 
             Comparator comparator = new Comparator(_specifications);
             if (_treatmentPlanXpsFilePath != null && needleDepthAndFreeLengthIsSet())
@@ -385,9 +382,13 @@ namespace WpfApp1
                 {
                     _resultRows.AddRange(comparator.sourceComparisonResultRows(_isSameSource));
                 }
+                if (prescriptionDoseIsSet())
+                {
+                    _resultRows.AddRange(comparator.prescriptionDoseResultRows());
+                }
             }
 
-            if (_treatmentPlanXpsFilePath != null && _dvhXpsFilePath != null && _tccPlanXpsFilePath != null && prescriptionDoseIsSet())
+                if (_treatmentPlanXpsFilePath != null && _dvhXpsFilePath != null && _tccPlanXpsFilePath != null && prescriptionDoseIsSet())
             {
                 PageReader treatmentPlanPageReader = new PageReader(_treatmentPlanXpsFilePath);
                 List<List<string>> treatmentPlanPageList = treatmentPlanPageReader.getPages();
@@ -412,10 +413,7 @@ namespace WpfApp1
 
         private void addCylinderResultRows()
         {
-            if (!correctCylinderFileType())
-            {
-                return;
-            }
+           
             Comparator comparator = new Comparator(_specifications);
 
             if ( _treatmentPlanXpsFilePath != null)
@@ -458,19 +456,27 @@ namespace WpfApp1
 
         }
 
-        void buildResultDataGrid()
+        bool buildResultDataGrid()
         {
             _resultRows.Clear();
             resultSummaryLabel.Visibility = Visibility.Hidden;
+            bool correctFileType = false;
             if (_tabType == TabType.PROSTATE)
             {
-                addProstateResultRows();
+                if (correctProstateFileType())
+                {
+                    correctFileType = true;
+                    addProstateResultRows();
+                }
             }
             else if (_tabType == TabType.CYLINDER)
             {
-                addCylinderResultRows();
+                if (correctCylinderFileType())
+                {
+                    correctFileType = true;
+                    addCylinderResultRows();
+                }
             }
-
 
             DataColumn testCase= new DataColumn("Test", typeof(string));
             DataColumn testResult = new DataColumn("Result", typeof(string));
@@ -489,7 +495,7 @@ namespace WpfApp1
             }
             ResultDataGrid.ItemsSource = dataTable.DefaultView;
             updateResultSummaryLabel();
-
+            return correctFileType;
         }
 
         bool isXpsFile()
@@ -519,39 +525,7 @@ namespace WpfApp1
 
         private void updateCatheters()
         {
-            // TODO: Add tab type and make the isXpsFile correct!!
-            _treatmentPlanLiveCatheters.Clear();
-            _treatmentPlanLiveCathetersCorr.Clear();
-            _tccPlanLiveCatheters.Clear();
-            catheterInfoButton.Visibility = Visibility.Hidden;
-            if (!isXpsFile())
-            {
-                return;
-            }
-
             Comparator comparator = new Comparator(_specifications);
-
-            if (_treatmentPlanXpsFilePath != null)
-            {
-                PageReader treatmentPlanPageReader = new PageReader(_treatmentPlanXpsFilePath);
-                List<List<string>> treatmentPlanPageList = treatmentPlanPageReader.getPages();
-                TreatmentPlan treatmentPlan = new TreatmentPlan(treatmentPlanPageList, _tabType);
-                comparator.treatmentPlan = treatmentPlan;
-                _treatmentPlanLiveCatheters = comparator.treatmentPlanLiveCatheters();
-                catheterInfoButton.Visibility = Visibility.Visible;
-            }
-
-            if (_tccPlanXpsFilePath != null)
-            {
-                PageReader tccPlanPageReader = new PageReader(_tccPlanXpsFilePath);
-                List<List<string>> tccPlanPageList = tccPlanPageReader.getPages();
-                List<LiveCatheter> tccLiveCatheters = tccPlanPageReader.tccLiveCatheters(_tabType);
-                TccPlan tccPlan = new TccPlan(tccPlanPageList, tccLiveCatheters);
-                comparator.tccPlan = tccPlan;
-                _tccPlanLiveCatheters = comparator.tccPlanLiveCatheters();
-                catheterInfoButton.Visibility = Visibility.Visible;
-            }
-
             if (_treatmentPlanXpsFilePath != null && _tccPlanXpsFilePath != null)
             {
                 PageReader treatmentPlanPageReader = new PageReader(_treatmentPlanXpsFilePath);
@@ -571,6 +545,25 @@ namespace WpfApp1
 
                 // Both plan and tcc file must be loaded to be able to calculate decay correction.
                 _treatmentPlanLiveCathetersCorr = comparator.treatmentPlanLiveCathetersDecayCorrected();
+            }
+            else if (_treatmentPlanXpsFilePath != null)
+            {
+                PageReader treatmentPlanPageReader = new PageReader(_treatmentPlanXpsFilePath);
+                List<List<string>> treatmentPlanPageList = treatmentPlanPageReader.getPages();
+                TreatmentPlan treatmentPlan = new TreatmentPlan(treatmentPlanPageList, _tabType);
+                comparator.treatmentPlan = treatmentPlan;
+                _treatmentPlanLiveCatheters = comparator.treatmentPlanLiveCatheters();
+                catheterInfoButton.Visibility = Visibility.Visible;
+            }
+            else if (_tccPlanXpsFilePath != null)
+            {
+                PageReader tccPlanPageReader = new PageReader(_tccPlanXpsFilePath);
+                List<List<string>> tccPlanPageList = tccPlanPageReader.getPages();
+                List<LiveCatheter> tccLiveCatheters = tccPlanPageReader.tccLiveCatheters(_tabType);
+                TccPlan tccPlan = new TccPlan(tccPlanPageList, tccLiveCatheters);
+                comparator.tccPlan = tccPlan;
+                _tccPlanLiveCatheters = comparator.tccPlanLiveCatheters();
+                catheterInfoButton.Visibility = Visibility.Visible;
             }
 
         }
@@ -770,8 +763,10 @@ namespace WpfApp1
             setCylinderCalculationsVisable(false);
             updateInputFilePaths();
             updateSameSourceSelected();
-            buildResultDataGrid();
-            updateCatheters();
+            if (buildResultDataGrid())
+            {
+                updateCatheters();
+            }
         }
 
         private void BtnExit_Click(object sender, RoutedEventArgs e)
