@@ -69,6 +69,10 @@ namespace WpfApp1
             if (foundIndex != -1)
             {
                 stringValue = stringsOnPage[foundIndex + steps];
+                if (stringValue.Split(' ').Length == 2)
+                {
+                    stringValue = stringValue.Split(' ')[0];
+                }
             }
             return stringValue.Trim();
         }

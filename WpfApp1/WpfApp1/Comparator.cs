@@ -104,32 +104,54 @@ namespace WpfApp1
             return (_treatmentPlan.totalTreatmentTime() == _tccPlan.totalTreatmentTime());
         }
 
+        decimal plannedToRelizationAKStrengthQuota()
+        {
+            return _tccPlan.plannedSourceStrength() /
+            calculatedRealizedAKStrength();
+        }
+
         decimal decayCorrectedValue(decimal inputValue)
         {
             StringExtractor stringExtractor = new StringExtractor();
             Calculator calculator = new Calculator();
+            // Debug
+            string tmp1 = _treatmentPlan.calibrationDateTime();
+            string tmp2 = _treatmentPlan.statusSetDateTime();
+            string tmp3 = _tccPlan.realizationDateAndTime();
+            // end
             return inputValue *
                (calculator.decayFactor(stringExtractor.stringToDateTime(_treatmentPlan.calibrationDateTime()),
                stringExtractor.stringToDateTime(_treatmentPlan.statusSetDateTime())) /
                calculator.decayFactor(stringExtractor.stringToDateTime(_treatmentPlan.calibrationDateTime()),
-               stringExtractor.stringToDateTime(tccPlan.realizationDateAndTime())));
+               stringExtractor.stringToDateTime(_tccPlan.realizationDateAndTime())));
         }
 
         bool hasCorrectRealizedTotalTreatmentTime(decimal totalTimeEpsilon)
         {
-            if (_treatmentPlan.totalTreatmentTime() == "" || _tccPlan.totalTreatmentTime() == "" || _treatmentPlan.calibrationDateTime() == "")
+            decimal correctedRealizedTotalTime = _treatmentPlan.totalTreatmentTimeValue() * plannedToRelizationAKStrengthQuota();
+            if (_tccPlan.realizedTotalTreatmentTime() < 0 || (correctedRealizedTotalTime < 0))
             {
                 return false;
             }
-            return (Math.Abs(decayCorrectedValue(_treatmentPlan.totalTreatmentTimeValue()) - _tccPlan.realizedTotalTreatmentTime()) /
-                (decayCorrectedValue(_treatmentPlan.totalTreatmentTimeValue())) * 100 < totalTimeEpsilon);
+            return ((Math.Abs(correctedRealizedTotalTime - _tccPlan.realizedTotalTreatmentTime()) /
+                correctedRealizedTotalTime) * 100 < totalTimeEpsilon);
         }
 
-        decimal decayCorrectedDeltaTime(string treatmentPlanTimeStr, string tccPlanTimeStr)
+        bool hasCorrectRealizedAKStrength(decimal AKStrengthEpsilon)
         {
-            StringExtractor stringExtractor = new StringExtractor();
-            decimal treatmentPlanTime = decayCorrectedValue(stringExtractor.decimalStringToDecimal(treatmentPlanTimeStr));
-            return Math.Abs(treatmentPlanTime - stringExtractor.decimalStringToDecimal(tccPlanTimeStr));
+            decimal calcRealizedAKStrength = calculatedRealizedAKStrength();
+            if (calcRealizedAKStrength == -1.0m)
+            {
+                return false;
+            }
+            if ((Math.Abs(calcRealizedAKStrength - _tccPlan.realizedSourceStrength()) / calcRealizedAKStrength) * 100 < AKStrengthEpsilon)
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
         }
 
         bool hasSameCatheterPositionTimePairs(decimal timeEpsilon)
@@ -153,15 +175,11 @@ namespace WpfApp1
                         {
                             continue;
                         }
-                        decimal deltaTime = Math.Abs(stringExtractor.decimalStringToDecimal(subItem.Item2) -
+                        decimal deltaTime = Math.Abs((stringExtractor.decimalStringToDecimal(subItem.Item2) * plannedToRelizationAKStrengthQuota()) -
                             stringExtractor.decimalStringToDecimal(tccLiveCatheters[counter].positonTimePairs()[subCounter].Item2));
-                        decimal deltaTime2 = decayCorrectedDeltaTime(subItem.Item2, tccLiveCatheters[counter].positonTimePairs()[subCounter].Item2);
                         if (subItem.Item1 != stringExtractor.decimalStringToZeroDecimalString(tccLiveCatheters[counter].positonTimePairs()[subCounter].Item1) ||
-                            deltaTime > timeEpsilon)
+                            ((deltaTime / stringExtractor.decimalStringToDecimal(subItem.Item2)) * 100.0m) > timeEpsilon)
                         {
-                            // Debug
-                            var debugItem = item;
-                            string debugStr = tccLiveCatheters[counter].positonTimePairs()[subCounter].Item1;
                             return false;
                         }
                         ++subCounter;
@@ -238,6 +256,21 @@ namespace WpfApp1
         {
             return ((guiPresciptionDose == treatmentPlanPrescriptionDose) &&
                 (treatmentPlanPrescriptionDose == tccPrescriptionDose));
+        }
+
+        decimal calculatedRealizedAKStrength()
+        {
+            if (_tccPlan.calibrationDateTime() == "" | _tccPlan.realizationDateAndTime() == "")
+            {
+                return -1.0m;
+            }
+            Calculator calculator = new Calculator();
+            StringExtractor stringExtractor = new StringExtractor();
+            return _tccPlan.calibratedSourceStrength() *
+                calculator.decayFactor(
+                    stringExtractor.stringToDateTime(_tccPlan.calibrationDateTime()),
+                    stringExtractor.stringToDateTime(_tccPlan.realizationDateAndTime()));
+
         }
         // check -----------------------
 
@@ -464,10 +497,28 @@ namespace WpfApp1
             return resultRow;
         }
 
+      
+
+        public List<string> checkRealizedAKStrength(decimal AKStrengthEpsilon)
+        {
+            List<string> resultRow = new List<string>();
+            resultRow.Add("Realiserade AK Strength");
+            if (hasCorrectRealizedAKStrength(AKStrengthEpsilon))
+            {
+                resultRow.Add("OK");
+            }
+            else
+            {
+                resultRow.Add("Inte OK");
+            }
+            resultRow.Add("Beräknad realiserad AK Strength: " + Math.Round(calculatedRealizedAKStrength(), 2) +
+                " och i TCC: " + _tccPlan.realizedSourceStrength() + " (tolerans:  " + AKStrengthEpsilon + " % ).");
+            return resultRow;
+        }
         public List<string> checkRealizedTotalTreatmentTime(decimal totalTimeEpsilon)
         {
             List<string> resultRow = new List<string>();
-            resultRow.Add("Dosplanen och TCC realiserade beh. tid");
+            resultRow.Add("TCC realiserade behandlingstid");
             if (hasCorrectRealizedTotalTreatmentTime(totalTimeEpsilon))
             {
                 resultRow.Add("OK");
@@ -476,7 +527,8 @@ namespace WpfApp1
             {
                 resultRow.Add("Inte OK");
             }
-            resultRow.Add("Beräknad realiserad behandlingstid utifrån plan: " + Math.Round(decayCorrectedValue(_treatmentPlan.totalTreatmentTimeValue()), 2) +
+            resultRow.Add("Beräknad realiserad behandlingstid utifrån plan: " + 
+                Math.Round(_treatmentPlan.totalTreatmentTimeValue() * plannedToRelizationAKStrengthQuota(), 2) +
                 " och i TCC: " + _tccPlan.realizedTotalTreatmentTime() + " (tolerans:  " + totalTimeEpsilon + " % ).");
             return resultRow;
         }
@@ -496,7 +548,7 @@ namespace WpfApp1
                 resultRow.Add("Inte OK");
                 descriptionString = "Någon/några positioner/tider är olika.";
             }
-            descriptionString += " (korrigerat för sönderfall)";
+            descriptionString += " (korrigerat med tol. " + timeEpsilon + " %";
             resultRow.Add(descriptionString);
 
             return resultRow;
@@ -733,6 +785,7 @@ namespace WpfApp1
             resultRows.Add(checkFractionDose());
             resultRows.Add(checkPlannedSourceStrength(_specifications.AirKermaStrengthEpsilon));
             resultRows.Add(checkTotalTreatmentTime()); 
+            resultRows.Add(checkRealizedAKStrength(_specifications.AKStrengthEpsilon)); 
             resultRows.Add(checkRealizedTotalTreatmentTime(_specifications.TotalTimeEpsilon)); 
             resultRows.Add(checkCatheterPositionTimePairs(_specifications.TimeEpsilon));
             return resultRows;
@@ -777,7 +830,7 @@ namespace WpfApp1
                 List<Tuple<string, string>> positionTimePairs = new List<Tuple<string, string>>();
                 foreach (var subItem in item.positonTimePairs())
                 {
-                    decimal correctedTime = decayCorrectedValue(stringExtractor.decimalStringToDecimal(subItem.Item2));
+                    decimal correctedTime = stringExtractor.decimalStringToDecimal(subItem.Item2) * plannedToRelizationAKStrengthQuota();
                     Tuple<string, string> tuple = new Tuple<string, string>(subItem.Item1, stringExtractor.decimalToTwoDecimalString(correctedTime));
                     positionTimePairs.Add(tuple);
                 }

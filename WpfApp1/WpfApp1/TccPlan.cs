@@ -42,34 +42,40 @@ namespace WpfApp1
             return _stringExtractor.getValueAfterSearchString(_pageList[pageIndex], "Plankod", 0);
         }
 
+        string  toStdDateString(string dateString)
+        {
+            string pattern1 = "dd MMM yyyy / HH:mm (UTC +1:00)";
+            string pattern2 = "d MMM yyyy / HH:mm (UTC +1:00)";
+            string pattern3 = "dd MMM yyyy / HH:mm (UTC +2:00)";
+            string pattern4 = "d MMM yyyy / HH:mm (UTC +2:00)";
+            DateTime parsedDate;
+            if (DateTime.TryParseExact(dateString, pattern1, null, DateTimeStyles.None, out parsedDate) ||
+                                      DateTime.TryParseExact(dateString, pattern2, null, DateTimeStyles.None, out parsedDate) ||
+                                      DateTime.TryParseExact(dateString, pattern3, null, DateTimeStyles.None, out parsedDate) ||
+                                      DateTime.TryParseExact(dateString, pattern4, null, DateTimeStyles.None, out parsedDate)
+                                      )
+            {
+                return parsedDate.ToString(Constants.DATE_AND_TIME_FORMAT);
+            }
+            else
+            {
+                return "";
+            }
+
+        }
+
         public string statusSetDateTime()
         {
             int pageIndex = 0;
             string dateString = _stringExtractor.getValueNStepAfterSearchString(_pageList[pageIndex], "Godkänd den", 2);
-            string pattern = "dd MMM yyyy / HH:mm (UTC +2:00)";
-            string stringFromDateTime = "";
-            DateTime parsedDate;
-            if (DateTime.TryParseExact(dateString, pattern, null,
-                                      DateTimeStyles.None, out parsedDate))
-            {
-                stringFromDateTime = parsedDate.ToString("yyyy-MM-dd HH:mm");
-            }
-            return stringFromDateTime;
+            return toStdDateString(dateString);
         }
 
         public string calibrationDateTime()
         {
             int pageIndex = 0;
             string dateString = _stringExtractor.getValueNStepAfterSearchString(_pageList[pageIndex], "Kalibreringsdatum/-tid", 4);
-            string pattern = "dd MMM yyyy / HH:mm (UTC +1:00)";
-            string stringFromDateTime = "";
-            DateTime parsedDate;
-            if (DateTime.TryParseExact(dateString, pattern, null,
-                                      DateTimeStyles.None, out parsedDate))
-            {
-                stringFromDateTime = parsedDate.ToString("yyyy-MM-dd HH:mm");
-            }
-            return stringFromDateTime;
+            return toStdDateString(dateString);
         }
 
         public bool planIsApproved()
@@ -99,7 +105,7 @@ namespace WpfApp1
         public decimal realizedSourceStrength()
         {
             int pageIndex = 0;
-            return Convert.ToDecimal(_stringExtractor.getValueAfterSearchStringSplitOnSpace(_pageList[pageIndex], "Realiserad AK-styrka", 0));
+            return _stringExtractor.decimalStringToDecimal(_stringExtractor.getValueNStepAfterSearchString(_pageList[pageIndex], "Realiserad AK-styrka", 1));
         }
 
         // TODO Test this function and use it to calculate the treatment time
@@ -107,7 +113,7 @@ namespace WpfApp1
         public decimal calibratedSourceStrength()
         {
             int pageIndex = 0;
-            return Convert.ToDecimal(_stringExtractor.getValueAfterSearchStringSplitOnSpace(_pageList[pageIndex], "Kalibrerad källstyrka", 0));
+            return _stringExtractor.decimalStringToDecimal(_stringExtractor.getValueNStepAfterSearchString(_pageList[pageIndex], "Kalibrerad källstyrka", 4));
         }
 
         public string totalTreatmentTime()
@@ -125,15 +131,7 @@ namespace WpfApp1
         {
             int pageIndex = 0;
             string dateString = _stringExtractor.getValueNStepAfterSearchString(_pageList[pageIndex], "Datum/tid", 1);
-            string pattern = "dd MMM yyyy / HH:mm (UTC +2:00)";
-            string stringFromDateTime = "";
-            DateTime parsedDate;
-            if (DateTime.TryParseExact(dateString, pattern, null,
-                                      DateTimeStyles.None, out parsedDate))
-            {
-                stringFromDateTime = parsedDate.ToString("yyyy-MM-dd HH:mm");
-            }
-            return stringFromDateTime;
+            return toStdDateString(dateString);
         }
 
         public List<LiveCatheter> liveCatheters()

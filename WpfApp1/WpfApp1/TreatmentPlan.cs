@@ -132,7 +132,7 @@ namespace WpfApp1
             if (DateTime.TryParseExact(dateString, pattern, null,
                                       DateTimeStyles.None, out parsedDate))
             {
-                stringFromDateTime = parsedDate.ToString("yyyy-MM-dd HH:mm");
+                stringFromDateTime = parsedDate.ToString(Constants.DATE_AND_TIME_FORMAT);
             }
             return stringFromDateTime;
         }
@@ -151,7 +151,7 @@ namespace WpfApp1
             DateTime result = DateTime.ParseExact(dateString, pattern, CultureInfo.InvariantCulture);
             if (result != null)
             {
-                stringFromDateTime = result.ToString("yyyy-MM-dd HH:mm");
+                stringFromDateTime = result.ToString(Constants.DATE_AND_TIME_FORMAT);
             }
             return stringFromDateTime;
         }
@@ -166,7 +166,7 @@ namespace WpfApp1
             if (DateTime.TryParseExact(stringValue, pattern, null,
                                       DateTimeStyles.None, out parsedDate))
             {
-                stringFromDateTime = parsedDate.ToString("yyyy-MM-dd HH:mm");
+                stringFromDateTime = parsedDate.ToString(Constants.DATE_AND_TIME_FORMAT);
             }
             return stringFromDateTime;
         }
@@ -181,7 +181,7 @@ namespace WpfApp1
             if (DateTime.TryParseExact(stringValue, pattern, null,
                                       DateTimeStyles.None, out parsedDate))
             {
-                stringFromDateTime = parsedDate.ToString("yyyy-MM-dd HH:mm");
+                stringFromDateTime = parsedDate.ToString(Constants.DATE_AND_TIME_FORMAT);
             }
             return stringFromDateTime;
         }

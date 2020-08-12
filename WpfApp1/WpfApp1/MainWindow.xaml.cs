@@ -145,10 +145,7 @@ namespace WpfApp1
         // Returns all data needed to estimate treatment time expect current source strength
         public DataForTreatmentTimeEstimate getDataForTreatmentTimeEstimate()
         {
-            //Calculator calculator = new Calculator();
             StringExtractor stringExtractor = new StringExtractor();
-            // public decimal estimateCylindricTreatmentTime(CylinderType cylinderType, decimal cylinderDiameter,
-            //decimal prescriptionDose, decimal, decimal currentSourceStrength, decimal treatmentLength)
             CylinderType cylinderType = CylinderType.VC;
             if (cylinderTypeComboBox.SelectedIndex == 0)
             {
@@ -167,8 +164,6 @@ namespace WpfApp1
             dataForTreatmentTimeEstimate.CylinderDiameter = cylinderDiameter;
             dataForTreatmentTimeEstimate.PrescriptionDose = prescriptionDose;
             dataForTreatmentTimeEstimate.TreatmentLength = treatmentLength;
-
-
             return dataForTreatmentTimeEstimate;
         }
 
@@ -186,7 +181,6 @@ namespace WpfApp1
                     _specifications.NeedleDepth = calculator.needleDepth();
                     _specifications.FreeLength = calculator.freeLength();
                 }
-
                 if (prescribedDoseText.Text.Length > 0)
                 {
                     _specifications.PrescriptionDose = stringExtractor.decimalStringToDecimal(prescribedDoseText.Text);
@@ -196,7 +190,6 @@ namespace WpfApp1
             {
                 _specifications.ExpectedChannelLength = 1300.0m;
             }
-         
         }
 
         public bool needleDepthAndFreeLengthIsSet()
@@ -223,7 +216,6 @@ namespace WpfApp1
                 _treatmentPlanXpsFilePath = _treatmentPlanXpsFilePathProstate;
                 _dvhXpsFilePath = _dvhXpsFilePathProstate;
                 _tccPlanXpsFilePath = _tccPlanXpsFilePathProstate;
-
             }
             else if (CylinderTab.IsSelected)
             {
@@ -237,7 +229,6 @@ namespace WpfApp1
                 //_dvhXpsFilePath = _dvhXpsFilePathIntraUterine;
                 //_tccPlanXpsFilePath = _tccPlanXpsFilePathIntraUterine;
             }
-
         }
 
         private bool sameSourceProstate()
@@ -278,7 +269,6 @@ namespace WpfApp1
                 //_dvhXpsFilePath = _dvhXpsFilePathIntraUterine;
                 //_tccPlanXpsFilePath = _tccPlanXpsFilePathIntraUterine;
             }
-
         }
 
         private bool correctProstateFileType()
@@ -313,7 +303,6 @@ namespace WpfApp1
             }
             return true;
         }
-
         private bool correctCylinderFileType()
         {
             Comparator comparator = new Comparator(_specifications);
@@ -341,8 +330,6 @@ namespace WpfApp1
 
             private void addProstateResultRows()
         {
-            
-
             Comparator comparator = new Comparator(_specifications);
             if (_treatmentPlanXpsFilePath != null && needleDepthAndFreeLengthIsSet())
             {
@@ -413,9 +400,7 @@ namespace WpfApp1
 
         private void addCylinderResultRows()
         {
-           
             Comparator comparator = new Comparator(_specifications);
-
             if ( _treatmentPlanXpsFilePath != null)
             {
                 PageReader treatmentPlanPageReader = new PageReader(_treatmentPlanXpsFilePath);
@@ -453,7 +438,6 @@ namespace WpfApp1
                     _resultRows.AddRange(comparator.sourceComparisonResultRows(_isSameSource));
                 }
             }
-
         }
 
         bool buildResultDataGrid()
@@ -496,31 +480,6 @@ namespace WpfApp1
             ResultDataGrid.ItemsSource = dataTable.DefaultView;
             updateResultSummaryLabel();
             return correctFileType;
-        }
-
-        bool isXpsFile()
-        {
-            PageReader pageReader = new PageReader(_treatmentPlanXpsFilePath);
-            if (pageReader.isFileType(XpsFileType.ONCENTRA_CYLINDER_TREATMENT_PLAN) || 
-                pageReader.isFileType(XpsFileType.ONCENTRA_PROSTATE_TREATMENT_PLAN))
-            {
-                return true;
-            }
-
-            pageReader = new PageReader(_dvhXpsFilePath);
-            if (pageReader.isFileType(XpsFileType.ONCENTRA_PROSTATE_DVH))
-            {
-                return true;
-            }
-
-            pageReader = new PageReader(_tccPlanXpsFilePath);
-            if (pageReader.isFileType(XpsFileType.CYLINDER_TCC) || pageReader.isFileType(XpsFileType.PROSTATE_TCC))
-            {
-                return true;
-            }
-
-            return false;
-
         }
 
         private void updateCatheters()
@@ -567,7 +526,6 @@ namespace WpfApp1
             }
 
         }
-
 
         public DataTable treatmentPlanDataTable()
         {
@@ -797,7 +755,6 @@ namespace WpfApp1
             DataTable dataTable = new DataTable();
             ResultDataGrid.ItemsSource = dataTable.DefaultView;
             catheterInfoButton.Visibility = Visibility.Hidden;
-
         }
 
         private void cylinderTypeComboBox_DropDownClosed(object sender, EventArgs e)
@@ -829,7 +786,6 @@ namespace WpfApp1
                 _comboboxDiameters.Add(40);
             }
         }
-
         private void catheterInfo_Click(object sender, RoutedEventArgs e)
         {
             CatheterInfoWindow catheterInfoWindow = new CatheterInfoWindow();
