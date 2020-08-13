@@ -154,13 +154,16 @@ namespace WpfApp1
             }
         }
 
-        bool hasSameCatheterPositionTimePairs(decimal timeEpsilon)
+        ErrorCode hasSameCatheterPositionTimePairs(decimal timeEpsilon, bool useRelativeEpsilon)
         {
             List<LiveCatheter> tpLiveCatheters = _treatmentPlan.liveCatheters();
             List<LiveCatheter> tccLiveCatheters = _tccPlan.liveCatheters();
+            ErrorCode errorCode = new ErrorCode();
             if (tpLiveCatheters.Count != tccLiveCatheters.Count)
             {
-                return false;
+                errorCode.Number = -100;
+                errorCode.Description = "Olika antal katetrar i dosplan och TCC plan";
+                return errorCode;
             }
             int counter = 0;
             StringExtractor stringExtractor = new StringExtractor();
@@ -175,23 +178,36 @@ namespace WpfApp1
                         {
                             continue;
                         }
-                        decimal deltaTime = Math.Abs((stringExtractor.decimalStringToDecimal(subItem.Item2) * plannedToRelizationAKStrengthQuota()) -
-                            stringExtractor.decimalStringToDecimal(tccLiveCatheters[counter].positonTimePairs()[subCounter].Item2));
-                        if (subItem.Item1 != stringExtractor.decimalStringToZeroDecimalString(tccLiveCatheters[counter].positonTimePairs()[subCounter].Item1) ||
-                            ((deltaTime / stringExtractor.decimalStringToDecimal(subItem.Item2)) * 100.0m) > timeEpsilon)
+                        decimal correctedTpTime = stringExtractor.decimalStringToDecimal(subItem.Item2) * plannedToRelizationAKStrengthQuota();
+                        decimal deltaTime = Math.Abs(correctedTpTime -
+                        stringExtractor.decimalStringToDecimal(tccLiveCatheters[counter].positonTimePairs()[subCounter].Item2));
+                        if (useRelativeEpsilon)
                         {
-                            return false;
+                            deltaTime = (deltaTime / correctedTpTime) *100.0m;
+                        }
+                        if (subItem.Item1 != stringExtractor.decimalStringToZeroDecimalString(tccLiveCatheters[counter].positonTimePairs()[subCounter].Item1) ||
+                             deltaTime > timeEpsilon)
+                        {
+                            errorCode.Number = -101;
+                            errorCode.Description = "Kateter nummer " + (counter + 1) + " på " + (subCounter + 1) + ":e positionen avviker. " +
+                                "Position i dosplan: "  + subItem.Item1 + " i TCC plan: " + stringExtractor.decimalStringToZeroDecimalString(tccLiveCatheters[counter].positonTimePairs()[subCounter].Item1) +
+                                ". Korrigerad tid i dosplan: " + correctedTpTime + " tid i TCC plan: " + stringExtractor.decimalStringToDecimal(tccLiveCatheters[counter].positonTimePairs()[subCounter].Item2);
+                            return errorCode;
                         }
                         ++subCounter;
                     }
                 }
                 else
                 {
-                    return false;
+                    errorCode.Number = -102;
+                    errorCode.Description = "Kateternummer i dosplan och TCC plan är olika för kateter " + counter;
+                    return errorCode;
                 }
                 ++counter;
             }
-            return true;
+            errorCode.Number = 0;
+            errorCode.Description = "Alla positioner och tider är lika";
+            return errorCode;
         }
 
         public bool treatmentPlanHasSameChannelLength(decimal channelLength)
@@ -385,7 +401,7 @@ namespace WpfApp1
         public List<string> checkApproveDateTime()
         {
             List<string> resultRow = new List<string>();
-            resultRow.Add("Samma godkännande tidpunkt");
+            resultRow.Add("Planens godkännandetidpunkt");
             string info = "";
             if (hasSameStatusSetDateTime())
             {
@@ -398,8 +414,8 @@ namespace WpfApp1
                 resultRow.Add("Inte OK");
                 info += "inte samma";
             }
-            info += " dosplanens godkännande: " + _treatmentPlan.statusSetDateTime() +
-                " TCC planens godkännande: " + _tccPlan.statusSetDateTime();
+            info += ". Dosplanens godkännande: " + _treatmentPlan.statusSetDateTime() +
+                ", TCC planens godkännande: " + _tccPlan.statusSetDateTime();
             resultRow.Add("Tiden för godkännande i plan och TCC är " + info);
 
             return resultRow;
@@ -533,22 +549,29 @@ namespace WpfApp1
             return resultRow;
         }
 
-        public List<string> checkCatheterPositionTimePairs(decimal timeEpsilon)
+        public List<string> checkCatheterPositionTimePairs(decimal timeEpsilon, bool useRelativeEpsilon = false)
         {
             List<string> resultRow = new List<string>();
             resultRow.Add("Bestrålningsposition och tid");
             string descriptionString = "";
-            if (hasSameCatheterPositionTimePairs(timeEpsilon))
+            ErrorCode errorCode = hasSameCatheterPositionTimePairs(timeEpsilon, useRelativeEpsilon);
+            if (errorCode.Number == 0)
             {
                 resultRow.Add("OK");
-                descriptionString = "Alla positioner och tider är lika.";
+                descriptionString = errorCode.Description;
             }
             else
             {
                 resultRow.Add("Inte OK");
-                descriptionString = "Någon/några positioner/tider är olika.";
+                descriptionString = errorCode.Description;
             }
-            descriptionString += " (korrigerat med tol. " + timeEpsilon + " %";
+
+            string toleranceUnit = "sek";
+            if (useRelativeEpsilon)
+            {
+                toleranceUnit = "%";
+            }
+            descriptionString += "  (tolerans: " + timeEpsilon + " " + toleranceUnit + "). Tider från dosplan har korrigerats för sönderfall.";
             resultRow.Add(descriptionString);
 
             return resultRow;
@@ -773,7 +796,7 @@ namespace WpfApp1
             return resultRows;
         }
 
-        public List<List<string>> resultRows(bool skipApprovalTest = false)
+        public List<List<string>> resultRows(bool skipApprovalTest = false, bool useRelativeEpsilon = false)
         {
             List<List<string>> resultRows = new List<List<string>>();
             resultRows.Add(headerResultRow("Plan & TCC"));
@@ -786,8 +809,13 @@ namespace WpfApp1
             resultRows.Add(checkPlannedSourceStrength(_specifications.AirKermaStrengthEpsilon));
             resultRows.Add(checkTotalTreatmentTime()); 
             resultRows.Add(checkRealizedAKStrength(_specifications.AKStrengthEpsilon)); 
-            resultRows.Add(checkRealizedTotalTreatmentTime(_specifications.TotalTimeEpsilon)); 
-            resultRows.Add(checkCatheterPositionTimePairs(_specifications.TimeEpsilon));
+            resultRows.Add(checkRealizedTotalTreatmentTime(_specifications.TotalTimeEpsilon));
+            decimal timeEpsilon = _specifications.TimeEpsilon;
+            if (useRelativeEpsilon)
+            {
+                timeEpsilon = _specifications.RelativeTimeEpsilon;
+            }
+            resultRows.Add(checkCatheterPositionTimePairs(timeEpsilon, useRelativeEpsilon));
             return resultRows;
         }
 

@@ -432,7 +432,8 @@ namespace WpfApp1
                 TccPlan tccPlan = new TccPlan(tccPlanPageList, tccLiveCatheters);
                 comparator.tccPlan = tccPlan;
                 bool skipApprovalTest = true;
-                _resultRows.AddRange(comparator.resultRows(skipApprovalTest));
+                bool useRelativeEpsilon = true;
+                _resultRows.AddRange(comparator.resultRows(skipApprovalTest, useRelativeEpsilon));
                 if (_sameSourceSet)
                 {
                     _resultRows.AddRange(comparator.sourceComparisonResultRows(_isSameSource));
@@ -645,6 +646,7 @@ namespace WpfApp1
         private void BtnOpenTPFile_Click(object sender, RoutedEventArgs e)
         {
             OpenFileDialog openFileDialog = new OpenFileDialog();
+            openFileDialog.Filter = "xps files (*.xps)|*.xps|All files (*.*)|*.*";
             if (openFileDialog.ShowDialog() == true)
             {
                 var selectedFile = openFileDialog.FileName;
@@ -672,6 +674,7 @@ namespace WpfApp1
         private void BtnOpenDVHFile_Click(object sender, RoutedEventArgs e)
         {
             OpenFileDialog openFileDialog = new OpenFileDialog();
+            openFileDialog.Filter = "xps files (*.xps)|*.xps|All files (*.*)|*.*";
             if (openFileDialog.ShowDialog() == true)
             {
                 var selectedFile = openFileDialog.FileName;
@@ -691,6 +694,7 @@ namespace WpfApp1
         private void BtnOpenTCCFile_Click(object sender, RoutedEventArgs e)
         {
             OpenFileDialog openFileDialog = new OpenFileDialog();
+            openFileDialog.Filter = "xps files (*.xps)|*.xps|All files (*.*)|*.*";
             if (openFileDialog.ShowDialog() == true)
             {
                 var selectedFile = openFileDialog.FileName;

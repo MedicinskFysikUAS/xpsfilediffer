@@ -122,23 +122,36 @@ namespace WpfApp1
             }
         }
 
+        string toStdDateStringInTreatmentPlan(string dateString)
+        {
+            string pattern1 = "HH:mm:ss, dd. MMMMM yyyy";
+            string pattern2 = "dd MMM yyyy HH:mm:ss";
+            string pattern3 = "yyyy-MM-dd HH:mm:ss";
+            CultureInfo enUS = new CultureInfo("en-US");
+            DateTime parsedDate;
+            if (DateTime.TryParseExact(dateString, pattern1, null, DateTimeStyles.None, out parsedDate) ||
+                                      DateTime.TryParseExact(dateString, pattern1, enUS, DateTimeStyles.None, out parsedDate) ||
+                                      DateTime.TryParseExact(dateString, pattern2, null, DateTimeStyles.None, out parsedDate) ||
+                                      DateTime.TryParseExact(dateString, pattern2, enUS, DateTimeStyles.None, out parsedDate) ||
+                                      DateTime.TryParseExact(dateString, pattern3, null, DateTimeStyles.None, out parsedDate) ||
+                                      DateTime.TryParseExact(dateString, pattern3, enUS, DateTimeStyles.None, out parsedDate)
+                                      )
+            {
+                return parsedDate.ToString(Constants.DATE_AND_TIME_FORMAT);
+            }
+            else
+            {
+                return "";
+            }
+
+        }
+
         public string prostateStatusSetDateTime()
         {
             int pageIndex = 0;
             string dateString = _stringExtractor.getValueFromSpaceSeparetedString(_pageList[pageIndex], "Status set at:", 0);
-            string pattern = "HH:mm:ss, dd. MMMMM yyyy";
-            string stringFromDateTime = "";
-            DateTime parsedDate;
-            if (DateTime.TryParseExact(dateString, pattern, null,
-                                      DateTimeStyles.None, out parsedDate))
-            {
-                stringFromDateTime = parsedDate.ToString(Constants.DATE_AND_TIME_FORMAT);
-            }
-            return stringFromDateTime;
+            return toStdDateStringInTreatmentPlan(dateString);
         }
-
-       
-
 
         public string cylindricStatusSetDateTime()
         {
@@ -146,6 +159,8 @@ namespace WpfApp1
             string dateAndUserString = _pageList[pageIndex][3];
             int position = dateAndUserString.IndexOf("by otpuser");
             string dateString = dateAndUserString.Substring(0, position).Trim();
+            return toStdDateStringInTreatmentPlan(dateString);
+            /*
             string pattern = "dd MMM yyyy HH:mm:ss";
             string stringFromDateTime = "";
             DateTime result = DateTime.ParseExact(dateString, pattern, CultureInfo.InvariantCulture);
@@ -153,13 +168,15 @@ namespace WpfApp1
             {
                 stringFromDateTime = result.ToString(Constants.DATE_AND_TIME_FORMAT);
             }
-            return stringFromDateTime;
+            return stringFromDateTime;*/
         }
 
         public string prostateCalibrationDateTime()
         {
             int pageIndex = 0;
-            string stringValue = _stringExtractor.getStringAfterStartWithSearchString(_pageList[pageIndex], "Calibration Date/Time:");
+            string dateString = _stringExtractor.getStringAfterStartWithSearchString(_pageList[pageIndex], "Calibration Date/Time:");
+            return toStdDateStringInTreatmentPlan(dateString);
+            /*
             string pattern = "yyyy-MM-dd HH:mm:ss";
             string stringFromDateTime = "";
             DateTime parsedDate;
@@ -168,14 +185,15 @@ namespace WpfApp1
             {
                 stringFromDateTime = parsedDate.ToString(Constants.DATE_AND_TIME_FORMAT);
             }
-            return stringFromDateTime;
+            return stringFromDateTime; */
         }
 
         public string cylinderCalibrationDateTime()
         {
             int pageIndex = 0;
-            string stringValue = _stringExtractor.getValueNStepAfterSearchString(_pageList[pageIndex], "Calibration date/time:", -1);
-            string pattern = "dd MMM yyyy HH:mm:ss";
+            string dateString = _stringExtractor.getValueNStepAfterSearchString(_pageList[pageIndex], "Calibration date/time:", -1);
+            return toStdDateStringInTreatmentPlan(dateString);
+            /*string pattern = "dd MMM yyyy HH:mm:ss";
             string stringFromDateTime = "";
             DateTime parsedDate;
             if (DateTime.TryParseExact(stringValue, pattern, null,
@@ -183,7 +201,7 @@ namespace WpfApp1
             {
                 stringFromDateTime = parsedDate.ToString(Constants.DATE_AND_TIME_FORMAT);
             }
-            return stringFromDateTime;
+            return stringFromDateTime; */
         }
 
 

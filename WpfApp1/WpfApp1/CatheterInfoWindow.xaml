@@ -5,20 +5,21 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:WpfApp1"
         mc:Ignorable="d"
-        Title="CatheterInfoWindow" Height="638" Width="800">
+        Title="CatheterInfoWindow" Height="638" Width="784">
     <Grid Margin="0,0,0,27">
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="19*"/>
-            <ColumnDefinition/>
+            <ColumnDefinition Width="0*"/>
+            <ColumnDefinition Width="610*"/>
+            <ColumnDefinition Width="60*"/>
         </Grid.ColumnDefinitions>
-        <Button Content="Button" HorizontalAlignment="Left" Margin="280,0,0,0" VerticalAlignment="Center" Width="0" Grid.Column="1" Height="20"/>
-        <Button x:Name="CatheterInfoExitButton" Click="CatheterInfoExit_click" Content="Stäng" HorizontalAlignment="Left" Margin="670,539,0,0" VerticalAlignment="Top" RenderTransformOrigin="3.528,2.758" Height="29" Width="50"/>
-        <DataGrid x:Name="treatmentPlanDataGrid" Margin="0,59,570,0"/>
-        <DataGrid x:Name="tccPlanDataGrid" Margin="415,59,155,0"/>
-        <Label x:Name="treatmentPlanGridLabel" Content="Dosplan" HorizontalAlignment="Left" Margin="50,24,0,0" VerticalAlignment="Top" Height="26" Width="53"/>
-        <Label x:Name="tccPlanGridLabel" Content="TCC plan" HorizontalAlignment="Left" Margin="476,24,0,0" VerticalAlignment="Top" Height="26" Width="56"/>
-        <DataGrid x:Name="treatmentPlanDataGridCorr" Margin="210,59,360,0"/>
-        <Label x:Name="treatmentPlanGridLabelCorr" Content="Dosplan korrigerad" HorizontalAlignment="Left" Margin="260,24,0,0" VerticalAlignment="Top" Height="26" Width="120"/>
+        <Button Content="Button" HorizontalAlignment="Left" Margin="195,0,0,0" VerticalAlignment="Center" Width="0" Grid.Column="4" Height="20"/>
+        <Button x:Name="CatheterInfoExitButton" Click="CatheterInfoExit_click" Content="Stäng" HorizontalAlignment="Left" Margin="0,535,0,0" VerticalAlignment="Top" RenderTransformOrigin="3.528,2.758" Height="29" Width="50" Grid.Column="2"/>
+        <DataGrid x:Name="treatmentPlanDataGrid" Margin="0,59,514,0" Grid.ColumnSpan="2"/>
+        <DataGrid x:Name="tccPlanDataGrid" Margin="440,59,44,0" Grid.ColumnSpan="2"/>
+        <Label x:Name="treatmentPlanGridLabel" Content="Dosplan" HorizontalAlignment="Left" Margin="50,24,0,0" VerticalAlignment="Top" Height="26" Width="53" Grid.ColumnSpan="2"/>
+        <Label x:Name="tccPlanGridLabel" Content="TCC plan" HorizontalAlignment="Left" Margin="526,24,0,0" VerticalAlignment="Top" Height="26" Width="64" Grid.ColumnSpan="2"/>
+        <DataGrid x:Name="treatmentPlanDataGridCorr" Margin="205,59,279,0" Grid.ColumnSpan="2"/>
+        <Label x:Name="treatmentPlanGridLabelCorr" Content="Dosplan korrigerad" HorizontalAlignment="Left" Margin="260,24,0,0" VerticalAlignment="Top" Height="26" Width="120" Grid.ColumnSpan="2"/>
 
     </Grid>
 </Window>

@@ -311,6 +311,11 @@ namespace WpfApp1
             return String.Format("{0:0.00}", decimalValue);
         }
 
+        public string decimalToOneDecimalString(decimal decimalValue)
+        {
+            return String.Format("{0:0.0}", decimalValue);
+        }
+
         public decimal decimalStringToDecimal(string decimalString)
         {
             string localDecimalString = decimalString;
