@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Windows.Controls;
 using System.Windows.Documents;
+using System.Windows.Navigation;
 using System.Windows.Xps.Packaging;
 
 
@@ -81,7 +82,7 @@ namespace WpfApp1
             }
         }
 
-        public List<List<string>> getPages()
+        public List<List<string>> getPages(bool debug = false)
         {
             XpsDocument _xpsDocument = new XpsDocument(xpsFilePath, System.IO.FileAccess.Read);
             IXpsFixedDocumentSequenceReader fixedDocSeqReader = _xpsDocument.FixedDocumentSequenceReader;
@@ -92,7 +93,11 @@ namespace WpfApp1
             {
                 IXpsFixedPageReader _page = _document.FixedPages[pageCount];
                 System.Xml.XmlReader _pageContentReader = _page.XmlReader;
-                //WriteOutXml(_pageContentReader, "xmlFile" + pageCount + ".xml");
+                // Debug print xml file:
+                if (debug)
+                {
+                    WriteOutXml(_pageContentReader, "xmlFile" + pageCount + ".xml");
+                }
                 List<string> stringsOnPage = new List<string>();
                 string startPageString = "Page number " + pageCount;
                 stringsOnPage.Add(startPageString);
@@ -136,6 +141,7 @@ namespace WpfApp1
                     string readCatheterPositionsAtY = "";
                     string channelNumber = "";
                     List<string> catheterPositions = new List<string>();
+                    string foundUnicodeString = "";
 
                     while (_pageContentReader.Read())
                     {
@@ -148,9 +154,10 @@ namespace WpfApp1
                                  */
 
                                 if (_pageContentReader.GetAttribute("UnicodeString") != null)
-                                {  
+                                {
                                     // If the previous Glyphs included the a unicode string starting with Kanal the next Glyphs will
                                     // include the indecies for the time positoins
+                                    var tmp = _pageContentReader.GetAttribute("OriginY");
                                     if (readCatheterPositions && readCatheterPositionsAtY == _pageContentReader.
                                         GetAttribute("OriginY"))
                                     {
@@ -169,15 +176,21 @@ namespace WpfApp1
 
                                     if (unicodeString.StartsWith("Kanal") && unicodeString.Length < 9)
                                     {
-                                        readCatheterPositionsAtY = (_pageContentReader.
-                                        GetAttribute("OriginY"));
+                                        readCatheterPositionsAtY = (_pageContentReader.GetAttribute("OriginY"));
                                         readCatheterPositions = true;
                                         channelNumber = unicodeString;
                                     }
 
                                     if (unicodeString.StartsWith("Stråln"))
                                     {
-                                        catheterPositions = catheterPositionsInHeader(_pageContentReader);
+                                        catheterPositions.Clear();
+                                        foundUnicodeString = catheterPositionsInHeader(_pageContentReader, ref catheterPositions);
+                                        if (foundUnicodeString.StartsWith("Kanal"))
+                                        {
+                                            channelNumber = foundUnicodeString;
+                                            readCatheterPositionsAtY = (_pageContentReader.GetAttribute("OriginY"));
+                                            readCatheterPositions = true;
+                                        }
                                     }
                                 }
                             }
@@ -412,21 +425,57 @@ namespace WpfApp1
             return tuples;
         }
 
-        public List<string> catheterPositionsInHeader(System.Xml.XmlReader pageContentReader)
+        private string setCatheterPositionsAfterEmptyHeader(System.Xml.XmlReader pageContentReader, ref List<string> catheterPositions)
         {
+            bool kanalUnicodeStringFound = false;
+            string foundUnicodeString = "";
+            while (!kanalUnicodeStringFound && pageContentReader.Read())
+            {
+                if (pageContentReader.Name == "Glyphs")
+                {
+                    if (pageContentReader.HasAttributes)
+                    {
+                        if (pageContentReader.GetAttribute("UnicodeString") != null)
+                        {
+                            string unicodeString = (pageContentReader.GetAttribute("UnicodeString"));
+                            if (unicodeString.StartsWith("Kanal"))
+                            {
+                                foundUnicodeString = unicodeString;
+                                kanalUnicodeStringFound = true;
+                            }
+                            else
+                            {
+                                catheterPositions.Add(unicodeString);
+                            }
+                        }
+                    }
+                }
+            }
+            return foundUnicodeString;
+        }
+
+        private string catheterPositionsInHeader(System.Xml.XmlReader pageContentReader, ref List<string> catheterPositions)
+        {
+            string foundUnicodeString = "";
             string headerString = pageContentReader.GetAttribute("UnicodeString");
             int startIndex = headerString.IndexOf(')') + 1;
             string positionString = headerString.Substring(startIndex, headerString.Length - startIndex);
-            startIndex = 0;
-            int stringLength = 5;
-            List<string> catheterPositions = new List<string>();
-            while (startIndex < positionString.Length)
+            if (positionString.Length == 0)
             {
-                string substring = positionString.Substring(startIndex, stringLength);
-                catheterPositions.Add(substring);
-                startIndex += stringLength;
+                foundUnicodeString = setCatheterPositionsAfterEmptyHeader(pageContentReader, ref catheterPositions);
             }
-            return catheterPositions;
+            else
+            {
+                startIndex = 0;
+                int stringLength = 5;
+                while (startIndex < positionString.Length)
+                {
+                    string substring = positionString.Substring(startIndex, stringLength);
+                    catheterPositions.Add(substring);
+                    startIndex += stringLength;
+                }
+            }
+            return foundUnicodeString;
         }
 
         public void addLiveCatheter(LiveCatheter liveCatheter)

@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:WpfApp1"
         mc:Ignorable="d"
-        Title="jmfXps" Height="619" Width="684">
+        Title="jmfXps" Height="639" Width="684">
     <Grid Margin="0,0,0,-6">
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="25*"/>
@@ -124,10 +124,10 @@
             </TabItem>
 
         </TabControl>
-        <DataGrid x:Name="ResultDataGrid" Margin="0,274,0,47" Grid.ColumnSpan="5" EnableRowVirtualization="False" VirtualizingStackPanel.IsVirtualizing="False" />
-        <Button x:Name="BtnExit" Click="BtnExit_Click" Content="Avsluta" HorizontalAlignment="Left" Margin="51,552,0,0" VerticalAlignment="Top" Width="57" Height="26" Grid.Column="3"/>
-        <Label x:Name="resultSummaryLabel" Content="label" HorizontalAlignment="Left" Margin="152,552,0,0" VerticalAlignment="Top" Width="124" Grid.Column="1" Height="26"/>
-        <Button x:Name="catheterInfoButton" Click="catheterInfo_Click" Content="KateterInfo" Grid.Column="2" HorizontalAlignment="Left" Margin="65,552,0,0" VerticalAlignment="Top" Height="26" Grid.ColumnSpan="2" Width="75"/>
+        <DataGrid x:Name="ResultDataGrid" Margin="0,274,0,68" Grid.ColumnSpan="5" EnableRowVirtualization="False" VirtualizingStackPanel.IsVirtualizing="False" />
+        <Button x:Name="BtnExit" Click="BtnExit_Click" Content="Avsluta" HorizontalAlignment="Left" Margin="51,565,0,0" VerticalAlignment="Top" Width="57" Height="29" Grid.Column="3"/>
+        <Label x:Name="resultSummaryLabel" Content="label" HorizontalAlignment="Left" Margin="152,565,0,0" VerticalAlignment="Top" Width="124" Grid.Column="1" Height="29"/>
+        <Button x:Name="catheterInfoButton" Click="catheterInfo_Click" Content="KateterInfo" Grid.Column="2" HorizontalAlignment="Left" Margin="65,565,0,0" VerticalAlignment="Top" Height="29" Grid.ColumnSpan="2" Width="75"/>
         <Label Content="Label" Grid.Column="4" HorizontalAlignment="Left" Margin="210,24,0,0" VerticalAlignment="Top"/>
 
 

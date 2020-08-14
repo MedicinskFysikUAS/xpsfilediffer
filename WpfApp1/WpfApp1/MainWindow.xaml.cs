@@ -62,7 +62,12 @@ namespace WpfApp1
             initiateCylinderTypeComboBox();
              _comboboxDiameters = new List<int>();
             initiateSameSourceCombobox();
-    }
+            // debug
+            //PageReader tccPlanPageReader = new PageReader("C:\\work\\git\\xpsfilediffer\\xpsFilerTcc1\\prostateTcc3.xps");
+            //List<List<string>> tccPlanPageList = tccPlanPageReader.getPages();
+            //List<LiveCatheter> tccLiveCatheters = tccPlanPageReader.tccLiveCatheters(TabType.PROSTATE);
+            // end
+        }
     // https://stackoverflow.com/questions/23499105/c-sharp-app-config-with-array-or-list-like-data
 
     public void setProstateCalculationsVisable(bool setVisable)
