@@ -37,7 +37,7 @@ namespace WpfApp1
 
         public bool sufficientNeedleDepth()
         {
-            return needleLengthPlusProbeDistance() < 195;
+            return needleLengthPlusProbeDistance() <= 195;
         }
 
         public decimal estimatedTreatmentTime(decimal ptvVolume, decimal prescribedDose, decimal sourceStrength)

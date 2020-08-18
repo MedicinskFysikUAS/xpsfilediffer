@@ -176,16 +176,6 @@ namespace WpfApp1
             int pageIndex = 0;
             string dateString = _stringExtractor.getStringAfterStartWithSearchString(_pageList[pageIndex], "Calibration Date/Time:");
             return toStdDateStringInTreatmentPlan(dateString);
-            /*
-            string pattern = "yyyy-MM-dd HH:mm:ss";
-            string stringFromDateTime = "";
-            DateTime parsedDate;
-            if (DateTime.TryParseExact(stringValue, pattern, null,
-                                      DateTimeStyles.None, out parsedDate))
-            {
-                stringFromDateTime = parsedDate.ToString(Constants.DATE_AND_TIME_FORMAT);
-            }
-            return stringFromDateTime; */
         }
 
         public string cylinderCalibrationDateTime()
@@ -193,15 +183,6 @@ namespace WpfApp1
             int pageIndex = 0;
             string dateString = _stringExtractor.getValueNStepAfterSearchString(_pageList[pageIndex], "Calibration date/time:", -1);
             return toStdDateStringInTreatmentPlan(dateString);
-            /*string pattern = "dd MMM yyyy HH:mm:ss";
-            string stringFromDateTime = "";
-            DateTime parsedDate;
-            if (DateTime.TryParseExact(stringValue, pattern, null,
-                                      DateTimeStyles.None, out parsedDate))
-            {
-                stringFromDateTime = parsedDate.ToString(Constants.DATE_AND_TIME_FORMAT);
-            }
-            return stringFromDateTime; */
         }
 
 
@@ -254,6 +235,7 @@ namespace WpfApp1
             }
             else if (_tabType == TabType.CYLINDER)
             {
+                pageIndex = 0;
                 stringValue = _stringExtractor.getValueBeforeSearchString(_pageList[pageIndex], "Prescription dose per fraction/pulse (Gy):", pageIndex);
             }
 
@@ -539,7 +521,7 @@ namespace WpfApp1
             else if (_stringExtractor.getIndexOnPageForSearchedStringFromIndex(page, startIndex, "Signed for approval") == -1 &&
                 _stringExtractor.getIndexOnPageForSearchedStringFromIndex(page, startIndex, "P1") != -1)
             {
-                return _stringExtractor.getIndexOnPageForSearchedStringFromIndex(page, startIndex, "Source");
+                return _stringExtractor.getIndexOnPageForSearchedStringFromIndex(page, startIndex, "P1") - 8;
             }
             else if (_stringExtractor.getIndexOnPageForSearchedStringFromIndex(page, startIndex, "Signed for approval") != -1 &&
                 _stringExtractor.getIndexOnPageForSearchedStringFromIndex(page, startIndex, "P1") != -1)
@@ -551,7 +533,7 @@ namespace WpfApp1
                 }
                 else
                 {
-                    return _stringExtractor.getIndexOnPageForSearchedStringFromIndex(page, startIndex, "P1");
+                    return _stringExtractor.getIndexOnPageForSearchedStringFromIndex(page, startIndex, "P1") - 8;
                 }
             }
             else

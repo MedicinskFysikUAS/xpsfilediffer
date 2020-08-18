@@ -93,7 +93,7 @@
                         <Label x:Name="cylinderDiameterLabel" Content="Cylinderdiameter [mm]: " HorizontalAlignment="Left" Margin="3,26,0,0" VerticalAlignment="Top" Height="26" Width="136"/>
                         <ComboBox x:Name="cylinderDiameterComboBox" HorizontalAlignment="Left" Margin="144,30,0,0" VerticalAlignment="Top" Width="53"/>
                     </Grid>
-                    <Grid HorizontalAlignment="Left" Height="71" Margin="10,7,0,0" VerticalAlignment="Top" Width="460" Grid.ColumnSpan="2">
+                    <Grid HorizontalAlignment="Left" Height="71" Margin="10,7,0,0" VerticalAlignment="Top" Width="597" Grid.ColumnSpan="3">
                         <Label x:Name="TPXpsPathLabel1" Content="Inte vald" HorizontalAlignment="Left" Margin="120,0,0,0" VerticalAlignment="Top" Height="26" Width="482"/>
                         <Button x:Name="BtnOpenTPFile1" Click="BtnOpenTPFile_Click" Content="Treatment plan file:" HorizontalAlignment="Left" Margin="0,3,0,0" VerticalAlignment="Top" Width="115" Height="23"/>
                         <Button x:Name="BtnOpenTCCFile1" Click="BtnOpenTCCFile_Click" Content="TCC file:" HorizontalAlignment="Left" Margin="0,37,0,0" VerticalAlignment="Top" Height="20" Width="46"/>

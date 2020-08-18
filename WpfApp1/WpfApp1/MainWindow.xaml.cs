@@ -194,6 +194,10 @@ namespace WpfApp1
             else if (_tabType == TabType.CYLINDER)
             {
                 _specifications.ExpectedChannelLength = 1300.0m;
+                if (prescriptionDoseIsSetCylinder())
+                {
+                    _specifications.PrescriptionDoseCylinder = stringExtractor.decimalStringToDecimal(cylindricPrescribedDoseText.Text);
+                }
             }
         }
 
@@ -205,6 +209,11 @@ namespace WpfApp1
         public bool prescriptionDoseIsSet()
         {
             return (prescribedDoseText.Text.Length > 0);
+        }
+
+        public bool prescriptionDoseIsSetCylinder()
+        {
+            return (cylindricPrescribedDoseText.Text.Length > 0);
         }
 
         public bool cylinderTypeDiamterLengthAndDoseIsSet()
@@ -443,6 +452,11 @@ namespace WpfApp1
                 {
                     _resultRows.AddRange(comparator.sourceComparisonResultRows(_isSameSource));
                 }
+                if (prescriptionDoseIsSetCylinder())
+                {
+                    _resultRows.AddRange(comparator.prescriptionDoseResultRowsCylinder());
+                }
+
             }
         }
 

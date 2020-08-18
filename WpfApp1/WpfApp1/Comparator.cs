@@ -22,6 +22,9 @@ namespace WpfApp1
         public TreatmentDvh treatmentDvh { get => _treatmentDvh; set => _treatmentDvh = value; }
 
         // has --------------------------
+
+
+        // TODO: Add check of dvh patients name
         public bool hasSamePatientName()
         {
             if (_treatmentPlan.patientFirstName() == "" || _tccPlan.patientFirstName() == "" ||
@@ -77,7 +80,10 @@ namespace WpfApp1
             {
                 return false;
             }
-            return (_treatmentPlan.calibrationDateTime() == _tccPlan.calibrationDateTime());
+            StringExtractor stringExtractor = new StringExtractor();
+            TimeSpan duration = stringExtractor.stringToDateTime(_treatmentPlan.calibrationDateTime()) -
+                stringExtractor.stringToDateTime(_tccPlan.calibrationDateTime());
+            return (duration.TotalHours <= 1);
         }
 
         public bool hasSameFractionDose()
@@ -103,6 +109,16 @@ namespace WpfApp1
             }
             return (_treatmentPlan.totalTreatmentTime() == _tccPlan.totalTreatmentTime());
         }
+
+        bool hasSameTotalTreatmentTimeValue(decimal totalTreatmentTimeEpsilon)
+        {
+            if (_treatmentPlan.totalTreatmentTime() == "" || _tccPlan.totalTreatmentTime() == "")
+            {
+                return false;
+            }
+            return (Math.Abs(_treatmentPlan.totalTreatmentTimeValue() - _tccPlan.totalTreatmentTimeValue()) < totalTreatmentTimeEpsilon);
+        }
+
 
         decimal plannedToRelizationAKStrengthQuota()
         {
@@ -169,7 +185,8 @@ namespace WpfApp1
             StringExtractor stringExtractor = new StringExtractor();
             foreach (var item in tpLiveCatheters)
             {
-                if (item.catheterNumber() == tccLiveCatheters[counter].catheterNumber())
+                if (item.catheterNumber() == tccLiveCatheters[counter].catheterNumber() &&
+                    item.positonTimePairs().Count >= tccLiveCatheters[counter].positonTimePairs().Count)
                 {
                     int subCounter = 0;
                     foreach (var subItem in item.positonTimePairs())
@@ -183,14 +200,14 @@ namespace WpfApp1
                         stringExtractor.decimalStringToDecimal(tccLiveCatheters[counter].positonTimePairs()[subCounter].Item2));
                         if (useRelativeEpsilon)
                         {
-                            deltaTime = (deltaTime / correctedTpTime) *100.0m;
+                            deltaTime = (deltaTime / correctedTpTime) * 100.0m;
                         }
                         if (subItem.Item1 != stringExtractor.decimalStringToZeroDecimalString(tccLiveCatheters[counter].positonTimePairs()[subCounter].Item1) ||
                              deltaTime > timeEpsilon)
                         {
                             errorCode.Number = -101;
                             errorCode.Description = "Kateter nummer " + (counter + 1) + " på " + (subCounter + 1) + ":e positionen avviker. " +
-                                "Position i dosplan: "  + subItem.Item1 + " i TCC plan: " + stringExtractor.decimalStringToZeroDecimalString(tccLiveCatheters[counter].positonTimePairs()[subCounter].Item1) +
+                                "Position i dosplan: " + subItem.Item1 + " i TCC plan: " + stringExtractor.decimalStringToZeroDecimalString(tccLiveCatheters[counter].positonTimePairs()[subCounter].Item1) +
                                 ". Korrigerad tid i dosplan: " + correctedTpTime + " tid i TCC plan: " + stringExtractor.decimalStringToDecimal(tccLiveCatheters[counter].positonTimePairs()[subCounter].Item2);
                             return errorCode;
                         }
@@ -200,7 +217,8 @@ namespace WpfApp1
                 else
                 {
                     errorCode.Number = -102;
-                    errorCode.Description = "Kateternummer i dosplan och TCC plan är olika för kateter " + counter;
+                    errorCode.Description = "Kateternummer i dosplan och TCC plan är olika för kateter " + (counter + 1) + 
+                        " eller så är antalet positioner för denna kateter inte det samma i dosplan och TCC plan.";
                     return errorCode;
                 }
                 ++counter;
@@ -382,7 +400,7 @@ namespace WpfApp1
             else
             {
                 resultRow.Add(" ");
-                string description = "Planens status kan inte testas. TCC-planen är ";
+                string description = "Dosplanens status kan inte testas. TCC-planen är ";
                 if (tccPlanHasApprovedStatus())
                 {
                     description += "godkänd.";
@@ -452,7 +470,8 @@ namespace WpfApp1
                 info += "inte samma.";
             }
             info += " Dosplanens kalibreringsdatum: " + _treatmentPlan.calibrationDateTime() +
-                " TCC planens kalibreringsdatum: " + _tccPlan.calibrationDateTime();
+                " TCC planens kalibreringsdatum: " + _tccPlan.calibrationDateTime() + 
+                " . Tiden kan iband avvika exakt 1 h.";
             resultRow.Add("Kalibreringstidpunkten i plan och TCC är " + info);
 
             return resultRow;
@@ -495,11 +514,11 @@ namespace WpfApp1
         }
 
 
-        public List<string> checkTotalTreatmentTime()
+        public List<string> checkTotalTreatmentTime(decimal totalTreatmentTimeEpsilon)
         {
             List<string> resultRow = new List<string>();
             resultRow.Add("Dosplanens behandlingstid");
-            if (hasSameTotalTreatmentTime())
+            if (hasSameTotalTreatmentTimeValue(totalTreatmentTimeEpsilon))
             {
                 resultRow.Add("OK");
             }
@@ -508,7 +527,7 @@ namespace WpfApp1
                 resultRow.Add("Inte OK");
             }
             resultRow.Add("Behandlingstid i plan: " + _treatmentPlan.totalTreatmentTime() +
-                " och i TCC: " + _tccPlan.totalTreatmentTime());
+                " och i TCC: " + _tccPlan.totalTreatmentTime() + " tolerans: " + totalTreatmentTimeEpsilon);
 
             return resultRow;
         }
@@ -683,18 +702,20 @@ namespace WpfApp1
             decimal tccPrescriptionDose)
         {
             List<string> resultRow = new List<string>();
-            resultRow.Add("Ordinerad dos");
+            resultRow.Add("Ordinerad dos i plan, dvh & tcc");
             string descriptionString = "";
             if (prescriptionDoseIsTheSame(guiPresciptionDose, treatmentPlanPrescriptionDose, dvhPrescriptionDose, tccPrescriptionDose))
             {
                 resultRow.Add("OK");
-                descriptionString = "Den angivna ordinerade dosen är den samma som i planen, DVH och TCC planen";
+                descriptionString = "Den angivna ordinerade dosen är den samma som i dosplanen, DVH och TCC planen";
             }
             else
             {
                 resultRow.Add("Inte OK");
-                descriptionString = "Den angivna ordinerade dosen är INTE den samma som i planen, dvh och TCC planen";
+                descriptionString = "Den angivna ordinerade dosen är INTE den samma som i dosplanen, dvh och TCC planen";
             }
+            descriptionString += ". I dosplan: " + treatmentPlanPrescriptionDose.ToString("0.00") + 
+                " i dvh: " + dvhPrescriptionDose.ToString("0.00") + " TCC:" + tccPrescriptionDose.ToString("0.00");
             resultRow.Add(descriptionString);
             return resultRow;
         }
@@ -702,7 +723,7 @@ namespace WpfApp1
            decimal tccPrescriptionDose)
         {
             List<string> resultRow = new List<string>();
-            resultRow.Add("Ordinerad dos");
+            resultRow.Add("Ordinerad dos i plan & tcc");
             string descriptionString = "";
             if (guiPlanTccPresciptionDoseIsTheSame(guiPresciptionDose, treatmentPlanPrescriptionDose, tccPrescriptionDose))
             {
@@ -712,8 +733,32 @@ namespace WpfApp1
             else
             {
                 resultRow.Add("Inte OK");
-                descriptionString = "Den angivna ordinerade dosen är INTE den samma som i planen och TCC planen";
+                descriptionString = "Den angivna ordinerade dosen är INTE den samma som i dosplanen och TCC planen";
             }
+            descriptionString += ". I dosplan: " + treatmentPlanPrescriptionDose.ToString("0.00") +
+                " TCC:" + tccPrescriptionDose.ToString("0.00");
+            resultRow.Add(descriptionString);
+            return resultRow;
+        }
+
+        public List<string> checkGuiPlanTccPresciptionDoseylinder(decimal guiPresciptionDose, decimal treatmentPlanPrescriptionDose,
+          decimal tccPrescriptionDose)
+        {
+            List<string> resultRow = new List<string>();
+            resultRow.Add("Ordinerad dos i plan & tcc");
+            string descriptionString = "";
+            if (guiPlanTccPresciptionDoseIsTheSame(guiPresciptionDose, treatmentPlanPrescriptionDose, tccPrescriptionDose))
+            {
+                resultRow.Add("OK");
+                descriptionString = "Den angivna ordinerade dosen är den samma som i dosplanen och TCC planen";
+            }
+            else
+            {
+                resultRow.Add("Inte OK");
+                descriptionString = "Den angivna ordinerade dosen är INTE den samma som i dosplanen och TCC planen";
+            }
+            descriptionString += ". I dosplan: " + treatmentPlanPrescriptionDose.ToString("0.00") +
+                " TCC:" + tccPrescriptionDose.ToString("0.00");
             resultRow.Add(descriptionString);
             return resultRow;
         }
@@ -807,7 +852,7 @@ namespace WpfApp1
             resultRows.Add(checkApproveDateTime());
             resultRows.Add(checkFractionDose());
             resultRows.Add(checkPlannedSourceStrength(_specifications.AirKermaStrengthEpsilon));
-            resultRows.Add(checkTotalTreatmentTime()); 
+            resultRows.Add(checkTotalTreatmentTime(_specifications.TotalTimeEpsilon)); 
             resultRows.Add(checkRealizedAKStrength(_specifications.AKStrengthEpsilon)); 
             resultRows.Add(checkRealizedTotalTreatmentTime(_specifications.TotalTimeEpsilon));
             decimal timeEpsilon = _specifications.TimeEpsilon;
@@ -840,6 +885,14 @@ namespace WpfApp1
         {
             List<List<string>> resultRows = new List<List<string>>();
             resultRows.Add(checkGuiPlanTccPresciptionDose(_specifications.PrescriptionDose, _treatmentPlan.PrescribedDose(),
+                _tccPlan.PrescribedDose()));
+            return resultRows;
+        }
+
+        public List<List<string>> prescriptionDoseResultRowsCylinder()
+        {
+            List<List<string>> resultRows = new List<List<string>>();
+            resultRows.Add(checkGuiPlanTccPresciptionDoseylinder(_specifications.PrescriptionDoseCylinder, _treatmentPlan.PrescribedDose(),
                 _tccPlan.PrescribedDose()));
             return resultRows;
         }

@@ -341,8 +341,6 @@ namespace WpfApp1
         {
             return inputString.Trim().ToLower() == "no";
         }
-        // TODO: Date time format string is hard coded in lots of places
-        // TODO: it should be defined in on place. For instance in Tyhpes.cs
         public DateTime stringToDateTime(string inputString)
         {
             return DateTime.ParseExact(inputString, Constants.DATE_AND_TIME_FORMAT,

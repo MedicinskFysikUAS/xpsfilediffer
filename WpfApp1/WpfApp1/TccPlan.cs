@@ -121,6 +121,13 @@ namespace WpfApp1
             int pageIndex = 0;
             return String.Format("{0:0.0}", Convert.ToDecimal(_stringExtractor.getValueAfterSearchStringSplitOnSpace(_pageList[pageIndex], "Total strålningstid", 0)));
         }
+
+        public decimal totalTreatmentTimeValue()
+        {
+            int pageIndex = 0;
+            return Convert.ToDecimal(_stringExtractor.getValueAfterSearchStringSplitOnSpace(_pageList[pageIndex], "Total strålningstid", 0));
+        }
+
         public decimal realizedTotalTreatmentTime()
         {
             int pageIndex = 0;
