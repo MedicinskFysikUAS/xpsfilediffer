@@ -83,7 +83,7 @@ namespace WpfApp1
             StringExtractor stringExtractor = new StringExtractor();
             TimeSpan duration = stringExtractor.stringToDateTime(_treatmentPlan.calibrationDateTime()) -
                 stringExtractor.stringToDateTime(_tccPlan.calibrationDateTime());
-            return (duration.TotalHours <= 1);
+            return Math.Abs(duration.TotalHours) <= 1;
         }
 
         public bool hasSameFractionDose()
@@ -471,7 +471,7 @@ namespace WpfApp1
             }
             info += " Dosplanens kalibreringsdatum: " + _treatmentPlan.calibrationDateTime() +
                 " TCC planens kalibreringsdatum: " + _tccPlan.calibrationDateTime() + 
-                " . Tiden kan iband avvika exakt 1 h.";
+                " . Tiden kan ibland avvika exakt 1 h.";
             resultRow.Add("Kalibreringstidpunkten i plan och TCC är " + info);
 
             return resultRow;
@@ -715,7 +715,7 @@ namespace WpfApp1
                 descriptionString = "Den angivna ordinerade dosen är INTE den samma som i dosplanen, dvh och TCC planen";
             }
             descriptionString += ". I dosplan: " + treatmentPlanPrescriptionDose.ToString("0.00") + 
-                " i dvh: " + dvhPrescriptionDose.ToString("0.00") + " TCC:" + tccPrescriptionDose.ToString("0.00");
+                " i dvh: " + dvhPrescriptionDose.ToString("0.00") + " TCC: " + tccPrescriptionDose.ToString("0.00");
             resultRow.Add(descriptionString);
             return resultRow;
         }
@@ -736,7 +736,7 @@ namespace WpfApp1
                 descriptionString = "Den angivna ordinerade dosen är INTE den samma som i dosplanen och TCC planen";
             }
             descriptionString += ". I dosplan: " + treatmentPlanPrescriptionDose.ToString("0.00") +
-                " TCC:" + tccPrescriptionDose.ToString("0.00");
+                " TCC: " + tccPrescriptionDose.ToString("0.00");
             resultRow.Add(descriptionString);
             return resultRow;
         }
@@ -758,7 +758,7 @@ namespace WpfApp1
                 descriptionString = "Den angivna ordinerade dosen är INTE den samma som i dosplanen och TCC planen";
             }
             descriptionString += ". I dosplan: " + treatmentPlanPrescriptionDose.ToString("0.00") +
-                " TCC:" + tccPrescriptionDose.ToString("0.00");
+                " TCC: " + tccPrescriptionDose.ToString("0.00");
             resultRow.Add(descriptionString);
             return resultRow;
         }

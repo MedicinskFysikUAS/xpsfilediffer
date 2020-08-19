@@ -101,14 +101,11 @@ namespace WpfApp1
             return Convert.ToDecimal(_stringExtractor.getValueAfterSearchStringSplitOnSpace(_pageList[pageIndex], "Planerad AK-styrka", 0));
         }
 
-        // TODO Test this function and use it to calculate the treatment time
         public decimal realizedSourceStrength()
         {
             int pageIndex = 0;
             return _stringExtractor.decimalStringToDecimal(_stringExtractor.getValueNStepAfterSearchString(_pageList[pageIndex], "Realiserad AK-styrka", 1));
         }
-
-        // TODO Test this function and use it to calculate the treatment time
 
         public decimal calibratedSourceStrength()
         {
