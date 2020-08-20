@@ -5,7 +5,8 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:WpfApp1"
         mc:Ignorable="d"
-        Title="CatheterInfoWindow" Height="638" Width="784">
+        Title="CatheterInfoWindow" Height="638" Width="784"
+        ResizeMode="NoResize">
     <Grid Margin="0,0,0,27">
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="0*"/>
