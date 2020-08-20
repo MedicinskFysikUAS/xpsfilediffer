@@ -604,7 +604,7 @@ namespace WpfApp1
             if (treatmentPlanHasSameChannelLength(expectedChannelLength))
             {
                 resultRow.Add("OK");
-                descriptionString = "Channel length för samtilga kanaler är " + expectedChannelLength;
+                descriptionString = "Channel length för samtliga kanaler är " + expectedChannelLength;
             }
             else
             {

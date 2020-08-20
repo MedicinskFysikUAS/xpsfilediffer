@@ -484,7 +484,7 @@ namespace WpfApp1
 
             DataColumn testCase= new DataColumn("Test", typeof(string));
             DataColumn testResult = new DataColumn("Result", typeof(string));
-            DataColumn resultDescripton = new DataColumn("Beskriving", typeof(string));
+            DataColumn resultDescripton = new DataColumn("Beskrivning", typeof(string));
             DataTable dataTable = new DataTable();
             dataTable.Columns.Add(testCase);
             dataTable.Columns.Add(testResult);
