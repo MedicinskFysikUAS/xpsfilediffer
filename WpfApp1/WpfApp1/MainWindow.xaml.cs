@@ -35,7 +35,7 @@ namespace WpfApp1
         string _tccPlanXpsFilePathProstate;
 
         string _treatmentPlanXpsFilePathCylinder;
-        string _tccPlanXpsFilePathCylinder; 
+        string _tccPlanXpsFilePathCylinder;
 
         //string _treatmentPlanXpsFilePathIntraUterine;
         //string _dvhXpsFilePathIntraUterine;
@@ -60,7 +60,7 @@ namespace WpfApp1
             resultSummaryLabel.Content = "";
             _specifications = new Specifications();
             initiateCylinderTypeComboBox();
-             _comboboxDiameters = new List<int>();
+            _comboboxDiameters = new List<int>();
             initiateSameSourceCombobox();
             // debug
             //PageReader tccPlanPageReader = new PageReader("C:\\work\\git\\xpsfilediffer\\xpsFilerTcc1\\prostateTcc3.xps");
@@ -68,9 +68,9 @@ namespace WpfApp1
             //List<LiveCatheter> tccLiveCatheters = tccPlanPageReader.tccLiveCatheters(TabType.PROSTATE);
             // end
         }
-    // https://stackoverflow.com/questions/23499105/c-sharp-app-config-with-array-or-list-like-data
+        // https://stackoverflow.com/questions/23499105/c-sharp-app-config-with-array-or-list-like-data
 
-    public void setProstateCalculationsVisable(bool setVisable)
+        public void setProstateCalculationsVisable(bool setVisable)
         {
             if (setVisable)
             {
@@ -154,7 +154,7 @@ namespace WpfApp1
             CylinderType cylinderType = CylinderType.VC;
             if (cylinderTypeComboBox.SelectedIndex == 0)
             {
-                cylinderType = CylinderType.VC; 
+                cylinderType = CylinderType.VC;
             }
             else if (cylinderTypeComboBox.SelectedIndex == 1)
             {
@@ -163,7 +163,7 @@ namespace WpfApp1
             int cylinderDiameter = _comboboxDiameters[cylinderDiameterComboBox.SelectedIndex];
             decimal prescriptionDose = stringExtractor.decimalStringToDecimal(cylindricPrescribedDoseText.Text);
             decimal treatmentLength = stringExtractor.decimalStringToDecimal(treatmentLengthText.Text);
-           
+
             DataForTreatmentTimeEstimate dataForTreatmentTimeEstimate = new DataForTreatmentTimeEstimate();
             dataForTreatmentTimeEstimate.CylinderType = cylinderType;
             dataForTreatmentTimeEstimate.CylinderDiameter = cylinderDiameter;
@@ -329,7 +329,7 @@ namespace WpfApp1
                     return false;
                 }
             }
-            
+
             if (_tccPlanXpsFilePath != null)
             {
                 PageReader pageReader = new PageReader(_tccPlanXpsFilePath);
@@ -342,7 +342,7 @@ namespace WpfApp1
             return true;
         }
 
-            private void addProstateResultRows()
+        private void addProstateResultRows()
         {
             Comparator comparator = new Comparator(_specifications);
             if (_treatmentPlanXpsFilePath != null && needleDepthAndFreeLengthIsSet())
@@ -389,7 +389,7 @@ namespace WpfApp1
                 }
             }
 
-                if (_treatmentPlanXpsFilePath != null && _dvhXpsFilePath != null && _tccPlanXpsFilePath != null && prescriptionDoseIsSet())
+            if (_treatmentPlanXpsFilePath != null && _dvhXpsFilePath != null && _tccPlanXpsFilePath != null && prescriptionDoseIsSet())
             {
                 PageReader treatmentPlanPageReader = new PageReader(_treatmentPlanXpsFilePath);
                 List<List<string>> treatmentPlanPageList = treatmentPlanPageReader.getPages();
@@ -397,7 +397,7 @@ namespace WpfApp1
                 PageReader treatmentDvhPageReader = new PageReader(_dvhXpsFilePath);
                 List<List<string>> treatmentPlanDvhPageList = treatmentDvhPageReader.getPages();
                 TreatmentDvh treatmentDvh = new TreatmentDvh(treatmentPlanDvhPageList);
-                PageReader tccPlanPageReader = new PageReader(_tccPlanXpsFilePath); 
+                PageReader tccPlanPageReader = new PageReader(_tccPlanXpsFilePath);
                 List<List<string>> tccPlanPageList = tccPlanPageReader.getPages();
                 List<LiveCatheter> tccLiveCatheters = tccPlanPageReader.tccLiveCatheters(_tabType);
                 TccPlan tccPlan = new TccPlan(tccPlanPageList, tccLiveCatheters);
@@ -415,7 +415,7 @@ namespace WpfApp1
         private void addCylinderResultRows()
         {
             Comparator comparator = new Comparator(_specifications);
-            if ( _treatmentPlanXpsFilePath != null)
+            if (_treatmentPlanXpsFilePath != null)
             {
                 PageReader treatmentPlanPageReader = new PageReader(_treatmentPlanXpsFilePath);
                 List<List<string>> treatmentPlanPageList = treatmentPlanPageReader.getPages();
@@ -482,7 +482,7 @@ namespace WpfApp1
                 }
             }
 
-            DataColumn testCase= new DataColumn("Test", typeof(string));
+            DataColumn testCase = new DataColumn("Test", typeof(string));
             DataColumn testResult = new DataColumn("Result", typeof(string));
             DataColumn resultDescripton = new DataColumn("Beskrivning", typeof(string));
             DataTable dataTable = new DataTable();
@@ -755,6 +755,18 @@ namespace WpfApp1
             System.Windows.Application.Current.Shutdown();
         }
 
+        private void clearLabelsAndResultRows()
+        {
+            setProstateCalculationsVisable(false);
+            setCylinderCalculationsVisable(false);
+            _resultRows.Clear();
+            resultSummaryLabel.Content = "";
+            resultSummaryLabel.Visibility = Visibility.Hidden;
+            DataTable dataTable = new DataTable();
+            ResultDataGrid.ItemsSource = dataTable.DefaultView;
+            catheterInfoButton.Visibility = Visibility.Hidden;
+        }
+
         private void TabControl_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             if (ProstateTab.IsSelected)
@@ -769,15 +781,16 @@ namespace WpfApp1
             {
                 _tabType = TabType.INTRAUTERINE;
             }
+            clearLabelsAndResultRows();
 
-            setProstateCalculationsVisable(false);
-            setCylinderCalculationsVisable(false);
-            _resultRows.Clear();
-            resultSummaryLabel.Content = "";
-            resultSummaryLabel.Visibility = Visibility.Hidden;
-            DataTable dataTable = new DataTable();
-            ResultDataGrid.ItemsSource = dataTable.DefaultView;
-            catheterInfoButton.Visibility = Visibility.Hidden;
+            //setProstateCalculationsVisable(false);
+            //setCylinderCalculationsVisable(false);
+            //_resultRows.Clear();
+            //resultSummaryLabel.Content = "";
+            //resultSummaryLabel.Visibility = Visibility.Hidden;
+            //DataTable dataTable = new DataTable();
+            //ResultDataGrid.ItemsSource = dataTable.DefaultView;
+            //catheterInfoButton.Visibility = Visibility.Hidden;
         }
 
         private void cylinderTypeComboBox_DropDownClosed(object sender, EventArgs e)
@@ -818,6 +831,10 @@ namespace WpfApp1
             catheterInfoWindow.ShowDialog(); // use ShowDialog to make it modal. use show will make non modal
         }
 
+        private void TextBox_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            clearLabelsAndResultRows();
+        }
     }
 }
 
