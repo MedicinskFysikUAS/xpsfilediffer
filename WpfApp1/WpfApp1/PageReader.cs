@@ -157,7 +157,6 @@ namespace WpfApp1
                                 {
                                     // If the previous Glyphs included the a unicode string starting with Kanal the next Glyphs will
                                     // include the indecies for the time positoins
-                                    var tmp = _pageContentReader.GetAttribute("OriginY");
                                     if (readCatheterPositions && readCatheterPositionsAtY == _pageContentReader.
                                         GetAttribute("OriginY"))
                                     {
@@ -288,6 +287,66 @@ namespace WpfApp1
             {
                 return 12;
             }
+            else if (tabType == TabType.PROSTATE)
+            {
+                startOrigin = 6760; // Prostate when last table contains empty columns in header.
+                if ((originXint > ((startOrigin + deltaWidth * 0) - margin)) && (originXint < ((startOrigin + deltaWidth * 0) + margin)))
+                {
+                    return 0;
+                }
+                else if ((originXint > ((startOrigin + deltaWidth * 1) - margin)) && (originXint < ((startOrigin + deltaWidth * 1) + margin)))
+                {
+                    return 1;
+                }
+                else if ((originXint > ((startOrigin + deltaWidth * 2) - margin)) && (originXint < ((startOrigin + deltaWidth * 2) + margin)))
+                {
+                    return 2;
+                }
+                else if ((originXint > ((startOrigin + deltaWidth * 3) - margin)) && (originXint < ((startOrigin + deltaWidth * 3) + margin)))
+                {
+                    return 3;
+                }
+                else if ((originXint > ((startOrigin + deltaWidth * 4) - margin)) && (originXint < ((startOrigin + deltaWidth * 4) + margin)))
+                {
+                    return 4;
+                }
+                else if ((originXint > ((startOrigin + deltaWidth * 5) - margin)) && (originXint < ((startOrigin + deltaWidth * 5) + margin)))
+                {
+                    return 5;
+                }
+                else if ((originXint > ((startOrigin + deltaWidth * 6) - margin)) && (originXint < ((startOrigin + deltaWidth * 6) + margin)))
+                {
+                    return 6;
+                }
+                else if ((originXint > ((startOrigin + deltaWidth * 7) - margin)) && (originXint < ((startOrigin + deltaWidth * 7) + margin)))
+                {
+                    return 7;
+                }
+                else if ((originXint > ((startOrigin + deltaWidth * 8) - margin)) && (originXint < ((startOrigin + deltaWidth * 8) + margin)))
+                {
+                    return 8;
+                }
+                else if ((originXint > ((startOrigin + deltaWidth * 9) - margin)) && (originXint < ((startOrigin + deltaWidth * 9) + margin)))
+                {
+                    return 9;
+                }
+                else if ((originXint > ((startOrigin + deltaWidth * 10) - margin)) && (originXint < ((startOrigin + deltaWidth * 10) + margin)))
+                {
+                    return 10;
+                }
+                else if ((originXint > ((startOrigin + deltaWidth * 11) - margin)) && (originXint < ((startOrigin + deltaWidth * 11) + margin)))
+                {
+                    return 11;
+                }
+                else if ((originXint > ((startOrigin + deltaWidth * 12) - margin)) && (originXint < ((startOrigin + deltaWidth * 12) + margin)))
+                {
+                    return 12;
+                }
+                else
+                {
+                    return -1;
+                }
+            } // end when last table contains empty columns in header.
             else
             {
                 return -1;

@@ -63,10 +63,10 @@ namespace WpfApp1
             _comboboxDiameters = new List<int>();
             initiateSameSourceCombobox();
             // debug
-            //PageReader tccPlanPageReader = new PageReader("C:\\work\\git\\xpsfilediffer\\xpsFilerTcc1\\prostateTcc3.xps");
-            //List<List<string>> tccPlanPageList = tccPlanPageReader.getPages();
+            //PageReader tccPlanPageReader = new PageReader("C:\\work\\tmp\\xps\\tcc200821.xps");
+            //List<List<string>> tccPlanPageList = tccPlanPageReader.getPages(false);
             //List<LiveCatheter> tccLiveCatheters = tccPlanPageReader.tccLiveCatheters(TabType.PROSTATE);
-            // end
+            //// end
         }
         // https://stackoverflow.com/questions/23499105/c-sharp-app-config-with-array-or-list-like-data
 
@@ -618,7 +618,6 @@ namespace WpfApp1
             }
             return dataTable;
         }
-
         private void updateResultSummaryLabel()
         {
             ResultDataGrid.UpdateLayout();

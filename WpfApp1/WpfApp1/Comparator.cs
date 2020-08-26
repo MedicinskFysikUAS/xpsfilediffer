@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 
 namespace WpfApp1
@@ -170,58 +171,125 @@ namespace WpfApp1
             }
         }
 
+        public Tuple<List<LiveCatheter>, List<LiveCatheter>> makeCorrectedTpLiveCathetersAboveThreshold(List<LiveCatheter> tpLiveCatheters, List<LiveCatheter> tccLiveCatheters)
+        {
+            List<LiveCatheter> liveCathetersAboveThreshold = new List<LiveCatheter>();
+            ErrorCode errorCode = new ErrorCode();
+            StringExtractor stringExtractor = new StringExtractor();
+            int counter = 0;
+            foreach (var item in tpLiveCatheters)
+            {
+                List<Tuple<string, string>> positonTimePairs = new List<Tuple<string, string>>();
+                int subCounter = 0;
+                foreach (var subItem in item.positonTimePairs())
+                {
+                    decimal correctedTime = Math.Round(stringExtractor.decimalStringToDecimal(subItem.Item2) * plannedToRelizationAKStrengthQuota(), 2);
+                    if (correctedTime > Constants.TIME_THRESHOLD)
+                    {
+                        positonTimePairs.Add(new Tuple<string, string>(subItem.Item1, stringExtractor.decimalToTwoDecimalString(correctedTime)));
+                    }
+                    else if (correctedTime == Constants.TIME_THRESHOLD && tccLiveCatheters.Count > counter)
+                    {
+                        foreach (var tccPositionTimePair in tccLiveCatheters[counter].positonTimePairs())
+                        {
+                            if ((stringExtractor.decimalStringToDecimal(subItem.Item1) - 
+                                stringExtractor.decimalStringToDecimal(tccPositionTimePair.Item1)) == 0.0m)
+                            {
+                                positonTimePairs.Add(new Tuple<string, string>(subItem.Item1, stringExtractor.decimalToTwoDecimalString(correctedTime)));
+                                break;
+                            }
+                        }
+                    }
+                    ++subCounter;
+                }
+                LiveCatheter liveCatheter = new LiveCatheter();
+                liveCatheter.setCatheterNumber(item.catheterNumber());
+                liveCatheter.setPositonTimePairs(positonTimePairs);
+                liveCathetersAboveThreshold.Add(liveCatheter);
+                ++counter;
+            }
+            Tuple<List<LiveCatheter>, List<LiveCatheter>> tuple = new Tuple<List<LiveCatheter>, List<LiveCatheter>>(liveCathetersAboveThreshold, tccLiveCatheters);
+            return tuple;
+        }
+
         ErrorCode hasSameCatheterPositionTimePairs(decimal timeEpsilon, bool useRelativeEpsilon)
         {
-            List<LiveCatheter> tpLiveCatheters = _treatmentPlan.liveCatheters();
-            List<LiveCatheter> tccLiveCatheters = _tccPlan.liveCatheters();
+            Tuple<List<LiveCatheter>, List<LiveCatheter>> tuple =  makeCorrectedTpLiveCathetersAboveThreshold(_treatmentPlan.liveCatheters(), _tccPlan.liveCatheters());
+            List<LiveCatheter> tpLiveCatheters = tuple.Item1;
+            List<LiveCatheter> tccLiveCatheters = tuple.Item2;
             ErrorCode errorCode = new ErrorCode();
             if (tpLiveCatheters.Count != tccLiveCatheters.Count)
             {
                 errorCode.Number = -100;
-                errorCode.Description = "Olika antal katetrar i dosplan och TCC plan";
+                errorCode.Description = "Olika antal katetrar i dosplan och TCC plan." +
+                        " I dosplan: " + tpLiveCatheters.Count +
+                        " i TCC plan: " + tccLiveCatheters.Count; ;
                 return errorCode;
             }
-            int counter = 0;
-            StringExtractor stringExtractor = new StringExtractor();
-            foreach (var item in tpLiveCatheters)
+            var tpAndTccCatheters = tpLiveCatheters.Zip(tccLiveCatheters, (tp, tcc) => new { tpLiveCatheters = tp, tccLiveCatheters = tcc });
+            foreach (var tpAndTccCatheter in tpAndTccCatheters)
             {
-                if (item.catheterNumber() == tccLiveCatheters[counter].catheterNumber() &&
-                    item.positonTimePairs().Count >= tccLiveCatheters[counter].positonTimePairs().Count)
+                if (tpAndTccCatheter.tpLiveCatheters.catheterNumber() != tpAndTccCatheter.tccLiveCatheters.catheterNumber())
                 {
-                    int subCounter = 0;
-                    foreach (var subItem in item.positonTimePairs())
-                    {
-                        if (stringExtractor.decimalStringToDecimal(subItem.Item2) < timeEpsilon)
-                        {
-                            continue;
-                        }
-                        decimal correctedTpTime = stringExtractor.decimalStringToDecimal(subItem.Item2) * plannedToRelizationAKStrengthQuota();
-                        decimal deltaTime = Math.Abs(correctedTpTime -
-                        stringExtractor.decimalStringToDecimal(tccLiveCatheters[counter].positonTimePairs()[subCounter].Item2));
-                        if (useRelativeEpsilon)
-                        {
-                            deltaTime = (deltaTime / correctedTpTime) * 100.0m;
-                        }
-                        if (subItem.Item1 != stringExtractor.decimalStringToZeroDecimalString(tccLiveCatheters[counter].positonTimePairs()[subCounter].Item1) ||
-                             deltaTime > timeEpsilon)
-                        {
-                            errorCode.Number = -101;
-                            errorCode.Description = "Kateter nummer " + (counter + 1) + " på " + (subCounter + 1) + ":e positionen avviker. " +
-                                "Position i dosplan: " + subItem.Item1 + " i TCC plan: " + stringExtractor.decimalStringToZeroDecimalString(tccLiveCatheters[counter].positonTimePairs()[subCounter].Item1) +
-                                ". Korrigerad tid i dosplan: " + correctedTpTime + " tid i TCC plan: " + stringExtractor.decimalStringToDecimal(tccLiveCatheters[counter].positonTimePairs()[subCounter].Item2);
-                            return errorCode;
-                        }
-                        ++subCounter;
-                    }
+                    errorCode.Number = -101;
+                    errorCode.Description = "Kateter nummer är inte det samma." +
+                        " I dosplan: " + tpAndTccCatheter.tpLiveCatheters.catheterNumber() +
+                        " i TCC plan: " + tpAndTccCatheter.tccLiveCatheters.catheterNumber();
+                    return errorCode;
                 }
                 else
                 {
-                    errorCode.Number = -102;
-                    errorCode.Description = "Kateternummer i dosplan och TCC plan är olika för kateter " + (counter + 1) + 
-                        " eller så är antalet positioner för denna kateter inte det samma i dosplan och TCC plan.";
-                    return errorCode;
+                    List<Tuple<string, string>> tpPositonTimePairs = tpAndTccCatheter.tpLiveCatheters.positonTimePairs();
+                    List<Tuple<string, string>> tccPositonTimePairs = tpAndTccCatheter.tccLiveCatheters.positonTimePairs();
+                    if (tpPositonTimePairs.Count != tccPositonTimePairs.Count)
+                    {
+                        errorCode.Number = -102;
+                        errorCode.Description = "Antalet positioner och tider för kateter nr " + tpAndTccCatheter.tpLiveCatheters.catheterNumber() +
+                            " är olika." + 
+                            " I dosplan: " + tpPositonTimePairs.Count +
+                            " i TCC plan: " + tccPositonTimePairs.Count;
+                        return errorCode;
+                    }
+                    var tpAndTccPositonTimePairs = tpPositonTimePairs.Zip(
+                       tccPositonTimePairs, (tpTimePairs, tccTimePairs) => new { 
+                                tpPositonTimePairs = tpTimePairs,
+                                tccPositonTimePairs = tccTimePairs
+                            });
+
+                    StringExtractor stringExtractor = new StringExtractor();
+
+                    foreach (var tpAndTccPositonTimePair in tpAndTccPositonTimePairs)
+                    {
+                        if (stringExtractor.decimalStringToDecimal(tpAndTccPositonTimePair.tpPositonTimePairs.Item1) -
+                            stringExtractor.decimalStringToDecimal(tpAndTccPositonTimePair.tccPositonTimePairs.Item1) != 0.0m)
+                        {
+                            errorCode.Number = -103;
+                            errorCode.Description = "Positionen för kateter nr " + tpAndTccCatheter.tpLiveCatheters.catheterNumber() +
+                                " är olika." +
+                            " I dosplan: " + tpAndTccPositonTimePair.tpPositonTimePairs.Item1 +
+                            " i TCC plan: " + tpAndTccPositonTimePair.tccPositonTimePairs.Item1;
+                            return errorCode;
+                        }
+
+                        decimal tpTime = stringExtractor.decimalStringToDecimal(tpAndTccPositonTimePair.tpPositonTimePairs.Item2);
+                        decimal deltaTime = Math.Abs(tpTime - stringExtractor.decimalStringToDecimal(tpAndTccPositonTimePair.tccPositonTimePairs.Item2));
+                        if (useRelativeEpsilon)
+                        {
+                            deltaTime = (deltaTime / tpTime) * 100.0m;
+                        }
+
+                        if (deltaTime > timeEpsilon)
+                        {
+                            errorCode.Number = -103;
+                            errorCode.Description = "Tiden för kateter nr " + tpAndTccCatheter.tpLiveCatheters.catheterNumber() +
+                                " är olika." +
+                            " I dosplan (korrigerad): " + tpAndTccPositonTimePair.tpPositonTimePairs.Item2 +
+                            " i TCC plan: " + tpAndTccPositonTimePair.tccPositonTimePairs.Item2 + 
+                            " för position " + tpAndTccPositonTimePair.tpPositonTimePairs.Item1;
+                            return errorCode;
+                        }
+                    }
                 }
-                ++counter;
             }
             errorCode.Number = 0;
             errorCode.Description = "Alla positioner och tider är lika";

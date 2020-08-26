@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 
 namespace WpfApp1
@@ -238,7 +239,8 @@ namespace WpfApp1
             for (int i = startIndex + 1 ; i < stopIndex; i++)
             {
                 string position = stringsOnPage[i].Substring(0, 3);
-                string time = stringsOnPage[i].Substring(stringsOnPage[i].Length - 4, 4);
+                //string time = stringsOnPage[i].Substring(stringsOnPage[i].Length - 4, 4);
+                string time = extractTimeFromLineString(stringsOnPage[i]);
                 posAndTimeValues.Add(new Tuple<string, string>(position, time));
             }
             return posAndTimeValues;
@@ -251,11 +253,22 @@ namespace WpfApp1
             for (int i = startIndex + 1; i < stopIndex; i++)
             {
                 string position = stringsOnPage[i].Substring(0, 3);
-                string time = stringsOnPage[i].Substring(stringsOnPage[i].Length - 4, 4);
+                //string time = stringsOnPage[i].Substring(stringsOnPage[i].Length - 4, 4);
+                string time = extractTimeFromLineString(stringsOnPage[i]);
                 posAndTimeValues.Add(new Tuple<string, string>(position, time));
             }
             return posAndTimeValues;
         }
+
+        private string extractTimeFromLineString(string lineString)
+        {
+            int lastDotIndex = lineString.LastIndexOf('.');
+            string excludedLastDotStr = lineString.Substring(0, lastDotIndex);
+            int startIndex = excludedLastDotStr.LastIndexOf('.') + 3;
+            string time = lineString.Substring(startIndex, (lineString.Length - startIndex));
+            return time;
+        }
+
 
         public List<Tuple<string, string>> valuesFromSearchedString(List<string> stringsOnPage, string searchedString, int stopIndex)
         {
@@ -264,7 +277,7 @@ namespace WpfApp1
             for (int i = startIndex + 1; i < stopIndex; i++)
             {
                 string position = stringsOnPage[i].Substring(0, 3);
-                string time = stringsOnPage[i].Substring(stringsOnPage[i].Length - 4, 4);
+                string time = extractTimeFromLineString(stringsOnPage[i]);
                 posAndTimeValues.Add(new Tuple<string, string>(position, time));
             }
             return posAndTimeValues;

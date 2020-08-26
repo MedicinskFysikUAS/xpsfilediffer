@@ -160,15 +160,6 @@ namespace WpfApp1
             int position = dateAndUserString.IndexOf("by otpuser");
             string dateString = dateAndUserString.Substring(0, position).Trim();
             return toStdDateStringInTreatmentPlan(dateString);
-            /*
-            string pattern = "dd MMM yyyy HH:mm:ss";
-            string stringFromDateTime = "";
-            DateTime result = DateTime.ParseExact(dateString, pattern, CultureInfo.InvariantCulture);
-            if (result != null)
-            {
-                stringFromDateTime = result.ToString(Constants.DATE_AND_TIME_FORMAT);
-            }
-            return stringFromDateTime;*/
         }
 
         public string prostateCalibrationDateTime()
@@ -464,19 +455,6 @@ namespace WpfApp1
                 line == "Sources";
         }
 
-        public int catheterNumberFromLine(string line)
-        {
-            return 1;
-        }
-
-        //public TreatmentPlanCatheter catheterFromLine(string line)
-        //{
-        //    TreatmentPlanCatheter catheter = new TreatmentPlanCatheter();
-        //    catheter.catheterNumber = catheterNumberFromLine(line);
-        //    catheter.offset = "";
-        //    string tmp = catheter.offset;
-        //    return catheter;
-        //}
 
         public int getCatheterTableEndIndex(List<string> page, int startIndex)
         {

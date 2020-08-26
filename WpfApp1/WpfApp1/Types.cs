@@ -25,4 +25,5 @@ public enum XpsFileType
 public static class Constants
 {
     public const string DATE_AND_TIME_FORMAT = "yyyy-MM-dd HH:mm";
+    public const decimal TIME_THRESHOLD = 0.05m;
 }
