@@ -595,6 +595,81 @@ namespace WpfApp1
             return dataTable;
         }
 
+        bool addVarning(decimal timeEpsilon, string planTime, string tccTime)
+        {
+            StringExtractor stringExtractor = new StringExtractor();
+            if (planTime == "" || tccTime == "")
+            { 
+                return false;
+            }
+            else if ((Math.Abs(stringExtractor.decimalStringToDecimal(planTime) -
+            stringExtractor.decimalStringToDecimal(tccTime)) < timeEpsilon))
+            {
+                return false;
+            }
+            else
+            {
+                return true;
+            }
+        }
+
+        public DataTable treatmentAndTccPlanDataTable()
+        {
+            DataColumn testCase = new DataColumn("Kanal", typeof(string));
+            DataColumn testResult = new DataColumn("Position", typeof(string));
+            DataColumn resultDescriptonPlan = new DataColumn("Tid plan (s)", typeof(string));
+            DataColumn resultDescriptonTcc = new DataColumn("Tid TCC (s)", typeof(string));
+            DataColumn note = new DataColumn("_", typeof(string));
+            DataTable dataTable = new DataTable();
+            dataTable.Columns.Add(testCase);
+            dataTable.Columns.Add(testResult);
+            dataTable.Columns.Add(resultDescriptonPlan);
+            dataTable.Columns.Add(resultDescriptonTcc);
+            dataTable.Columns.Add(note);
+            int counter = 0 ;
+            Specifications specifications = new Specifications();
+            List<LiveCatheter> tccPlanLiveCatheters = _tccPlanLiveCatheters;
+            foreach (var item in _treatmentPlanLiveCathetersCorr)
+            {
+            StringExtractor stringExtractor = new StringExtractor();
+
+                foreach (var subItem in item.positonTimePairs())
+                {
+                    DataRow dataRow = dataTable.NewRow();
+                    dataRow[0] = item.catheterNumber();
+                    dataRow[1] = subItem.Item1;
+                    dataRow[2] = subItem.Item2;
+                    dataRow[3] = "";
+                    dataRow[4] = "";
+                    if (tccPlanLiveCatheters.Count > counter)
+                    {
+                        string tccTime = "";
+                        for (int i = 0; i < tccPlanLiveCatheters[counter].positonTimePairs().Count; i++)
+                        {
+                            if ((stringExtractor.decimalStringToDecimal(tccPlanLiveCatheters[counter].positonTimePairs()[i].Item1) -
+                                stringExtractor.decimalStringToDecimal(subItem.Item1)) == 0.0m)
+                            {
+                                tccTime = tccPlanLiveCatheters[counter].positonTimePairs()[i].Item2;
+                                break;
+                            }
+                        }
+                        dataRow[3] = tccTime;
+                    }
+                    else
+                    {
+                        dataRow[3] = "";
+                    }
+                    if (addVarning(specifications.TimeEpsilon, dataRow[2].ToString(), dataRow[3].ToString()))
+                    {
+                        dataRow[4] = "?";
+                    }
+                    dataTable.Rows.Add(dataRow);
+                }
+                ++counter;
+            }
+            return dataTable;
+        }
+
         public DataTable tccPlanDataTable()
         {
             DataColumn testCase = new DataColumn("Kanal", typeof(string));
@@ -781,15 +856,6 @@ namespace WpfApp1
                 _tabType = TabType.INTRAUTERINE;
             }
             clearLabelsAndResultRows();
-
-            //setProstateCalculationsVisable(false);
-            //setCylinderCalculationsVisable(false);
-            //_resultRows.Clear();
-            //resultSummaryLabel.Content = "";
-            //resultSummaryLabel.Visibility = Visibility.Hidden;
-            //DataTable dataTable = new DataTable();
-            //ResultDataGrid.ItemsSource = dataTable.DefaultView;
-            //catheterInfoButton.Visibility = Visibility.Hidden;
         }
 
         private void cylinderTypeComboBox_DropDownClosed(object sender, EventArgs e)
@@ -825,7 +891,7 @@ namespace WpfApp1
         {
             CatheterInfoWindow catheterInfoWindow = new CatheterInfoWindow();
             catheterInfoWindow.setTreatmentPlanDataGrid(treatmentPlanDataTable());
-            catheterInfoWindow.setTreatmentPlanDataGridCorr(treatmentPlanDataTableCorr());
+            catheterInfoWindow.setTreatmentPlanDataGridCorr(treatmentAndTccPlanDataTable());
             catheterInfoWindow.setTccPlanDataGrid(tccPlanDataTable());
             catheterInfoWindow.ShowDialog(); // use ShowDialog to make it modal. use show will make non modal
         }
