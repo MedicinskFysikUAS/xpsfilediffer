@@ -4,7 +4,7 @@ using System.Text;
 
 namespace WpfApp1
 {
-    class LiveCatheter
+    public class LiveCatheter
     {
         private List<Tuple<string, string>> _positonTimePairs = new List<Tuple<string, string>>();
         private int _catheterNumber;

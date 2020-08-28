@@ -4,7 +4,7 @@ using System.Text;
 
 namespace WpfApp1
 {
-    class TreatmentPlanCatheter
+    public class TreatmentPlanCatheter
     {
         private int _catheterNumber;
         private decimal _selector;

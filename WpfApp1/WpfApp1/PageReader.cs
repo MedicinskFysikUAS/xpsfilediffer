@@ -11,7 +11,7 @@ using System.Windows.Xps.Packaging;
 
 namespace WpfApp1
 {
-    class PageReader
+    public class PageReader
     {
         private string xpsFilePath;
         //private List<Tuple<string, string>> _positonTimePairs;
@@ -157,6 +157,8 @@ namespace WpfApp1
                                 {
                                     // If the previous Glyphs included the a unicode string starting with Kanal the next Glyphs will
                                     // include the indecies for the time positoins
+                                    var debug = readCatheterPositionsAtY;
+                                    var debug2 = _pageContentReader.GetAttribute("OriginY");
                                     if (readCatheterPositions && readCatheterPositionsAtY == _pageContentReader.
                                         GetAttribute("OriginY"))
                                     {

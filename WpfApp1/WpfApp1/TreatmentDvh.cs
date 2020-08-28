@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace WpfApp1
 {
-    class TreatmentDvh
+    public class TreatmentDvh
     {
         private List<List<string>> _pageList;
         private StringExtractor _stringExtractor = new StringExtractor();

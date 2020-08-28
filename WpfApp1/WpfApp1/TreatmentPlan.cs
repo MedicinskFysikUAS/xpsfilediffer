@@ -4,11 +4,11 @@ using System.Runtime.InteropServices.WindowsRuntime;
 using System.Text;
 using System.Windows.Controls;
 using System.Globalization;
-
+using System.Linq;
 
 namespace WpfApp1
 {
-    class TreatmentPlan
+    public class TreatmentPlan
     {
         private List<List<string>> _pageList;
         private StringExtractor _stringExtractor = new StringExtractor();
@@ -342,13 +342,13 @@ namespace WpfApp1
         {
             if (_tabType == TabType.PROSTATE)
             {
-                return prostateLiveCatheters();
+                return prostateLiveCatheters().OrderBy(o => o.catheterNumber()).ToList();
             }
             else if (_tabType == TabType.CYLINDER)
             {
-                return cylindricLiveCatheters();
+                return cylindricLiveCatheters().OrderBy(o => o.catheterNumber()).ToList();
             }
-            else
+            else // Only added to get rid of build warnings.
             {
                 List<LiveCatheter> liveCatheters = new List<LiveCatheter>();
                 return liveCatheters;

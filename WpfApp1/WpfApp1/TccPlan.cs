@@ -2,10 +2,11 @@
 using System.Collections.Generic;
 using System.Text;
 using System.Globalization;
+using System.Linq;
 
 namespace WpfApp1
 {
-    class TccPlan
+    public class TccPlan
     {
         private List<List<string>> _pageList;
         private StringExtractor _stringExtractor = new StringExtractor();
@@ -140,7 +141,7 @@ namespace WpfApp1
 
         public List<LiveCatheter> liveCatheters()
         {
-            return _liveCatheters;
+            return _liveCatheters.OrderBy(o => o.catheterNumber()).ToList();
         }
     }
 }

@@ -5,7 +5,7 @@ using System.Text;
 
 namespace WpfApp1
 {
-    class Comparator
+    public class Comparator
     {
         private TreatmentPlan _treatmentPlan;
         private TccPlan _tccPlan;
@@ -246,8 +246,8 @@ namespace WpfApp1
                         errorCode.Number = -102;
                         errorCode.Description = "Antalet positioner och tider för kateter nr " + tpAndTccCatheter.tpLiveCatheters.catheterNumber() +
                             " är olika." + 
-                            " I dosplan: " + tpPositonTimePairs.Count +
-                            " i TCC plan: " + tccPositonTimePairs.Count;
+                            " Antalet (över tröskelvärdet på " + Constants.TIME_THRESHOLD + " sek) i dosplan: " + tpPositonTimePairs.Count +
+                            ". Antalet i TCC plan: " + tccPositonTimePairs.Count;
                         return errorCode;
                     }
                     var tpAndTccPositonTimePairs = tpPositonTimePairs.Zip(

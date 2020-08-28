@@ -63,8 +63,8 @@ namespace WpfApp1
             _comboboxDiameters = new List<int>();
             initiateSameSourceCombobox();
             // debug
-            //PageReader tccPlanPageReader = new PageReader("C:\\work\\tmp\\xps\\tcc200821.xps");
-            //List<List<string>> tccPlanPageList = tccPlanPageReader.getPages(false);
+            //PageReader tccPlanPageReader = new PageReader("C:\\work\\git\\xpsfilediffer\\xpsFiles\\A92DTcc.xps");
+            //List<List<string>> tccPlanPageList = tccPlanPageReader.getPages(true);
             //List<LiveCatheter> tccLiveCatheters = tccPlanPageReader.tccLiveCatheters(TabType.PROSTATE);
             //// end
         }
@@ -598,6 +598,11 @@ namespace WpfApp1
         bool addVarning(decimal timeEpsilon, string planTime, string tccTime)
         {
             StringExtractor stringExtractor = new StringExtractor();
+            if (planTime != "" && tccTime == "" && Math.Abs(stringExtractor.decimalStringToDecimal(planTime)) > timeEpsilon)
+            {
+                return true;
+            }
+
             if (planTime == "" || tccTime == "")
             { 
                 return false;

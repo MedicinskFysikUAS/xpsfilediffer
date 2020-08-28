@@ -6,7 +6,7 @@ using System.Text;
 
 namespace WpfApp1
 {
-    class Specifications
+    public class Specifications
     {
         private decimal _needleDepth;
         private decimal _freeLength;

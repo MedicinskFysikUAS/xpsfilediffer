@@ -19,7 +19,7 @@
         <DataGrid x:Name="tccPlanDataGrid" Margin="219,59,339,0" Grid.Column="2"/>
         <Label x:Name="treatmentPlanGridLabel" Content="Dosplan" HorizontalAlignment="Left" Margin="82,24,0,0" VerticalAlignment="Top" Height="26" Width="53" Grid.Column="2"/>
         <Label x:Name="tccPlanGridLabel" Content="TCC plan" HorizontalAlignment="Left" Margin="294,24,0,0" VerticalAlignment="Top" Height="26" Width="64" Grid.Column="2"/>
-        <DataGrid x:Name="treatmentPlanDataGridCorr" Margin="419,59,71,0" Grid.Column="2"/>
+        <DataGrid x:Name="treatmentPlanDataGridCorr" Margin="419,59,64,0" Grid.Column="2"/>
         <Label x:Name="treatmentPlanGridLabelCorr" Content="Dosplan (korrigerad) &amp; TCC plan" HorizontalAlignment="Left" Margin="469,24,0,0" VerticalAlignment="Top" Height="26" Width="195" Grid.Column="2"/>
 
     </Grid>
