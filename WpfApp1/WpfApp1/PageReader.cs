@@ -30,77 +30,15 @@ namespace WpfApp1
 
         public bool isFileType(XpsFileType xpsFileType)
         {
-            XpsDocument _xpsDocument = new XpsDocument(xpsFilePath, System.IO.FileAccess.Read);
-            IXpsFixedDocumentSequenceReader fixedDocSeqReader = _xpsDocument.FixedDocumentSequenceReader;
-            IXpsFixedDocumentReader _document = fixedDocSeqReader.FixedDocuments[0];
-            FixedDocumentSequence sequence = _xpsDocument.GetFixedDocumentSequence();
-            List<List<string>> pageList = new List<List<string>>();
-            IXpsFixedPageReader _page = _document.FixedPages[0];
-            System.Xml.XmlReader _pageContentReader = _page.XmlReader;
-            List<string> stringsOnPage = new List<string>();
-
-            if (_pageContentReader != null)
+            using (XpsDocument _xpsDocument = new XpsDocument(xpsFilePath, System.IO.FileAccess.Read))
             {
-                while (_pageContentReader.Read())
-                {
-                    if (_pageContentReader.Name == "Glyphs")
-                    {
-                        if (_pageContentReader.HasAttributes)
-                        {
-                            if (_pageContentReader.GetAttribute("UnicodeString") != null)
-                            {
-                                stringsOnPage.Add(_pageContentReader.
-                                  GetAttribute("UnicodeString"));
-                            }
-                        }
-                    }
-                }
-            }
-            if (xpsFileType == XpsFileType.ONCENTRA_PROSTATE_TREATMENT_PLAN&& stringsOnPage.Count > 1 && stringsOnPage[0].StartsWith("Oncentra Prostate") && stringsOnPage[1] == "Treatment Plan")
-            {
-                return true;
-            }
-            else if (xpsFileType == XpsFileType.ONCENTRA_PROSTATE_DVH && stringsOnPage.Count > 1 && stringsOnPage[0].StartsWith("Oncentra Prostate") && stringsOnPage[1] == "DVH Evaluation")
-            {
-                return true;
-            }
-            else if (xpsFileType == XpsFileType.PROSTATE_TCC && stringsOnPage.Count > 90 && stringsOnPage[90] == "Förbehandlingsrapport")
-            {
-                return true;
-            }
-            else if (xpsFileType == XpsFileType.ONCENTRA_CYLINDER_TREATMENT_PLAN && stringsOnPage.Count > 51 && stringsOnPage[51] == "Oncentra Brachy ")
-            {
-                return true;
-            }
-            else if (xpsFileType == XpsFileType.CYLINDER_TCC && stringsOnPage.Count > 90 && stringsOnPage[90] == "Förbehandlingsrapport")
-            {
-                return true;
-            }
-            else
-            {
-                return false;
-            }
-        }
-
-        public List<List<string>> getPages(bool debug = false)
-        {
-            XpsDocument _xpsDocument = new XpsDocument(xpsFilePath, System.IO.FileAccess.Read);
-            IXpsFixedDocumentSequenceReader fixedDocSeqReader = _xpsDocument.FixedDocumentSequenceReader;
-            IXpsFixedDocumentReader _document = fixedDocSeqReader.FixedDocuments[0];
-            FixedDocumentSequence sequence = _xpsDocument.GetFixedDocumentSequence();
-            List<List<string>> pageList = new List<List<string>>();
-            for (int pageCount = 0; pageCount < sequence.DocumentPaginator.PageCount; ++pageCount)
-            {
-                IXpsFixedPageReader _page = _document.FixedPages[pageCount];
+                IXpsFixedDocumentSequenceReader fixedDocSeqReader = _xpsDocument.FixedDocumentSequenceReader;
+                IXpsFixedDocumentReader _document = fixedDocSeqReader.FixedDocuments[0];
+                FixedDocumentSequence sequence = _xpsDocument.GetFixedDocumentSequence();
+                List<List<string>> pageList = new List<List<string>>();
+                IXpsFixedPageReader _page = _document.FixedPages[0];
                 System.Xml.XmlReader _pageContentReader = _page.XmlReader;
-                // Debug print xml file:
-                if (debug)
-                {
-                    WriteOutXml(_pageContentReader, "xmlFile" + pageCount + ".xml");
-                }
                 List<string> stringsOnPage = new List<string>();
-                string startPageString = "Page number " + pageCount;
-                stringsOnPage.Add(startPageString);
 
                 if (_pageContentReader != null)
                 {
@@ -119,78 +57,148 @@ namespace WpfApp1
                         }
                     }
                 }
-                pageList.Add(stringsOnPage);
+
+                if (xpsFileType == XpsFileType.ONCENTRA_PROSTATE_TREATMENT_PLAN && stringsOnPage.Count > 1 && stringsOnPage[0].StartsWith("Oncentra Prostate") && stringsOnPage[1] == "Treatment Plan")
+                {
+                    return true;
+                }
+                else if (xpsFileType == XpsFileType.ONCENTRA_PROSTATE_DVH && stringsOnPage.Count > 1 && stringsOnPage[0].StartsWith("Oncentra Prostate") && stringsOnPage[1] == "DVH Evaluation")
+                {
+                    return true;
+                }
+                else if (xpsFileType == XpsFileType.PROSTATE_TCC && stringsOnPage.Count > 90 && stringsOnPage[90] == "Förbehandlingsrapport")
+                {
+                    return true;
+                }
+                else if (xpsFileType == XpsFileType.ONCENTRA_CYLINDER_TREATMENT_PLAN && stringsOnPage.Count > 51 && stringsOnPage[51] == "Oncentra Brachy ")
+                {
+                    return true;
+                }
+                else if (xpsFileType == XpsFileType.CYLINDER_TCC && stringsOnPage.Count > 90 && stringsOnPage[90] == "Förbehandlingsrapport")
+                {
+                    return true;
+                }
+                else
+                {
+                    return false;
+                }
             }
-            return pageList;
+        }
+
+        public List<List<string>> getPages(bool debug = false)
+        {
+            using (XpsDocument _xpsDocument = new XpsDocument(xpsFilePath, System.IO.FileAccess.Read))
+            {
+                IXpsFixedDocumentSequenceReader fixedDocSeqReader = _xpsDocument.FixedDocumentSequenceReader;
+                IXpsFixedDocumentReader _document = fixedDocSeqReader.FixedDocuments[0];
+                FixedDocumentSequence sequence = _xpsDocument.GetFixedDocumentSequence();
+                List<List<string>> pageList = new List<List<string>>();
+                for (int pageCount = 0; pageCount < sequence.DocumentPaginator.PageCount; ++pageCount)
+                {
+                    IXpsFixedPageReader _page = _document.FixedPages[pageCount];
+                    System.Xml.XmlReader _pageContentReader = _page.XmlReader;
+                    // Debug print xml file:
+                    if (debug)
+                    {
+                        WriteOutXml(_pageContentReader, "xmlFile" + pageCount + ".xml");
+                    }
+                    List<string> stringsOnPage = new List<string>();
+                    string startPageString = "Page number " + pageCount;
+                    stringsOnPage.Add(startPageString);
+
+                    if (_pageContentReader != null)
+                    {
+                        while (_pageContentReader.Read())
+                        {
+                            if (_pageContentReader.Name == "Glyphs")
+                            {
+                                if (_pageContentReader.HasAttributes)
+                                {
+                                    if (_pageContentReader.GetAttribute("UnicodeString") != null)
+                                    {
+                                        stringsOnPage.Add(_pageContentReader.
+                                          GetAttribute("UnicodeString"));
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    pageList.Add(stringsOnPage);
+                }
+                return pageList;
+            }
+
         }
 
         public void setTccLiveCatheters(TabType tabType)
         {
-            XpsDocument _xpsDocument = new XpsDocument(xpsFilePath, System.IO.FileAccess.Read);
-            IXpsFixedDocumentSequenceReader fixedDocSeqReader = _xpsDocument.FixedDocumentSequenceReader;
-            IXpsFixedDocumentReader _document = fixedDocSeqReader.FixedDocuments[0];
-            FixedDocumentSequence sequence = _xpsDocument.GetFixedDocumentSequence();
-            List<List<string>> pageList = new List<List<string>>();
-            for (int pageCount = 0; pageCount < sequence.DocumentPaginator.PageCount; ++pageCount)
+            using (XpsDocument _xpsDocument = new XpsDocument(xpsFilePath, System.IO.FileAccess.Read))
             {
-                IXpsFixedPageReader _page = _document.FixedPages[pageCount];
-                System.Xml.XmlReader _pageContentReader = _page.XmlReader;
-                if (_pageContentReader != null)
+                IXpsFixedDocumentSequenceReader fixedDocSeqReader = _xpsDocument.FixedDocumentSequenceReader;
+                IXpsFixedDocumentReader _document = fixedDocSeqReader.FixedDocuments[0];
+                FixedDocumentSequence sequence = _xpsDocument.GetFixedDocumentSequence();
+                List<List<string>> pageList = new List<List<string>>();
+                for (int pageCount = 0; pageCount < sequence.DocumentPaginator.PageCount; ++pageCount)
                 {
-                    bool readCatheterPositions = false;
-                    string readCatheterPositionsAtY = "";
-                    string channelNumber = "";
-                    List<string> catheterPositions = new List<string>();
-                    string foundUnicodeString = "";
-
-                    while (_pageContentReader.Read())
+                    IXpsFixedPageReader _page = _document.FixedPages[pageCount];
+                    System.Xml.XmlReader _pageContentReader = _page.XmlReader;
+                    if (_pageContentReader != null)
                     {
-                        if (_pageContentReader.Name == "Glyphs")
+                        bool readCatheterPositions = false;
+                        string readCatheterPositionsAtY = "";
+                        string channelNumber = "";
+                        List<string> catheterPositions = new List<string>();
+                        string foundUnicodeString = "";
+
+                        while (_pageContentReader.Read())
                         {
-                            if (_pageContentReader.HasAttributes)
+                            if (_pageContentReader.Name == "Glyphs")
                             {
-                                /*
-                                 *  Each entry in the list of indices comprises a glyph ID, optionally a comma, followed by an AdvanceWidth, and finally, delimited with a semi-colon. There is actually a lot more that could be present in Indices, but this is about the limit of what you'll see being pumped out by the XPS printer driver. I
-                                 */
-
-                                if (_pageContentReader.GetAttribute("UnicodeString") != null)
+                                if (_pageContentReader.HasAttributes)
                                 {
-                                    // If the previous Glyphs included the a unicode string starting with Kanal the next Glyphs will
-                                    // include the indecies for the time positoins
-                                    var debug = readCatheterPositionsAtY;
-                                    var debug2 = _pageContentReader.GetAttribute("OriginY");
-                                    if (readCatheterPositions && readCatheterPositionsAtY == _pageContentReader.
-                                        GetAttribute("OriginY"))
-                                    {
-                                        string originX = (_pageContentReader.
-                                        GetAttribute("OriginX"));
-                                        int startColumn = columnFromOrigX(originX, tabType);
-                                        List<Tuple<int, double>> columnAndTimes = getColumnAndTimes(startColumn, _pageContentReader);
-                                        setPositonTimePairs(channelNumber, catheterPositions, columnAndTimes);
-                                        readCatheterPositions = false;
-                                        readCatheterPositionsAtY = "";
-                                        channelNumber = "";
-                                    }
+                                    /*
+                                     *  Each entry in the list of indices comprises a glyph ID, optionally a comma, followed by an AdvanceWidth, and finally, delimited with a semi-colon. There is actually a lot more that could be present in Indices, but this is about the limit of what you'll see being pumped out by the XPS printer driver. I
+                                     */
 
-                                    string unicodeString = (_pageContentReader.
-                                      GetAttribute("UnicodeString"));
-
-                                    if (unicodeString.StartsWith("Kanal") && unicodeString.Length < 9)
+                                    if (_pageContentReader.GetAttribute("UnicodeString") != null)
                                     {
-                                        readCatheterPositionsAtY = (_pageContentReader.GetAttribute("OriginY"));
-                                        readCatheterPositions = true;
-                                        channelNumber = unicodeString;
-                                    }
-
-                                    if (unicodeString.StartsWith("Stråln"))
-                                    {
-                                        catheterPositions.Clear();
-                                        foundUnicodeString = catheterPositionsInHeader(_pageContentReader, ref catheterPositions);
-                                        if (foundUnicodeString.StartsWith("Kanal"))
+                                        // If the previous Glyphs included the a unicode string starting with Kanal the next Glyphs will
+                                        // include the indecies for the time positoins
+                                        var debug = readCatheterPositionsAtY;
+                                        var debug2 = _pageContentReader.GetAttribute("OriginY");
+                                        if (readCatheterPositions && readCatheterPositionsAtY == _pageContentReader.
+                                            GetAttribute("OriginY"))
                                         {
-                                            channelNumber = foundUnicodeString;
+                                            string originX = (_pageContentReader.
+                                            GetAttribute("OriginX"));
+                                            int startColumn = columnFromOrigX(originX, tabType);
+                                            List<Tuple<int, double>> columnAndTimes = getColumnAndTimes(startColumn, _pageContentReader);
+                                            setPositonTimePairs(channelNumber, catheterPositions, columnAndTimes);
+                                            readCatheterPositions = false;
+                                            readCatheterPositionsAtY = "";
+                                            channelNumber = "";
+                                        }
+
+                                        string unicodeString = (_pageContentReader.
+                                          GetAttribute("UnicodeString"));
+
+                                        if (unicodeString.StartsWith("Kanal") && unicodeString.Length < 9)
+                                        {
                                             readCatheterPositionsAtY = (_pageContentReader.GetAttribute("OriginY"));
                                             readCatheterPositions = true;
+                                            channelNumber = unicodeString;
+                                        }
+
+                                        if (unicodeString.StartsWith("Stråln"))
+                                        {
+                                            catheterPositions.Clear();
+                                            foundUnicodeString = catheterPositionsInHeader(_pageContentReader, ref catheterPositions);
+                                            if (foundUnicodeString.StartsWith("Kanal"))
+                                            {
+                                                channelNumber = foundUnicodeString;
+                                                readCatheterPositionsAtY = (_pageContentReader.GetAttribute("OriginY"));
+                                                readCatheterPositions = true;
+                                            }
                                         }
                                     }
                                 }
@@ -605,8 +613,7 @@ namespace WpfApp1
             this.setTccLiveCatheters(tabType);
             return _liveCatheters;
         }
-
-
+                
     }
 
 

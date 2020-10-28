@@ -360,6 +360,12 @@ namespace WpfApp1
                 (treatmentPlanPrescriptionDose == tccPrescriptionDose));
         }
 
+        public bool guiPlanTccPlanCodeIsTheSame(string guiPlanCode, string treatmentPlanCode, string tccPlanCode)
+        {
+            return ((guiPlanCode.ToUpper().Trim() == treatmentPlanCode.ToUpper()) &&
+                (treatmentPlanCode.ToUpper() == tccPlanCode.ToUpper()));
+        }
+
         decimal calculatedRealizedAKStrength()
         {
             if (_tccPlan.calibrationDateTime() == "" | _tccPlan.realizationDateAndTime() == "")
@@ -693,6 +699,15 @@ namespace WpfApp1
             return resultRow;
         }
 
+        public List<string> errorResultRow(string testName, string desciption)
+        {
+            List<string> resultRow = new List<string>();
+            resultRow.Add(testName);
+            resultRow.Add("Inte OK");
+            resultRow.Add(desciption);
+            return resultRow;
+        }
+
         public List<string> informationResultRow(string testColumnString, string resultColumnString, string descriptonColumnString)
         {
             List<string> resultRow = new List<string>();
@@ -805,6 +820,50 @@ namespace WpfApp1
             }
             descriptionString += ". I dosplan: " + treatmentPlanPrescriptionDose.ToString("0.00") +
                 " TCC: " + tccPrescriptionDose.ToString("0.00");
+            resultRow.Add(descriptionString);
+            return resultRow;
+        }
+
+        public List<string> checkGuiPlanTccPlanCode(string guiPlanCode, string treatmentPlanCode,
+          string tccPlanCode)
+        {
+            List<string> resultRow = new List<string>();
+            resultRow.Add("Angiven plankod");
+            string descriptionString = "";
+            if (guiPlanTccPlanCodeIsTheSame(guiPlanCode, treatmentPlanCode, tccPlanCode))
+            {
+                resultRow.Add("OK");
+                descriptionString = "Den angivna plankoden den samma som i planen och TCC planen";
+            }
+            else
+            {
+                resultRow.Add("Inte OK");
+                descriptionString = "Den angivna plankoden är INTE den samma som i dosplanen och TCC planen";
+            }
+            descriptionString += ". I dosplan: " + treatmentPlanCode +
+                " TCC: " + tccPlanCode;
+            resultRow.Add(descriptionString);
+            return resultRow;
+        }
+
+        public List<string> checkGuiPlanTccPlanCodeCylinder(string guiPlanCode, string treatmentPlanCode,
+          string tccPlanCode)
+        {
+            List<string> resultRow = new List<string>();
+            resultRow.Add("Angiven plankod");
+            string descriptionString = "";
+            if (guiPlanTccPlanCodeIsTheSame(guiPlanCode, treatmentPlanCode, tccPlanCode))
+            {
+                resultRow.Add("OK");
+                descriptionString = "Den angivna plankoden den samma som i planen och TCC planen";
+            }
+            else
+            {
+                resultRow.Add("Inte OK");
+                descriptionString = "Den angivna plankoden är INTE den samma som i dosplanen och TCC planen";
+            }
+            descriptionString += ". I dosplan: " + treatmentPlanCode +
+                " TCC: " + tccPlanCode;
             resultRow.Add(descriptionString);
             return resultRow;
         }
@@ -954,6 +1013,29 @@ namespace WpfApp1
             List<List<string>> resultRows = new List<List<string>>();
             resultRows.Add(checkGuiPlanTccPresciptionDose(_specifications.PrescriptionDose, _treatmentPlan.PrescribedDose(),
                 _tccPlan.PrescribedDose()));
+            return resultRows;
+        }
+
+        public List<List<string>> errorResultRows(string testName, string desciption)
+        {
+            List<List<string>> resultRows = new List<List<string>>();
+            resultRows.Add(errorResultRow(testName, desciption));
+            return resultRows;
+        }
+
+        public List<List<string>> planCodeResultRows()
+        {
+            List<List<string>> resultRows = new List<List<string>>();
+            resultRows.Add(checkGuiPlanTccPlanCode(_specifications.PlanCode, _treatmentPlan.planCode(),
+                _tccPlan.planCode()));
+            return resultRows;
+        }
+
+        public List<List<string>> planCodeResultRowsCylinder()
+        {
+            List<List<string>> resultRows = new List<List<string>>();
+            resultRows.Add(checkGuiPlanTccPlanCodeCylinder(_specifications.PlanCodeCylinder, _treatmentPlan.planCode(),
+                _tccPlan.planCode()));
             return resultRows;
         }
 

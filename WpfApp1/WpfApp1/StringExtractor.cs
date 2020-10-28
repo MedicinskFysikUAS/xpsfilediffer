@@ -8,7 +8,7 @@ namespace WpfApp1
     class StringExtractor
     {
 
-        public string getValueFromSpaceSeparetedString(List<string> stringsOnPage, string searchedString, int stringIndex)
+        public string getValueFromSpaceSeparetedString(List<string> stringsOnPage, string searchedString, int stringIndex, bool getPatientName = false)
         {
             int foundIndex = stringsOnPage.FindIndex(x => x.StartsWith(searchedString));
             string stringValue = "";
@@ -22,6 +22,31 @@ namespace WpfApp1
             if (stringValue.Split(' ').Length == 2)
             {
                 stringValue = stringValue.Split(' ')[stringIndex];
+            }
+            if (getPatientName)
+            {
+                if (stringValue.Split(' ').Length == 3)
+                {
+                    if (stringIndex == 0)  // search for first names
+                    {
+                        stringValue = stringValue.Split(' ')[0] + " " + stringValue.Split(' ')[1];
+                    }
+                    if (stringIndex == 1) // search for the last name
+                    {
+                        stringValue = stringValue.Split(' ')[2];
+                    }
+                }
+                if (stringValue.Split(' ').Length == 4)
+                {
+                    if (stringIndex == 0)  // search for first names
+                    {
+                        stringValue = stringValue.Split(' ')[0] + " " + stringValue.Split(' ')[1] + " " + stringValue.Split(' ')[2];
+                    }
+                    if (stringIndex == 1) // search for the last name
+                    {
+                        stringValue = stringValue.Split(' ')[3];
+                    }
+                }
             }
             return stringValue;
         }

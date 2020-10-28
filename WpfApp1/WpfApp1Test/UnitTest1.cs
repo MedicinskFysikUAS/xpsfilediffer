@@ -22,17 +22,19 @@ namespace WpfApp1Test
                 }
                 treatmentPlanPageList.Add(stringList);
             }
-
-
+            // C:\work\git\xpsfilediffer\test\textFiles
+            WpfApp1.PageReader pageReader = new WpfApp1.PageReader("C:\\work\\git\\xpsfilediffer\\xpsFiles\\A92D-plan.xps");
+            List<List<string>> pageList = pageReader.getPages();
 
             // Set a variable to the Documents path.
             string docPath =
               Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
 
-            // Write the string array to a new file named "WriteLines.txt".
-            using (StreamWriter outputFile = new StreamWriter(Path.Combine(docPath, "WriteLines.txt")))
+            // Write the string array to a new file named "WriteLines.txt".// "C:\\work\\git\\xpsfilediffer\\xpsFiles\\test\\textFiles\\
+            //using (StreamWriter outputFile = new StreamWriter(Path.Combine(docPath, "WriteLines.txt")))
+            using (StreamWriter outputFile = new StreamWriter("C:\\work\\git\\xpsfilediffer\\xpsFiles\\test\\textFiles\\planFile.txt"))
             {
-                foreach (var item in treatmentPlanPageList)
+                foreach (var item in pageList)
                 {
 
                     foreach (string line in item)

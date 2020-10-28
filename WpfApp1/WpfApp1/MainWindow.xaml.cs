@@ -17,6 +17,7 @@ using System.Data;
 using Microsoft.Win32;
 using System.Windows.Controls.Primitives;
 using System.Configuration;
+using System.IO;
 
 namespace WpfApp1
 {
@@ -190,6 +191,10 @@ namespace WpfApp1
                 {
                     _specifications.PrescriptionDose = stringExtractor.decimalStringToDecimal(prescribedDoseText.Text);
                 }
+                if (planCodeText.Text.Length > 0)
+                {
+                    _specifications.PlanCode = planCodeText.Text;
+                }
             }
             else if (_tabType == TabType.CYLINDER)
             {
@@ -197,6 +202,10 @@ namespace WpfApp1
                 if (prescriptionDoseIsSetCylinder())
                 {
                     _specifications.PrescriptionDoseCylinder = stringExtractor.decimalStringToDecimal(cylindricPrescribedDoseText.Text);
+                }
+                if (planCodeTextCylinder.Text.Length > 0)
+                {
+                    _specifications.PlanCodeCylinder = planCodeTextCylinder.Text;
                 }
             }
         }
@@ -209,6 +218,16 @@ namespace WpfApp1
         public bool prescriptionDoseIsSet()
         {
             return (prescribedDoseText.Text.Length > 0);
+        }
+
+        public bool planCodeIsSet()
+        {
+            return (planCodeText.Text.Length > 0);
+        }
+
+        public bool planCodeIsSetCylinder()
+        {
+            return (planCodeTextCylinder.Text.Length > 0);
         }
 
         public bool prescriptionDoseIsSetCylinder()
@@ -387,6 +406,18 @@ namespace WpfApp1
                 {
                     _resultRows.AddRange(comparator.prescriptionDoseResultRows());
                 }
+                else
+                {
+                    _resultRows.AddRange(comparator.errorResultRows("Angiven ordinationsdos", "Ordinationsdosen är inte angiven."));
+                }
+                if (planCodeIsSet())
+                {
+                    _resultRows.AddRange(comparator.planCodeResultRows());
+                }
+                else
+                {
+                    _resultRows.AddRange(comparator.errorResultRows("Angiven plankod", "Plankoden är inte angiven."));
+                }
             }
 
             if (_treatmentPlanXpsFilePath != null && _dvhXpsFilePath != null && _tccPlanXpsFilePath != null && prescriptionDoseIsSet())
@@ -456,7 +487,18 @@ namespace WpfApp1
                 {
                     _resultRows.AddRange(comparator.prescriptionDoseResultRowsCylinder());
                 }
-
+                else
+                {
+                    _resultRows.AddRange(comparator.errorResultRows("Angiven ordinationsdos", "Ordinationsdosen är inte angiven."));
+                }
+                if (planCodeIsSetCylinder())
+                {
+                    _resultRows.AddRange(comparator.planCodeResultRowsCylinder());
+                }
+                else
+                {
+                    _resultRows.AddRange(comparator.errorResultRows("Angiven plankod", "Plankoden är inte angiven."));
+                }
             }
         }
 
@@ -829,8 +871,98 @@ namespace WpfApp1
             }
         }
 
+        private void moveFileToArchive(string soureFileNamePath, string destinationDirectory, string destinationFileName)
+        {
+            string sourceDirectory = System.IO.Path.GetDirectoryName(soureFileNamePath);
+            if (!Directory.Exists(sourceDirectory))
+            {
+                throw new Exception("'sourceDirectory' does not exist: " + sourceDirectory);
+            }
+
+            string archveDirectory = System.IO.Path.Combine(sourceDirectory, destinationDirectory);
+            if (!Directory.Exists(archveDirectory))
+            {
+                System.IO.Directory.CreateDirectory(archveDirectory);
+            }
+
+            if (System.IO.Path.GetFileName(destinationFileName) != destinationFileName)
+            {
+                throw new Exception("'destinationFileName' is invalid: " + destinationFileName);
+            }
+            string destinationFilePath = System.IO.Path.Combine(archveDirectory, destinationFileName);
+           
+
+            if (File.Exists(destinationFilePath))
+            {
+                File.Delete(destinationFilePath);
+            }
+            File.Move(soureFileNamePath, destinationFilePath);
+        }
+
+
+        private List<List<string>> getPageList(string xpsFilePath)
+        {
+            PageReader pageReader = new PageReader(xpsFilePath);
+            return pageReader.getPages();
+        }
+
+        private string getTreatmentPlanCode(string xpsFilePath, TabType tabType)
+        {  
+            TreatmentPlan treatmentPlan = new TreatmentPlan(getPageList(xpsFilePath), tabType);
+            return treatmentPlan.planCode();
+        }
+        private string getDvhPlanCode(string xpsFilePath, TabType tabType)
+        {
+            TreatmentDvh treatmentDvh = new treatmentDvh(getPageList(xpsFilePath), tabType);
+            return treatmentPlan.planCode();
+        }
+
+
+        private void moveFilesToArchive()
+        {
+            try
+            {
+                if (_treatmentPlanXpsFilePath != null && File.Exists(_treatmentPlanXpsFilePath) &&
+                    _tccPlanXpsFilePath != null && File.Exists(_tccPlanXpsFilePath) &&
+                    ((_dvhXpsFilePath != null && File.Exists(_dvhXpsFilePath) && ProstateTab.IsSelected) ||
+                        CylinderTab.IsSelected))
+                {
+                    if (MessageBox.Show("Skall xps-filerna flyttas till arkiv-mappen?", "Fråga", MessageBoxButton.YesNo, MessageBoxImage.Question) == MessageBoxResult.No)
+                    {
+                        return;
+                    }
+
+                    PageReader treatmentPlanPageReader = new PageReader(_treatmentPlanXpsFilePath);
+                    List<List<string>> treatmentPlanPageList = treatmentPlanPageReader.getPages();
+                    TreatmentPlan treatmentPlan = new TreatmentPlan(treatmentPlanPageList, _tabType);
+                    string planCode = treatmentPlan.planCode();
+
+                    if (ProstateTab.IsSelected)
+                    {
+                        string archiveDirName = "Prostata_xps_filer_arkiv";
+                        moveFileToArchive(_treatmentPlanXpsFilePath,archiveDirName, planCode + "_prost_plan.xps");
+                        moveFileToArchive(_dvhXpsFilePath,archiveDirName, planCode + "_prost_dvh.xps");
+                        moveFileToArchive(_tccPlanXpsFilePath,archiveDirName, planCode + "_prost_tcc.xps");
+                    }
+                    else if (CylinderTab.IsSelected)
+                    {
+                        string archiveDirName = "Cylinder_xps_filer_arkiv";
+                        moveFileToArchive(_treatmentPlanXpsFilePath, archiveDirName, planCode + "_cyl_plan.xps");
+                        moveFileToArchive(_tccPlanXpsFilePath, archiveDirName, planCode + "_cyl_tcc.xps");
+                    }
+                }
+            }
+            catch (Exception e)
+            {
+                string messageStr = "Det gick inte att flytta xps-filer till arkiv-mappen. Fel: " + e.ToString();
+                MessageBox.Show(messageStr, "Fel inträffade", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+
+        }
+
         private void BtnExit_Click(object sender, RoutedEventArgs e)
         {
+            moveFilesToArchive();
             System.Windows.Application.Current.Shutdown();
         }
 

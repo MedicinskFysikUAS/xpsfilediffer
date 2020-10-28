@@ -27,7 +27,7 @@ namespace WpfApp1
             string stringValue = "";
             if (_tabType == TabType.PROSTATE)
             {
-                stringValue = _stringExtractor.getValueFromSpaceSeparetedString(_pageList[pageIndex], "Patient name:", 0);
+                stringValue = _stringExtractor.getValueFromSpaceSeparetedString(_pageList[pageIndex], "Patient name:", 0, true);
             }
             else if (_tabType == TabType.CYLINDER)
             {
@@ -43,7 +43,7 @@ namespace WpfApp1
             string stringValue = "";
             if (_tabType == TabType.PROSTATE)
             {
-                stringValue = _stringExtractor.getValueFromSpaceSeparetedString(_pageList[pageIndex], "Patient name:", 1);
+                stringValue = _stringExtractor.getValueFromSpaceSeparetedString(_pageList[pageIndex], "Patient name:", 1, true);
             }
             else if (_tabType == TabType.CYLINDER)
             {
