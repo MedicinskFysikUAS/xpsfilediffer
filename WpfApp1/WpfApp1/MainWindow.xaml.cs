@@ -890,7 +890,24 @@ namespace WpfApp1
                 throw new Exception("'destinationFileName' is invalid: " + destinationFileName);
             }
             string destinationFilePath = System.IO.Path.Combine(archveDirectory, destinationFileName);
-           
+
+
+            string err; int result;
+            //// Try to disconnect from network
+            //result = NetworkHelper.Disconnect(@"\\195.252.26.54", true, out err);
+            //if (result != 0)
+            //{
+            //    Console.WriteLine(err);
+            //    return;
+            //}
+
+            // Try to connect to network
+            result = NetworkHelper.Connect(@"\\195.252.26.54", @"asfcon", @"Asfcon018", false, out err);
+            if (result != 0)
+            {
+                Console.WriteLine(err);
+                return;
+            }
 
             if (File.Exists(destinationFilePath))
             {
@@ -906,18 +923,17 @@ namespace WpfApp1
             return pageReader.getPages();
         }
 
-        private string getTreatmentPlanCode(string xpsFilePath, TabType tabType)
+        public string getTreatmentPlanCode(string xpsFilePath, TabType tabType)
         {  
             TreatmentPlan treatmentPlan = new TreatmentPlan(getPageList(xpsFilePath), tabType);
             return treatmentPlan.planCode();
         }
-        private string getDvhPlanCode(string xpsFilePath, TabType tabType)
+        public string getTccPlanCode(string xpsFilePath)
         {
-            TreatmentDvh treatmentDvh = new treatmentDvh(getPageList(xpsFilePath), tabType);
-            return treatmentPlan.planCode();
+            List<LiveCatheter> liveCatheters = new List<LiveCatheter>();
+            TccPlan tccPlan = new TccPlan(getPageList(xpsFilePath), liveCatheters);
+            return tccPlan.planCode();
         }
-
-
         private void moveFilesToArchive()
         {
             try
@@ -935,19 +951,22 @@ namespace WpfApp1
                     PageReader treatmentPlanPageReader = new PageReader(_treatmentPlanXpsFilePath);
                     List<List<string>> treatmentPlanPageList = treatmentPlanPageReader.getPages();
                     TreatmentPlan treatmentPlan = new TreatmentPlan(treatmentPlanPageList, _tabType);
-                    string planCode = treatmentPlan.planCode();
 
                     if (ProstateTab.IsSelected)
                     {
+                        string planCode = getTreatmentPlanCode(_treatmentPlanXpsFilePath, TabType.PROSTATE);
                         string archiveDirName = "Prostata_xps_filer_arkiv";
                         moveFileToArchive(_treatmentPlanXpsFilePath,archiveDirName, planCode + "_prost_plan.xps");
                         moveFileToArchive(_dvhXpsFilePath,archiveDirName, planCode + "_prost_dvh.xps");
+                        planCode = getTccPlanCode(_treatmentPlanXpsFilePath);
                         moveFileToArchive(_tccPlanXpsFilePath,archiveDirName, planCode + "_prost_tcc.xps");
                     }
                     else if (CylinderTab.IsSelected)
                     {
+                        string planCode = getTreatmentPlanCode(_treatmentPlanXpsFilePath, TabType.CYLINDER);
                         string archiveDirName = "Cylinder_xps_filer_arkiv";
                         moveFileToArchive(_treatmentPlanXpsFilePath, archiveDirName, planCode + "_cyl_plan.xps");
+                        planCode = getTccPlanCode(_treatmentPlanXpsFilePath);
                         moveFileToArchive(_tccPlanXpsFilePath, archiveDirName, planCode + "_cyl_tcc.xps");
                     }
                 }
@@ -960,9 +979,20 @@ namespace WpfApp1
 
         }
 
+        private void archiveFileReminder()
+        {
+            if (_treatmentPlanXpsFilePath != null && File.Exists(_treatmentPlanXpsFilePath) &&
+                    _tccPlanXpsFilePath != null && File.Exists(_tccPlanXpsFilePath) &&
+                    ((_dvhXpsFilePath != null && File.Exists(_dvhXpsFilePath) && ProstateTab.IsSelected) ||
+                        CylinderTab.IsSelected))
+            {
+                MessageBox.Show("Glöm inte att arkivera xps-filerna.", "Information", MessageBoxButton.OK, MessageBoxImage.Information);
+            }
+        }
+
         private void BtnExit_Click(object sender, RoutedEventArgs e)
         {
-            moveFilesToArchive();
+            archiveFileReminder();
             System.Windows.Application.Current.Shutdown();
         }
 

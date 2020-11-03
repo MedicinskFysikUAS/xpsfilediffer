@@ -781,6 +781,27 @@ namespace WpfApp1
 
         }
 
+        public List<string> checkPlanAndDvhPlanCode(string dvhPlanCode, string treatmentPlanPlanCode)
+        {
+            List<string> resultRow = new List<string>();
+            resultRow.Add("Plankod i DVH & Plan");
+            string descriptionString = "";
+            if (dvhPlanCode.ToUpper().Trim() == treatmentPlanPlanCode.ToUpper().Trim())
+            {
+                resultRow.Add("OK");
+                descriptionString = "Samma plankod i DVH och Plan.";
+            }
+            else
+            {
+                resultRow.Add("Inte OK");
+                descriptionString = "INTE Samma plankod i DVH och Plan. Plankod i DVH: " + dvhPlanCode +
+                    " i Plan: " + treatmentPlanPlanCode;
+            }
+            resultRow.Add(descriptionString);
+            return resultRow;
+        }
+
+
         public List<string> checkPresciptionDose(decimal guiPresciptionDose, decimal treatmentPlanPrescriptionDose, decimal dvhPrescriptionDose, 
             decimal tccPrescriptionDose)
         {
@@ -918,6 +939,7 @@ namespace WpfApp1
             decimal reportedTreatmentTime = _treatmentPlan.totalTreatmentTimeValue();
 
             resultRows.Add(checkTreatmentTime(estimatedTreatmentTime, reportedTreatmentTime, _specifications.TreatmentTimeEpsilon));
+            resultRows.Add(checkPlanAndDvhPlanCode(_treatmentDvh.planCode(), treatmentPlan.planCode()));
             return resultRows;
         }
 

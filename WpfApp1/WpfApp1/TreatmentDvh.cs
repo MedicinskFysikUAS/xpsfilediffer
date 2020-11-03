@@ -35,6 +35,14 @@ namespace WpfApp1
             return Convert.ToDecimal(stringValue);
         }
 
+        public string planCode()
+        {
+            int pageIndex = 0;
+            string stringValue = "";
+            stringValue = _stringExtractor.getValueFromSpaceSeparetedString(_pageList[pageIndex], "Plan Code:", 0);
+            return stringValue;
+        }
+
 
 
     }

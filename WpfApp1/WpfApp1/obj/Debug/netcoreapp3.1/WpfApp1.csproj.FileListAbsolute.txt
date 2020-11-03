@@ -18,15 +18,18 @@ C:\work\git\xpsFileDiff\WpfApp1\WpfApp1\obj\Debug\netcoreapp3.1\WpfApp1.pdb
 C:\work\git\xpsFileDiff\WpfApp1\WpfApp1\obj\Debug\netcoreapp3.1\WpfApp1.genruntimeconfig.cache
 C:\work\git\xpsFileDiff\WpfApp1\WpfApp1\obj\Debug\netcoreapp3.1\WpfApp1.csprojAssemblyReference.cache
 C:\work\git\xpsfilediffer\WpfApp1\WpfApp1\bin\Debug\netcoreapp3.1\WpfApp1.exe
+C:\work\git\xpsfilediffer\WpfApp1\WpfApp1\bin\Debug\netcoreapp3.1\WpfApp1.dll.config
 C:\work\git\xpsfilediffer\WpfApp1\WpfApp1\bin\Debug\netcoreapp3.1\WpfApp1.deps.json
 C:\work\git\xpsfilediffer\WpfApp1\WpfApp1\bin\Debug\netcoreapp3.1\WpfApp1.runtimeconfig.json
 C:\work\git\xpsfilediffer\WpfApp1\WpfApp1\bin\Debug\netcoreapp3.1\WpfApp1.runtimeconfig.dev.json
 C:\work\git\xpsfilediffer\WpfApp1\WpfApp1\bin\Debug\netcoreapp3.1\WpfApp1.dll
 C:\work\git\xpsfilediffer\WpfApp1\WpfApp1\bin\Debug\netcoreapp3.1\WpfApp1.pdb
+C:\work\git\xpsfilediffer\WpfApp1\WpfApp1\obj\Debug\netcoreapp3.1\CatheterInfoWindow.g.cs
 C:\work\git\xpsfilediffer\WpfApp1\WpfApp1\obj\Debug\netcoreapp3.1\MainWindow.g.cs
 C:\work\git\xpsfilediffer\WpfApp1\WpfApp1\obj\Debug\netcoreapp3.1\App.g.cs
 C:\work\git\xpsfilediffer\WpfApp1\WpfApp1\obj\Debug\netcoreapp3.1\WpfApp1_MarkupCompile.cache
 C:\work\git\xpsfilediffer\WpfApp1\WpfApp1\obj\Debug\netcoreapp3.1\WpfApp1_MarkupCompile.lref
+C:\work\git\xpsfilediffer\WpfApp1\WpfApp1\obj\Debug\netcoreapp3.1\CatheterInfoWindow.baml
 C:\work\git\xpsfilediffer\WpfApp1\WpfApp1\obj\Debug\netcoreapp3.1\MainWindow.baml
 C:\work\git\xpsfilediffer\WpfApp1\WpfApp1\obj\Debug\netcoreapp3.1\WpfApp1.g.resources
 C:\work\git\xpsfilediffer\WpfApp1\WpfApp1\obj\Debug\netcoreapp3.1\WpfApp1.csproj.CoreCompileInputs.cache
@@ -36,6 +39,3 @@ C:\work\git\xpsfilediffer\WpfApp1\WpfApp1\obj\Debug\netcoreapp3.1\WpfApp1.dll
 C:\work\git\xpsfilediffer\WpfApp1\WpfApp1\obj\Debug\netcoreapp3.1\WpfApp1.pdb
 C:\work\git\xpsfilediffer\WpfApp1\WpfApp1\obj\Debug\netcoreapp3.1\WpfApp1.genruntimeconfig.cache
 C:\work\git\xpsfilediffer\WpfApp1\WpfApp1\obj\Debug\netcoreapp3.1\WpfApp1.csprojAssemblyReference.cache
-C:\work\git\xpsfilediffer\WpfApp1\WpfApp1\bin\Debug\netcoreapp3.1\WpfApp1.dll.config
-C:\work\git\xpsfilediffer\WpfApp1\WpfApp1\obj\Debug\netcoreapp3.1\CatheterInfoWindow.g.cs
-C:\work\git\xpsfilediffer\WpfApp1\WpfApp1\obj\Debug\netcoreapp3.1\CatheterInfoWindow.baml
