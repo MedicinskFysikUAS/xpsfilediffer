@@ -42,6 +42,11 @@ namespace WpfApp1
             int pageIndex = 0;
             return _stringExtractor.getValueAfterSearchString(_pageList[pageIndex], "Plankod", 0);
         }
+        public string fractionNumber()
+        {
+            int pageIndex = 0;
+            return _stringExtractor.getValueAfterSearchString(_pageList[pageIndex], "Fraktionsnummer", 0);
+        }
 
         string  toStdDateString(string dateString)
         {

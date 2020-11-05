@@ -16,6 +16,7 @@ using System.Windows.Shapes;
 using System.Configuration;
 
 using WpfApp1;
+using System.Diagnostics;
 
 namespace archiveXps
 {
@@ -28,7 +29,7 @@ namespace archiveXps
         {
             InitializeComponent();
             string inputDirectory = ConfigurationManager.AppSettings["inputDirectory"];
-            inputDirectoryLabel.Content = "Detta program arkiverar filer i katalogen:\n" + inputDirectory;
+            inputDirectoryLabel.Content = "Detta program arkiverar xsp-filer i katalogen:\n" + inputDirectory;
         }
         public void archiveXpsFiles()
         {
@@ -41,37 +42,28 @@ namespace archiveXps
         {
             PageReader pageReader = new PageReader(filePath);
             XpsFileInfo xpsFileInfo = new XpsFileInfo();
+            xpsFileInfo.OutputDirectoryName = "xps_filer_arkiv";
             if (pageReader.isFileType(XpsFileType.ONCENTRA_PROSTATE_TREATMENT_PLAN))
             {
                 TreatmentPlan treatmentPlan = new TreatmentPlan(pageReader.getPages(), TabType.PROSTATE);
                 xpsFileInfo.PlanCode = treatmentPlan.planCode() + "_prost_plan.xps";
-                xpsFileInfo.OutputDirectoryName = "Prostata_xps_filer_arkiv";
             }
             else if (pageReader.isFileType(XpsFileType.ONCENTRA_PROSTATE_DVH))
             {
                 TreatmentDvh treatmentDvh = new TreatmentDvh(pageReader.getPages());
                 xpsFileInfo.PlanCode = treatmentDvh.planCode() + "_prost_dvh.xps";
-                xpsFileInfo.OutputDirectoryName = "Prostata_xps_filer_arkiv";
-            }
-            else if (pageReader.isFileType(XpsFileType.PROSTATE_TCC))
-            {
-                List<LiveCatheter> liveCatheters = new List<LiveCatheter>();
-                TccPlan tccPlan = new TccPlan(pageReader.getPages(), liveCatheters);
-                xpsFileInfo.PlanCode = tccPlan.planCode() + "_prost_tcc.xps";
-                xpsFileInfo.OutputDirectoryName = "Prostata_xps_filer_arkiv";
             }
             else if (pageReader.isFileType(XpsFileType.ONCENTRA_CYLINDER_TREATMENT_PLAN))
             {
                 TreatmentPlan treatmentPlan = new TreatmentPlan(pageReader.getPages(), TabType.CYLINDER);
                 xpsFileInfo.PlanCode = treatmentPlan.planCode() + "_cyl_plan.xps";
-                xpsFileInfo.OutputDirectoryName = "Cylinder_xps_filer_arkiv";
             }
-            else if (pageReader.isFileType(XpsFileType.CYLINDER_TCC))
+            else if (pageReader.isFileType(XpsFileType.PROSTATE_TCC) || (pageReader.isFileType(XpsFileType.CYLINDER_TCC)))
             {
                 List<LiveCatheter> liveCatheters = new List<LiveCatheter>();
                 TccPlan tccPlan = new TccPlan(pageReader.getPages(), liveCatheters);
-                xpsFileInfo.PlanCode = tccPlan.planCode() + "_cyl_tcc.xps";
-                xpsFileInfo.OutputDirectoryName = "Cylinder_xps_filer_arkiv";
+                string fractionNumber = tccPlan.fractionNumber();
+                xpsFileInfo.PlanCode = tccPlan.planCode() + "_frakt_" + fractionNumber + "_tcc.xps";
             }
             else
             {
@@ -113,7 +105,7 @@ namespace archiveXps
             {
                 return;
             }
-
+            int counter = 0;
             try
             {
                 string inputDirectory = ConfigurationManager.AppSettings["inputDirectory"];
@@ -126,14 +118,16 @@ namespace archiveXps
                         continue;
                     }
                     moveFileToArchive(filePath, xpsFileInfo.OutputDirectoryName, xpsFileInfo.PlanCode);
+                    ++counter;
                 }
             }
             catch (Exception exception)
             {
-                string messageStr = "Det gick inte att flytta xps-filer till arkiv-mappen. Fel: " + exception.ToString();
+                string messageStr = "Det gick inte att flytta xps-filer till arkiv-mappen. Fel:\n\n" + exception.ToString();
                 MessageBox.Show(messageStr, "Fel inträffade", MessageBoxButton.OK, MessageBoxImage.Error);
             }
-            MessageBox.Show("Filerna har arkiverats", "Information", MessageBoxButton.OK, MessageBoxImage.Information);
+            string message = counter.ToString() + " filerna har arkiverats";
+            MessageBox.Show(message, "Information", MessageBoxButton.OK, MessageBoxImage.Information);
         }
 
         private void quitButton_Click(object sender, RoutedEventArgs e)
