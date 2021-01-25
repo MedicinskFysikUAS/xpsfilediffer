@@ -30,6 +30,9 @@ namespace archiveXps
             InitializeComponent();
             string inputDirectory = ConfigurationManager.AppSettings["inputDirectory"];
             inputDirectoryLabel.Content = "Detta program arkiverar xsp-filer i katalogen:\n" + inputDirectory;
+            string err; int result;
+            // Try to connect to network
+            result = NetworkHelper.Connect(@"\\195.252.26.54", @"asfcon", @"Asfcon018", false, out err);
         }
         public void archiveXpsFiles()
         {

@@ -324,6 +324,18 @@ namespace WpfApp1
             return true;
         }
 
+        int treatmentCatheterNumberWithWrongDepth(decimal expectedDepth, decimal needleDepthEpsilon)
+        {
+            foreach (var catheter in _treatmentPlan.treatmentPlanCatheters())
+            {
+                if (Math.Abs(catheter.depth - expectedDepth) > needleDepthEpsilon)
+                {
+                    return catheter.catheterNumber;
+                }
+            }
+            return -1;
+        }
+
         public bool treatmentPlanHasExpectedFreeLength(decimal expectedFreeLength, decimal freeLengthEpsilon)
         {
             foreach (var catheter in _treatmentPlan.treatmentPlanCatheters())
@@ -726,12 +738,17 @@ namespace WpfApp1
             if (treatmentPlanHasExpectedDepth(expectedDepth, needleDepthEpsilon))
             {
                 resultRow.Add("OK");
-                descriptionString = "Nåldjupet är " + expectedDepth + " (inom " + needleDepthEpsilon + " mm)";
+                descriptionString = "Nåldjupet är " + expectedDepth + " mm (inom " + needleDepthEpsilon + " mm)";
             }
             else
             {
                 resultRow.Add("Inte OK");
-                descriptionString = "Nåldjupet avviker från " + expectedDepth + " mer än " + needleDepthEpsilon + " mm.";
+                descriptionString = "Nåldjupet avviker från det förväntade djupet på " + expectedDepth + " mm mer än " + needleDepthEpsilon + " mm.";
+                int catheterNumber = treatmentCatheterNumberWithWrongDepth(expectedDepth, needleDepthEpsilon);
+                if (catheterNumber != -1)
+                {
+                    descriptionString += " Detta gäller kateter nr: " + catheterNumber + ".";
+                }
             }
             resultRow.Add(descriptionString);
 

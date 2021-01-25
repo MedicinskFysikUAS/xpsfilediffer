@@ -66,7 +66,9 @@ namespace WpfApp1
                 {
                     return true;
                 }
-                else if (xpsFileType == XpsFileType.PROSTATE_TCC && stringsOnPage.Count > 90 && stringsOnPage[90] == "Förbehandlingsrapport")
+                //else if (xpsFileType == XpsFileType.PROSTATE_TCC && stringsOnPage.Count > 90 && stringsOnPage[90] == "Förbehandlingsrapport")
+                // New version 210125:
+                else if (xpsFileType == XpsFileType.PROSTATE_TCC && stringsOnPage.Count > 86 && stringsOnPage[81] == "Förbehandlingsrapport")
                 {
                     return true;
                 }
