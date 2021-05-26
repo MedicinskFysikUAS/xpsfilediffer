@@ -528,7 +528,17 @@ namespace WpfApp1
         public List<string> checkCalibrationDateTime(bool sameSource)
         {
             List<string> resultRow = new List<string>();
-            resultRow.Add("Kalibreringstidpunkt");
+            string description = "";
+            if (sameSource)
+            {
+                description = "Samma kalibreringstidpunkt";
+            }
+            else
+            {
+                description = "Olika kalibreringstidpunkt";
+
+            }
+            resultRow.Add(description);
             string info = "";
             if (hasSameCalibrationDateTime())
             {

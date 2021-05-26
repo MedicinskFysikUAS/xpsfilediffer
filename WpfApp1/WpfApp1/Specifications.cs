@@ -18,7 +18,7 @@ namespace WpfApp1
         private decimal _expectedChannelLength;
         private decimal _treatmentTimeEpsilon = 0.1m;
         private decimal _cylinderTreatmentTimeEpsilon = 0.01m;
-        private decimal _airKermaStrengthEpsilon = 0.5m;
+        private decimal _airKermaStrengthEpsilon = 0.6m;
         private decimal _prescriptionDose;
         private decimal _totalTimeEpsilon = 1.0m;
         private decimal _AKStrengthEpsilon = 0.1m;
