@@ -17,14 +17,22 @@ using System.Configuration;
 
 using WpfApp1;
 using System.Diagnostics;
+using System.Net;
 
 namespace archiveXps
 {
+
+
     /// <summary>
     /// Interaction logic for MainWindow.xaml
     /// </summary>
     public partial class MainWindow : Window
     {
+        //public string networkPath = @"\\195.252.26.54\asfdoc";
+        public string networkPath = @"\\195.252.26.54\BRACHY\xpsFiler_klinisk";
+        NetworkCredential credentials = new NetworkCredential(@"flexitron", "flexitron");
+        public string myNetworkPath = string.Empty;
+
         public MainWindow()
         {
             InitializeComponent();
@@ -32,44 +40,55 @@ namespace archiveXps
             inputDirectoryLabel.Content = "Detta program arkiverar xsp-filer i katalogen:\n" + inputDirectory;
             string err; int result;
             // Try to connect to network
-            result = NetworkHelper.Connect(@"\\195.252.26.54", @"asfcon", @"Asfcon018", false, out err);
+            //result = NetworkHelper.Connect(@"\\195.252.26.54", @"asfcon", @"Asfcon018", false, out err);
+            //result = NetworkHelper.Connect(@"\\195.252.26.54\BRACHY", @"asfcon", @"Asfcon018", false, out err);
         }
         public void archiveXpsFiles()
         {
             PageReader treatmentPlanPageReader = new PageReader("");
 
         }
-
-
+        
         private XpsFileInfo getXpsFileInfo(string filePath)
         {
             PageReader pageReader = new PageReader(filePath);
             XpsFileInfo xpsFileInfo = new XpsFileInfo();
             xpsFileInfo.OutputDirectoryName = "xps_filer_arkiv";
-            if (pageReader.isFileType(XpsFileType.ONCENTRA_PROSTATE_TREATMENT_PLAN))
+            try
             {
-                TreatmentPlan treatmentPlan = new TreatmentPlan(pageReader.getPages(), TabType.PROSTATE);
-                xpsFileInfo.PlanCode = treatmentPlan.planCode() + "_prost_plan.xps";
+                if (pageReader.isFileType(XpsFileType.ONCENTRA_PROSTATE_TREATMENT_PLAN))
+                {
+                    TreatmentPlan treatmentPlan = new TreatmentPlan(pageReader.getPages(), TabType.PROSTATE);
+                    xpsFileInfo.PlanCode = treatmentPlan.planCode() + "_prost_plan.xps";
+                }
+                else if (pageReader.isFileType(XpsFileType.ONCENTRA_PROSTATE_DVH))
+                {
+                    TreatmentDvh treatmentDvh = new TreatmentDvh(pageReader.getPages());
+                    xpsFileInfo.PlanCode = treatmentDvh.planCode() + "_prost_dvh.xps";
+                }
+                else if (pageReader.isFileType(XpsFileType.ONCENTRA_CYLINDER_TREATMENT_PLAN))
+                {
+                    TreatmentPlan treatmentPlan = new TreatmentPlan(pageReader.getPages(), TabType.CYLINDER);
+                    xpsFileInfo.PlanCode = treatmentPlan.planCode() + "_cyl_plan.xps";
+                }
+                else if (pageReader.isFileType(XpsFileType.PROSTATE_TCC) || (pageReader.isFileType(XpsFileType.CYLINDER_TCC)))
+                {
+                    List<LiveCatheter> liveCatheters = new List<LiveCatheter>();
+                    TccPlan tccPlan = new TccPlan(pageReader.getPages(), liveCatheters);
+                    string fractionNumber = tccPlan.fractionNumber();
+                    xpsFileInfo.PlanCode = tccPlan.planCode() + "_frakt_" + fractionNumber + "_tcc.xps";
+                }
+                else
+                {
+                    xpsFileInfo.PlanCode = "UNKNOWN";
+                    xpsFileInfo.OutputDirectoryName = "UNKNOWN";
+                }
+
             }
-            else if (pageReader.isFileType(XpsFileType.ONCENTRA_PROSTATE_DVH))
+            catch (Exception exception)
             {
-                TreatmentDvh treatmentDvh = new TreatmentDvh(pageReader.getPages());
-                xpsFileInfo.PlanCode = treatmentDvh.planCode() + "_prost_dvh.xps";
-            }
-            else if (pageReader.isFileType(XpsFileType.ONCENTRA_CYLINDER_TREATMENT_PLAN))
-            {
-                TreatmentPlan treatmentPlan = new TreatmentPlan(pageReader.getPages(), TabType.CYLINDER);
-                xpsFileInfo.PlanCode = treatmentPlan.planCode() + "_cyl_plan.xps";
-            }
-            else if (pageReader.isFileType(XpsFileType.PROSTATE_TCC) || (pageReader.isFileType(XpsFileType.CYLINDER_TCC)))
-            {
-                List<LiveCatheter> liveCatheters = new List<LiveCatheter>();
-                TccPlan tccPlan = new TccPlan(pageReader.getPages(), liveCatheters);
-                string fractionNumber = tccPlan.fractionNumber();
-                xpsFileInfo.PlanCode = tccPlan.planCode() + "_frakt_" + fractionNumber + "_tcc.xps";
-            }
-            else
-            {
+                string messageStr = "Skippar filen:\n\n" + filePath;
+                MessageBox.Show(messageStr, "Fel inträffade", MessageBoxButton.OK, MessageBoxImage.Error);
                 xpsFileInfo.PlanCode = "UNKNOWN";
                 xpsFileInfo.OutputDirectoryName = "UNKNOWN";
             }
@@ -78,28 +97,31 @@ namespace archiveXps
 
         private void moveFileToArchive(string soureFileNamePath, string destinationDirectory, string destinationFileName)
         {
-            string sourceDirectory = System.IO.Path.GetDirectoryName(soureFileNamePath);
-            if (!Directory.Exists(sourceDirectory))
+            using (new ConnectToSharedFolder(networkPath, credentials))
             {
-                throw new Exception("'sourceDirectory' does not exist: " + sourceDirectory);
-            }
+                string sourceDirectory = System.IO.Path.GetDirectoryName(soureFileNamePath);
+                if (!Directory.Exists(sourceDirectory))
+                {
+                    throw new Exception("'sourceDirectory' does not exist: " + sourceDirectory);
+                }
 
-            string archveDirectory = System.IO.Path.Combine(sourceDirectory, destinationDirectory);
-            if (!Directory.Exists(archveDirectory))
-            {
-                System.IO.Directory.CreateDirectory(archveDirectory);
-            }
+                string archveDirectory = System.IO.Path.Combine(sourceDirectory, destinationDirectory);
+                if (!Directory.Exists(archveDirectory))
+                {
+                    System.IO.Directory.CreateDirectory(archveDirectory);
+                }
 
-            if (System.IO.Path.GetFileName(destinationFileName) != destinationFileName)
-            {
-                throw new Exception("'destinationFileName' is invalid: " + destinationFileName);
+                if (System.IO.Path.GetFileName(destinationFileName) != destinationFileName)
+                {
+                    throw new Exception("'destinationFileName' is invalid: " + destinationFileName);
+                }
+                string destinationFilePath = System.IO.Path.Combine(archveDirectory, destinationFileName);
+                if (File.Exists(destinationFilePath))
+                {
+                    File.Delete(destinationFilePath);
+                }
+                File.Move(soureFileNamePath, destinationFilePath);
             }
-            string destinationFilePath = System.IO.Path.Combine(archveDirectory, destinationFileName);
-            if (File.Exists(destinationFilePath))
-            {
-                File.Delete(destinationFilePath);
-            }
-            File.Move(soureFileNamePath, destinationFilePath);
         }
 
         private void archiveButton_Click(object sender, RoutedEventArgs e)
@@ -111,17 +133,22 @@ namespace archiveXps
             int counter = 0;
             try
             {
-                string inputDirectory = ConfigurationManager.AppSettings["inputDirectory"];
-                string[] filePaths = Directory.GetFiles(@inputDirectory, "*.xps");
-                foreach (var filePath in filePaths)
+                // Code taken from https://www.c-sharpcorner.com/blogs/how-to-access-network-drive-using-c-sharp
+                using (new ConnectToSharedFolder(networkPath, credentials))
                 {
-                    XpsFileInfo xpsFileInfo = getXpsFileInfo(filePath);
-                    if (xpsFileInfo.PlanCode == "UNKNOWN")
+                    var fileList = Directory.GetDirectories(networkPath);
+                    string inputDirectory = ConfigurationManager.AppSettings["inputDirectory"];
+                    string[] filePaths = Directory.GetFiles(@inputDirectory, "*.xps");
+                    foreach (var filePath in filePaths)
                     {
-                        continue;
+                        XpsFileInfo xpsFileInfo = getXpsFileInfo(filePath);
+                        if (xpsFileInfo.PlanCode == "UNKNOWN")
+                        {
+                            continue;
+                        }
+                        moveFileToArchive(filePath, xpsFileInfo.OutputDirectoryName, xpsFileInfo.PlanCode);
+                        ++counter;
                     }
-                    moveFileToArchive(filePath, xpsFileInfo.OutputDirectoryName, xpsFileInfo.PlanCode);
-                    ++counter;
                 }
             }
             catch (Exception exception)

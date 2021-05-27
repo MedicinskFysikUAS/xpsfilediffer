@@ -69,7 +69,7 @@ namespace WpfApp1
                 //else if (xpsFileType == XpsFileType.PROSTATE_TCC && stringsOnPage.Count > 90 && stringsOnPage[90] == "Förbehandlingsrapport")
                 // New version 210125:
                 else if ((xpsFileType == XpsFileType.PROSTATE_TCC && stringsOnPage.Count > 86 && stringsOnPage[81] == "Förbehandlingsrapport") ||
-                    (xpsFileType == XpsFileType.PROSTATE_TCC && stringsOnPage.Count > 95 && stringsOnPage[96] == "Förbehandlingsrapport"))
+                    (xpsFileType == XpsFileType.PROSTATE_TCC && stringsOnPage.Count > 96 && stringsOnPage[96] == "Förbehandlingsrapport"))
                 {
                     return true;
                 }
@@ -78,7 +78,7 @@ namespace WpfApp1
                     return true;
                 }
                 else if ((xpsFileType == XpsFileType.CYLINDER_TCC && stringsOnPage.Count > 86 && stringsOnPage[81] == "Förbehandlingsrapport") ||
-                    (xpsFileType == XpsFileType.CYLINDER_TCC && stringsOnPage.Count > 95 && stringsOnPage[96] == "Förbehandlingsrapport"))
+                    (xpsFileType == XpsFileType.CYLINDER_TCC && stringsOnPage.Count > 96 && stringsOnPage[96] == "Förbehandlingsrapport"))
                 {
                     return true;
                 }
