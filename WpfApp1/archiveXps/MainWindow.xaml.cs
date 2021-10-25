@@ -29,8 +29,10 @@ namespace archiveXps
     public partial class MainWindow : Window
     {
         //public string networkPath = @"\\195.252.26.54\asfdoc";
-        public string networkPath = @"\\195.252.26.54\BRACHY\xpsFiler_klinisk";
-        NetworkCredential credentials = new NetworkCredential(@"flexitron", "flexitron");
+        public string networkPath = @"\\10.194.4.157\BRACHY\xpsFiler_klinisk";
+        //public string networkPath = @"\\10.194.4.157\BRACHY";
+        NetworkCredential credentials = new NetworkCredential(@"hdr1\flexitron", "flexitron");
+        //NetworkCredential credentials = new NetworkCredential(@"asfcon", "Asfcon018");
         public string myNetworkPath = string.Empty;
 
         public MainWindow()
@@ -38,10 +40,6 @@ namespace archiveXps
             InitializeComponent();
             string inputDirectory = ConfigurationManager.AppSettings["inputDirectory"];
             inputDirectoryLabel.Content = "Detta program arkiverar xsp-filer i katalogen:\n" + inputDirectory;
-            string err; int result;
-            // Try to connect to network
-            //result = NetworkHelper.Connect(@"\\195.252.26.54", @"asfcon", @"Asfcon018", false, out err);
-            //result = NetworkHelper.Connect(@"\\195.252.26.54\BRACHY", @"asfcon", @"Asfcon018", false, out err);
         }
         public void archiveXpsFiles()
         {
@@ -49,6 +47,7 @@ namespace archiveXps
 
         }
         
+
         private XpsFileInfo getXpsFileInfo(string filePath)
         {
             PageReader pageReader = new PageReader(filePath);
@@ -87,8 +86,8 @@ namespace archiveXps
             }
             catch (Exception exception)
             {
-                string messageStr = "Skippar filen:\n\n" + filePath;
-                MessageBox.Show(messageStr, "Fel inträffade", MessageBoxButton.OK, MessageBoxImage.Error);
+                //string messageStr = "Skippar filen:\n\n" + filePath + " error:" + exception.ToString();
+                //MessageBox.Show(messageStr, "Fel inträffade", MessageBoxButton.OK, MessageBoxImage.Error);
                 xpsFileInfo.PlanCode = "UNKNOWN";
                 xpsFileInfo.OutputDirectoryName = "UNKNOWN";
             }
@@ -131,12 +130,12 @@ namespace archiveXps
                 return;
             }
             int counter = 0;
+            int skipCounter = 0;
             try
             {
                 // Code taken from https://www.c-sharpcorner.com/blogs/how-to-access-network-drive-using-c-sharp
                 using (new ConnectToSharedFolder(networkPath, credentials))
                 {
-                    var fileList = Directory.GetDirectories(networkPath);
                     string inputDirectory = ConfigurationManager.AppSettings["inputDirectory"];
                     string[] filePaths = Directory.GetFiles(@inputDirectory, "*.xps");
                     foreach (var filePath in filePaths)
@@ -144,6 +143,7 @@ namespace archiveXps
                         XpsFileInfo xpsFileInfo = getXpsFileInfo(filePath);
                         if (xpsFileInfo.PlanCode == "UNKNOWN")
                         {
+                            ++skipCounter;
                             continue;
                         }
                         moveFileToArchive(filePath, xpsFileInfo.OutputDirectoryName, xpsFileInfo.PlanCode);
@@ -156,7 +156,8 @@ namespace archiveXps
                 string messageStr = "Det gick inte att flytta xps-filer till arkiv-mappen. Fel:\n\n" + exception.ToString();
                 MessageBox.Show(messageStr, "Fel inträffade", MessageBoxButton.OK, MessageBoxImage.Error);
             }
-            string message = counter.ToString() + " filerna har arkiverats";
+            string message = counter.ToString() + " filerna har arkiverats.\n";
+            message += skipCounter.ToString() + " filer har skippats.";
             MessageBox.Show(message, "Information", MessageBoxButton.OK, MessageBoxImage.Information);
         }
 
