@@ -1,12 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "3tqbIMOpGlS3KJQFCXkKnQAM8O0NdqvtaR2SSdkoqki/uU7P26Mb8jashzF7n/woL9sMkuUVQO09vRMIc0uaCA==",
+  "dgSpecHash": "8MdKfzraXlchKipX9CV0Zram/pANkxrUxtt80rL8dtyu/ZCUZaGhWdgUohA7WtcVgiPpRd0fT0yQ3UCSBK5tZw==",
   "success": true,
   "projectFilePath": "C:\\work\\git\\xpsfilediffer\\WpfApp1\\WpfApp1\\WpfApp1.csproj",
-  "expectedPackageFiles": [
-    "C:\\Users\\sae081la\\.nuget\\packages\\microsoft.netcore.app.runtime.win-x86\\3.1.3\\microsoft.netcore.app.runtime.win-x86.3.1.3.nupkg.sha512",
-    "C:\\Users\\sae081la\\.nuget\\packages\\microsoft.windowsdesktop.app.runtime.win-x86\\3.1.3\\microsoft.windowsdesktop.app.runtime.win-x86.3.1.3.nupkg.sha512",
-    "C:\\Users\\sae081la\\.nuget\\packages\\microsoft.aspnetcore.app.runtime.win-x86\\3.1.3\\microsoft.aspnetcore.app.runtime.win-x86.3.1.3.nupkg.sha512"
-  ],
+  "expectedPackageFiles": [],
   "logs": []
 }

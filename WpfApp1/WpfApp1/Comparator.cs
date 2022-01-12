@@ -995,6 +995,14 @@ namespace WpfApp1
             return resultRows;
         }
 
+        public List<List<string>> intrauterineTreatmentPlanResultRows()
+        {
+            List<List<string>> resultRows = new List<List<string>>();
+            resultRows.Add(headerResultRow("Plan"));
+            resultRows.Add(checkTreatmentPlanChannelLength(_specifications.ExpectedChannelLength));
+            return resultRows;
+        }
+
         public List<List<string>> cylinderTreatmentPlanAndCylinderSettingsResultRows(DataForTreatmentTimeEstimate dataForTreatmentTimeEstimate)
         {
             List<List<string>> resultRows = new List<List<string>>();

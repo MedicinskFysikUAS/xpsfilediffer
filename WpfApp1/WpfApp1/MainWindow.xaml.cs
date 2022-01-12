@@ -38,9 +38,9 @@ namespace WpfApp1
         string _treatmentPlanXpsFilePathCylinder;
         string _tccPlanXpsFilePathCylinder;
 
-        //string _treatmentPlanXpsFilePathIntraUterine;
-        //string _dvhXpsFilePathIntraUterine;
+        string _treatmentPlanXpsFilePathIntraUterine;
         string _tccPlanXpsFilePathIntraUterine;
+
         private TabType _tabType;
         private List<int> _comboboxDiameters;
         private bool _isSameSource;
@@ -110,7 +110,7 @@ namespace WpfApp1
                 calculatedLabel1.Visibility = Visibility.Hidden;
             }
         }
-
+                
         public void initiateCylinderTypeComboBox()
         {
             cylinderTypeComboBox.Items.Add("VC");
@@ -208,6 +208,18 @@ namespace WpfApp1
                     _specifications.PlanCodeCylinder = planCodeTextCylinder.Text;
                 }
             }
+            else if (_tabType == TabType.INTRAUTERINE)
+            {
+                _specifications.ExpectedChannelLength = 1300.0m;
+                if (prescriptionDoseIsSetCylinder())
+                {
+                    _specifications.PrescriptionDoseCylinder = stringExtractor.decimalStringToDecimal(cylindricPrescribedDoseText.Text);
+                }
+                if (planCodeTextCylinder.Text.Length > 0)
+                {
+                    _specifications.PlanCodeCylinder = planCodeTextCylinder.Text;
+                }
+            }
         }
 
         public bool needleDepthAndFreeLengthIsSet()
@@ -235,6 +247,11 @@ namespace WpfApp1
             return (cylindricPrescribedDoseText.Text.Length > 0);
         }
 
+        public bool prescriptionDoseIsSetIntrauterine()
+        {
+            return (intrauterinePrescribedDoseText.Text.Length > 0);
+        }
+
         public bool cylinderTypeDiamterLengthAndDoseIsSet()
         {
             bool typIsSet = cylinderTypeComboBox.SelectedIndex != -1;
@@ -258,9 +275,9 @@ namespace WpfApp1
             }
             else if (IntraUterineTab.IsSelected)
             {
-                //_treatmentPlanXpsFilePath = _treatmentPlanXpsFilePathIntraUterine;
-                //_dvhXpsFilePath = _dvhXpsFilePathIntraUterine;
-                //_tccPlanXpsFilePath = _tccPlanXpsFilePathIntraUterine;
+                _treatmentPlanXpsFilePath = _treatmentPlanXpsFilePathIntraUterine;
+                _dvhXpsFilePath = "";
+                _tccPlanXpsFilePath = _tccPlanXpsFilePathIntraUterine;
             }
         }
 
@@ -284,6 +301,11 @@ namespace WpfApp1
             return sameSourceCombobox1.SelectedIndex == 0;
         }
 
+        private bool sameSourceIntrauterine()
+        {
+            return sameSourceCombobox2.SelectedIndex == 0;
+        }
+
         private void updateSameSourceSelected()
         {
             if (ProstateTab.IsSelected)
@@ -298,9 +320,8 @@ namespace WpfApp1
             }
             else if (IntraUterineTab.IsSelected)
             {
-                //_treatmentPlanXpsFilePath = _treatmentPlanXpsFilePathIntraUterine;
-                //_dvhXpsFilePath = _dvhXpsFilePathIntraUterine;
-                //_tccPlanXpsFilePath = _tccPlanXpsFilePathIntraUterine;
+                _isSameSource = sameSourceIntrauterine();
+                _sameSourceSet = sameSourceIntrauterine();
             }
         }
 
@@ -358,6 +379,12 @@ namespace WpfApp1
                     return false;
                 }
             }
+            return true;
+        }
+
+        private bool correctIntrauterineFileType()
+        {
+            // TODO:
             return true;
         }
 
@@ -502,7 +529,20 @@ namespace WpfApp1
             }
         }
 
-        bool buildResultDataGrid()
+        private void addIntrauterineResultRows()
+        {
+            Comparator comparator = new Comparator(_specifications);
+            if (_treatmentPlanXpsFilePath != null)
+            {
+                PageReader treatmentPlanPageReader = new PageReader(_treatmentPlanXpsFilePath);
+                List<List<string>> treatmentPlanPageList = treatmentPlanPageReader.getPages();
+                TreatmentPlan treatmentPlan = new TreatmentPlan(treatmentPlanPageList, _tabType); // TODO Add support for tabType Intrauterine
+                comparator.treatmentPlan = treatmentPlan;
+                _resultRows.AddRange(comparator.intrauterineTreatmentPlanResultRows());
+            }
+        }
+
+            bool buildResultDataGrid()
         {
             _resultRows.Clear();
             resultSummaryLabel.Visibility = Visibility.Hidden;
@@ -523,8 +563,16 @@ namespace WpfApp1
                     addCylinderResultRows();
                 }
             }
+            else if (_tabType == TabType.INTRAUTERINE)
+            {
+                if (correctIntrauterineFileType())
+                {
+                    correctFileType = true;
+                    addIntrauterineResultRows();
+                }
+            }
 
-            DataColumn testCase = new DataColumn("Test", typeof(string));
+                DataColumn testCase = new DataColumn("Test", typeof(string));
             DataColumn testResult = new DataColumn("Result", typeof(string));
             DataColumn resultDescripton = new DataColumn("Beskrivning", typeof(string));
             DataTable dataTable = new DataTable();
@@ -804,9 +852,9 @@ namespace WpfApp1
                 }
                 else if (IntraUterineTab.IsSelected)
                 {
-                    //TPXpsPathLabel2.Content = selectedFile;
-                    //_treatmentPlanXpsFilePathIntraUterine = selectedFile;
-                    //_tabType = TabType.INTRAUTERINE;
+                    TPXpsPathLabel2.Content = selectedFile;
+                    _treatmentPlanXpsFilePathIntraUterine = selectedFile;
+                    _tabType = TabType.INTRAUTERINE;
                 }
             }
         }
@@ -863,6 +911,8 @@ namespace WpfApp1
             setProstateCalculationsVisable(false);
             calculateLengthAndFreeLength();
             setCylinderCalculationsVisable(false);
+            // TODO:
+            //setIntrauterineCalculationsVisable(false)
             updateInputFilePaths();
             updateSameSourceSelected();
             if (buildResultDataGrid())
