@@ -384,7 +384,26 @@ namespace WpfApp1
 
         private bool correctIntrauterineFileType()
         {
-            // TODO:
+            Comparator comparator = new Comparator(_specifications);
+            if (_treatmentPlanXpsFilePath != null)
+            {
+                PageReader pageReader = new PageReader(_treatmentPlanXpsFilePath);
+                if (!pageReader.isFileType(XpsFileType.ONCENTRA_INTRAUTERINE_TREATMENT_PLAN))
+                {
+                    _resultRows.AddRange(comparator.informationResultRows("", "Inte OK", "Felaktig Oncentra Brachy fil."));
+                    return false;
+                }
+            }
+
+            if (_tccPlanXpsFilePath != null)
+            {
+                PageReader pageReader = new PageReader(_tccPlanXpsFilePath);
+                if (!pageReader.isFileType(XpsFileType.INTRAUTERINE_TCC))
+                {
+                    _resultRows.AddRange(comparator.informationResultRows("", "Inte OK", "Felaktig TCC fil."));
+                    return false;
+                }
+            }
             return true;
         }
 
@@ -539,6 +558,42 @@ namespace WpfApp1
                 TreatmentPlan treatmentPlan = new TreatmentPlan(treatmentPlanPageList, _tabType); // TODO Add support for tabType Intrauterine
                 comparator.treatmentPlan = treatmentPlan;
                 _resultRows.AddRange(comparator.intrauterineTreatmentPlanResultRows());
+            }
+           
+            if (_treatmentPlanXpsFilePath != null && _tccPlanXpsFilePath != null)
+            {
+                PageReader treatmentPlanPageReader = new PageReader(_treatmentPlanXpsFilePath);
+                List<List<string>> treatmentPlanPageList = treatmentPlanPageReader.getPages();
+                TreatmentPlan treatmentPlan = new TreatmentPlan(treatmentPlanPageList, _tabType);
+                comparator.treatmentPlan = treatmentPlan;
+                PageReader tccPlanPageReader = new PageReader(_tccPlanXpsFilePath);
+                List<List<string>> tccPlanPageList = tccPlanPageReader.getPages();
+                List<LiveCatheter> tccLiveCatheters = tccPlanPageReader.tccLiveCatheters(_tabType);
+                TccPlan tccPlan = new TccPlan(tccPlanPageList, tccLiveCatheters);
+                comparator.tccPlan = tccPlan;
+                bool skipApprovalTest = true;
+                bool useRelativeEpsilon = true;
+                _resultRows.AddRange(comparator.resultRows(skipApprovalTest, useRelativeEpsilon));
+                if (_sameSourceSet)
+                {
+                    _resultRows.AddRange(comparator.sourceComparisonResultRows(_isSameSource));
+                }
+                if (prescriptionDoseIsSetCylinder())
+                {
+                    _resultRows.AddRange(comparator.prescriptionDoseResultRowsCylinder());
+                }
+                else
+                {
+                    _resultRows.AddRange(comparator.errorResultRows("Angiven ordinationsdos", "Ordinationsdosen är inte angiven."));
+                }
+                if (planCodeIsSetCylinder())
+                {
+                    _resultRows.AddRange(comparator.planCodeResultRowsCylinder());
+                }
+                else
+                {
+                    _resultRows.AddRange(comparator.errorResultRows("Angiven plankod", "Plankoden är inte angiven."));
+                }
             }
         }
 

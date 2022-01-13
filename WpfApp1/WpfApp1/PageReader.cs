@@ -82,6 +82,15 @@ namespace WpfApp1
                 {
                     return true;
                 }
+                else if (xpsFileType == XpsFileType.ONCENTRA_INTRAUTERINE_TREATMENT_PLAN && stringsOnPage.Count > 51 && stringsOnPage[50] == "Oncentra Brachy ")
+                {
+                    return true;
+                }
+                else if ((xpsFileType == XpsFileType.INTRAUTERINE_TCC && stringsOnPage.Count > 86 && stringsOnPage[81] == "Förbehandlingsrapport") ||
+                    (xpsFileType == XpsFileType.INTRAUTERINE_TCC && stringsOnPage.Count > 96 && stringsOnPage[96] == "Förbehandlingsrapport"))
+                {
+                    return true;
+                }
                 else
                 {
                     return false;

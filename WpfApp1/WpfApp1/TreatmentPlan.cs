@@ -33,6 +33,10 @@ namespace WpfApp1
             {
                 stringValue = _stringExtractor.getValueAtIndex(_pageList[pageIndex], 11, 1);
             }
+            else if (_tabType == TabType.INTRAUTERINE)
+            {
+                stringValue = _stringExtractor.getValueAtIndex(_pageList[pageIndex], 11, 1);
+            }
 
             return stringValue;
         }
@@ -46,6 +50,10 @@ namespace WpfApp1
                 stringValue = _stringExtractor.getValueFromSpaceSeparetedString(_pageList[pageIndex], "Patient name:", 1, true);
             }
             else if (_tabType == TabType.CYLINDER)
+            {
+                stringValue = _stringExtractor.getValueAtIndex(_pageList[pageIndex], 11, 0);
+            }
+            else if (_tabType == TabType.INTRAUTERINE)
             {
                 stringValue = _stringExtractor.getValueAtIndex(_pageList[pageIndex], 11, 0);
             }
@@ -64,6 +72,10 @@ namespace WpfApp1
             {
                 stringValue = _stringExtractor.getValueAtIndex(_pageList[pageIndex], 10, 0);
             }
+            else if (_tabType == TabType.INTRAUTERINE)
+            {
+                stringValue = _stringExtractor.getValueAtIndex(_pageList[pageIndex], 10, 0);
+            }
             return stringValue;
         }
 
@@ -77,6 +89,10 @@ namespace WpfApp1
                 stringValue = _stringExtractor.getValueFromSpaceSeparetedString(_pageList[pageIndex], "Plan Code:", 0);
             }
             else if (_tabType == TabType.CYLINDER)
+            {
+                stringValue = _stringExtractor.getValueAtIndex(_pageList[pageIndex], 1, 0);
+            }
+            else if (_tabType == TabType.INTRAUTERINE)
             {
                 stringValue = _stringExtractor.getValueAtIndex(_pageList[pageIndex], 1, 0);
             }
@@ -100,6 +116,10 @@ namespace WpfApp1
             {
                 return cylindricStatusSetDateTime();
             }
+            else if (_tabType == TabType.INTRAUTERINE)
+            {
+                return cylindricStatusSetDateTime();
+            }
             else
             {
                 return "";
@@ -113,6 +133,10 @@ namespace WpfApp1
                 return prostateCalibrationDateTime();
             }
             else if (_tabType == TabType.CYLINDER)
+            {
+                return cylinderCalibrationDateTime();
+            }
+            else if (_tabType == TabType.INTRAUTERINE)
             {
                 return cylinderCalibrationDateTime();
             }
@@ -229,6 +253,11 @@ namespace WpfApp1
                 pageIndex = 0;
                 stringValue = _stringExtractor.getValueBeforeSearchString(_pageList[pageIndex], "Prescription dose per fraction/pulse (Gy):", pageIndex);
             }
+            else if (_tabType == TabType.INTRAUTERINE)
+            {
+                pageIndex = 0;
+                stringValue = _stringExtractor.getValueBeforeSearchString(_pageList[pageIndex], "Prescription dose per fraction/pulse (Gy):", pageIndex);
+            }
 
             if (stringValue.Contains('.'))
             {
@@ -250,6 +279,10 @@ namespace WpfApp1
                 stringValue = _stringExtractor.getValueFromSpaceSeparetedString(_pageList[pageIndex], "Planned Source Strength:", 0);
             }
             else if (_tabType == TabType.CYLINDER)
+            {
+                stringValue = _stringExtractor.getValueAfterSearchString(_pageList[pageIndex], "and treatment date and time (days):", pageIndex);
+            }
+            else if (_tabType == TabType.INTRAUTERINE)
             {
                 stringValue = _stringExtractor.getValueAfterSearchString(_pageList[pageIndex], "and treatment date and time (days):", pageIndex);
             }
@@ -304,6 +337,11 @@ namespace WpfApp1
                 pageIndex = 1;
                 stringValue = _stringExtractor.getStringAfterStartWithSearchString(_pageList[pageIndex], "Total treatment time (sec.):");
             }
+            else if (_tabType == TabType.INTRAUTERINE)
+            {
+                pageIndex = 1;
+                stringValue = _stringExtractor.getStringAfterStartWithSearchString(_pageList[pageIndex], "Total treatment time (sec.):");
+            }
             return stringValue;
         }
 
@@ -347,6 +385,10 @@ namespace WpfApp1
             else if (_tabType == TabType.CYLINDER)
             {
                 return cylindricLiveCatheters().OrderBy(o => o.catheterNumber()).ToList();
+            }
+            else if (_tabType == TabType.INTRAUTERINE)
+            {
+                return intrauterineLiveCatheters().OrderBy(o => o.catheterNumber()).ToList();
             }
             else // Only added to get rid of build warnings.
             {
@@ -485,8 +527,6 @@ namespace WpfApp1
             {
                 return -1;
             }
-
-
         }
 
         public int getCylindricCatheterTableEndIndex(List<string> page, int startIndex)
@@ -518,8 +558,40 @@ namespace WpfApp1
             {
                 return -1;
             }
+        }
 
-
+        public int getIntrauterineCatheterTableEndIndex(List<string> page, int startIndex)
+        {
+            if (_stringExtractor.getIndexOnPageForStartWithStringFromIndex(page, startIndex, "Offset (mm):") != -1)
+            {
+                return _stringExtractor.getIndexOnPageForStartWithStringFromIndex(page, startIndex, "Offset (mm):") - 8;
+            } else if (_stringExtractor.getIndexOnPageForSearchedStringFromIndex(page, startIndex, "Signed for approval") != -1 &&
+                _stringExtractor.getIndexOnPageForSearchedStringFromIndex(page, startIndex, "P1") == -1)
+            {
+                return _stringExtractor.getIndexOnPageForSearchedStringFromIndex(page, startIndex, "Signed for approval");
+            }
+            else if (_stringExtractor.getIndexOnPageForSearchedStringFromIndex(page, startIndex, "Signed for approval") == -1 &&
+                _stringExtractor.getIndexOnPageForSearchedStringFromIndex(page, startIndex, "P1") != -1)
+            {
+                return _stringExtractor.getIndexOnPageForSearchedStringFromIndex(page, startIndex, "P1") - 8;
+            }
+            else if (_stringExtractor.getIndexOnPageForSearchedStringFromIndex(page, startIndex, "Signed for approval") != -1 &&
+                _stringExtractor.getIndexOnPageForSearchedStringFromIndex(page, startIndex, "P1") != -1)
+            {
+                if (_stringExtractor.getIndexOnPageForSearchedStringFromIndex(page, startIndex, "Signed for approval") <
+                    _stringExtractor.getIndexOnPageForSearchedStringFromIndex(page, startIndex, "P1"))
+                {
+                    return _stringExtractor.getIndexOnPageForSearchedStringFromIndex(page, startIndex, "Signed for approval");
+                }
+                else
+                {
+                    return _stringExtractor.getIndexOnPageForSearchedStringFromIndex(page, startIndex, "P1") - 8;
+                }
+            }
+            else
+            {
+                return -1;
+            }
         }
 
         public List<TreatmentPlanCatheter> treatmentPlanCatheters()
@@ -621,6 +693,45 @@ namespace WpfApp1
                     {
                         startTableIndex = offsetIndex;
                         endTableIndex = getCylindricCatheterTableEndIndex(page, currentIndex);
+                        List<string> allValues = _stringExtractor.allValuesInInterval(page, startTableIndex, endTableIndex);
+                        List<List<string>> catheterTableLines = _stringExtractor.nColumnsRowsInInterval(6, allValues);
+                        foreach (var catheterTableLine in catheterTableLines)
+                        {
+                            Tuple<string, string> tuple = new Tuple<string, string>(catheterTableLine[5], catheterTableLine[0]);
+                            positonTimePairs.Add(tuple);
+                        }
+                        currentIndex = endTableIndex;
+                    }
+                    else
+                    {
+                        currentIndex = -1;
+                    }
+                }
+            }
+            liveCatheter.setPositonTimePairs(positonTimePairs);
+            liveCatheters.Add(liveCatheter);
+            return liveCatheters;
+        }
+
+
+        public List<LiveCatheter> intrauterineLiveCatheters()
+        {
+            List<LiveCatheter> liveCatheters = new List<LiveCatheter>();
+            LiveCatheter liveCatheter = new LiveCatheter();
+            liveCatheter.setCatheterNumber(1); // TODO: Add code to get catheter number.
+            List<Tuple<string, string>> positonTimePairs = new List<Tuple<string, string>>();
+            int startTableIndex = -1;
+            int endTableIndex = -1;
+            foreach (var page in _pageList)
+            {
+                int currentIndex = 0;
+                while (currentIndex != -1)
+                {
+                    int offsetIndex = _stringExtractor.getIndexOnPageForStartWithStringFromIndex(page, currentIndex, "Offset (mm):");
+                    if (offsetIndex != -1)
+                    {
+                        startTableIndex = offsetIndex;
+                        endTableIndex = getIntrauterineCatheterTableEndIndex(page, currentIndex);
                         List<string> allValues = _stringExtractor.allValuesInInterval(page, startTableIndex, endTableIndex);
                         List<List<string>> catheterTableLines = _stringExtractor.nColumnsRowsInInterval(6, allValues);
                         foreach (var catheterTableLine in catheterTableLines)
