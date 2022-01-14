@@ -13,6 +13,7 @@ namespace WpfApp1
         private List<List<string>> _pageList;
         private StringExtractor _stringExtractor = new StringExtractor();
         private TabType _tabType;
+        private Dictionary<string, string> _catheterTochannel = new Dictionary<string, string>();
 
         public TreatmentPlan(List<List<string>> pageList, TabType tabType)
         {
@@ -388,6 +389,7 @@ namespace WpfApp1
             }
             else if (_tabType == TabType.INTRAUTERINE)
             {
+                setCatheterToChannelNumber();
                 return intrauterineLiveCatheters().OrderBy(o => o.catheterNumber()).ToList();
             }
             else // Only added to get rid of build warnings.
@@ -564,8 +566,13 @@ namespace WpfApp1
         {
             if (_stringExtractor.getIndexOnPageForStartWithStringFromIndex(page, startIndex, "Offset (mm):") != -1)
             {
-                return _stringExtractor.getIndexOnPageForStartWithStringFromIndex(page, startIndex, "Offset (mm):") - 8;
-            } else if (_stringExtractor.getIndexOnPageForSearchedStringFromIndex(page, startIndex, "Signed for approval") != -1 &&
+                return _stringExtractor.getIndexOnPageForStartWithStringFromIndex(page, startIndex, "Offset (mm):");
+            }
+            else if (_stringExtractor.getIndexOnPageForSearchedStringFromIndex(page, startIndex, "AR") != -1)
+            {
+                return _stringExtractor.getIndexOnPageForSearchedStringFromIndex(page, startIndex, "AR");
+            }
+            else if (_stringExtractor.getIndexOnPageForSearchedStringFromIndex(page, startIndex, "Signed for approval") != -1 &&
                 _stringExtractor.getIndexOnPageForSearchedStringFromIndex(page, startIndex, "P1") == -1)
             {
                 return _stringExtractor.getIndexOnPageForSearchedStringFromIndex(page, startIndex, "Signed for approval");
@@ -592,6 +599,20 @@ namespace WpfApp1
             {
                 return -1;
             }
+        }
+
+        private int getIntrauterineSourcePositionsTableEndIndex(List<string> page, int startIndex)
+        {
+            //"Source position separation (mm):
+            if (_stringExtractor.getIndexOnPageForStartWithStringFromIndex(page, startIndex, "Source position separation (mm):") != -1)
+            {
+                return _stringExtractor.getIndexOnPageForStartWithStringFromIndex(page, startIndex, "Source position separation (mm):");
+            }
+            else
+            {
+                return -1;
+            }
+
         }
 
         public List<TreatmentPlanCatheter> treatmentPlanCatheters()
@@ -714,14 +735,75 @@ namespace WpfApp1
         }
 
 
+        private void setCatheterToChannelNumber()
+        {
+            _catheterTochannel.Clear();
+            //_catheterTochannel.Add("1", "1");
+            //_catheterTochannel.Add("2", "3");
+            //_catheterTochannel.Add("3", "5");
+            //_catheterTochannel.Add("4", "12");
+            //_catheterTochannel.Add("5", "14");
+            //_catheterTochannel.Add("6", "22");
+            //_catheterTochannel.Add("7", "24");
+
+
+            int startTableIndex = -1;
+            int endTableIndex = -1;
+            foreach (var page in _pageList)
+            {
+                int currentIndex = 0;
+                while (currentIndex != -1)
+                {
+                    int offsetIndex = _stringExtractor.getIndexOnPageForStartWithStringFromIndex(page, currentIndex, "Material info:");
+                    if (offsetIndex != -1)
+                    {
+                        LiveCatheter liveCatheter = new LiveCatheter();
+                        startTableIndex = offsetIndex;
+                        endTableIndex = getIntrauterineSourcePositionsTableEndIndex(page, startTableIndex + 1);
+                        List<string> allValues = _stringExtractor.allValuesInInterval(page, startTableIndex + 17, endTableIndex);
+                        List<string> catheterAndCannels = new List<string>();
+                        for (int i = 0; i < allValues.Count; ++i)
+                        {
+                            if (allValues[i].Contains("(") &&
+                                allValues[i].Contains(")") &&
+                                !allValues[i].Contains("mm"))
+                            {
+                                catheterAndCannels.Add(allValues[i]);
+                            }
+                        }
+
+                        foreach (var catheterAndCannel in catheterAndCannels)
+                        {
+                            int from = 0;
+                            int to = catheterAndCannel.IndexOf("(");
+                            string catheterNumber = catheterAndCannel.Substring(from, to).Trim();
+                            from = catheterAndCannel.IndexOf("(") + "(".Length;
+                            to = catheterAndCannel.LastIndexOf(")");
+                            string channelNumber = catheterAndCannel.Substring(from, to - from).Trim();
+                            int n;
+                            if (int.TryParse(catheterNumber, out n) &&
+                                int.TryParse(channelNumber, out n))
+                            {
+                                _catheterTochannel.Add(catheterNumber, channelNumber);
+                            }
+                        }
+                        currentIndex = -1;
+                    }
+                    else
+                    {
+                        currentIndex = -1;
+                    }
+                }
+            }
+        }
+
+
         public List<LiveCatheter> intrauterineLiveCatheters()
         {
             List<LiveCatheter> liveCatheters = new List<LiveCatheter>();
-            LiveCatheter liveCatheter = new LiveCatheter();
-            liveCatheter.setCatheterNumber(1); // TODO: Add code to get catheter number.
-            List<Tuple<string, string>> positonTimePairs = new List<Tuple<string, string>>();
             int startTableIndex = -1;
             int endTableIndex = -1;
+            int catheterNumberCounter = 1;
             foreach (var page in _pageList)
             {
                 int currentIndex = 0;
@@ -730,15 +812,23 @@ namespace WpfApp1
                     int offsetIndex = _stringExtractor.getIndexOnPageForStartWithStringFromIndex(page, currentIndex, "Offset (mm):");
                     if (offsetIndex != -1)
                     {
+                        LiveCatheter liveCatheter = new LiveCatheter();
                         startTableIndex = offsetIndex;
-                        endTableIndex = getIntrauterineCatheterTableEndIndex(page, currentIndex);
+                        endTableIndex = getIntrauterineCatheterTableEndIndex(page, startTableIndex + 1);
                         List<string> allValues = _stringExtractor.allValuesInInterval(page, startTableIndex, endTableIndex);
                         List<List<string>> catheterTableLines = _stringExtractor.nColumnsRowsInInterval(6, allValues);
+                        List<Tuple<string, string>> positonTimePairs = new List<Tuple<string, string>>();
                         foreach (var catheterTableLine in catheterTableLines)
                         {
                             Tuple<string, string> tuple = new Tuple<string, string>(catheterTableLine[5], catheterTableLine[0]);
                             positonTimePairs.Add(tuple);
                         }
+                        int channelNumber = -1;
+                        Int32.TryParse(_catheterTochannel[catheterNumberCounter.ToString()], out channelNumber);
+                        liveCatheter.setCatheterNumber(channelNumber);
+                        liveCatheter.setPositonTimePairs(positonTimePairs);
+                        liveCatheters.Add(liveCatheter);
+                        catheterNumberCounter++;
                         currentIndex = endTableIndex;
                     }
                     else
@@ -747,8 +837,6 @@ namespace WpfApp1
                     }
                 }
             }
-            liveCatheter.setPositonTimePairs(positonTimePairs);
-            liveCatheters.Add(liveCatheter);
             return liveCatheters;
         }
 

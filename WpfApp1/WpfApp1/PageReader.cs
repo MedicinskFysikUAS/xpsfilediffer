@@ -246,16 +246,21 @@ namespace WpfApp1
         public int columnFromOrigX(string originX, TabType tabType)
         {
             int startOrigin = -1;
+            int deltaWidth = 1833;
             if (tabType == TabType.PROSTATE)
             {
-                startOrigin = 6849; // Prostate
+                startOrigin = 6849; 
             }
             if (tabType == TabType.CYLINDER)
             {
-                startOrigin = 6750; // Cylinder
+                startOrigin = 6750; 
+            }
+            if (tabType == TabType.INTRAUTERINE)
+            {
+                startOrigin = 6818;
+                deltaWidth = 1845;
             }
 
-            int deltaWidth = 1833;
             int margin = 50;
             int originXint = stringToInt(originX);
             if ((originXint > ((startOrigin + deltaWidth * 0) - margin)) && (originXint < ((startOrigin + deltaWidth * 0) + margin)))
