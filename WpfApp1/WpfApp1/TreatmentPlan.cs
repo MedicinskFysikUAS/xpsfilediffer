@@ -14,6 +14,8 @@ namespace WpfApp1
         private StringExtractor _stringExtractor = new StringExtractor();
         private TabType _tabType;
         private Dictionary<string, string> _catheterTochannel = new Dictionary<string, string>();
+        private List<string> _catheterLengths = new List<string>();
+        private Dictionary<string, string> _catheterAndTime = new Dictionary<string, string>();
 
         public TreatmentPlan(List<List<string>> pageList, TabType tabType)
         {
@@ -223,7 +225,8 @@ namespace WpfApp1
             {
                 stringValue = _stringExtractor.getValueFromSpaceSeparetedString(_pageList[pageIndex], "Prescribed Dose:", 0);
             }
-            else if (_tabType == TabType.CYLINDER)
+            else if (_tabType == TabType.CYLINDER ||
+                _tabType == TabType.INTRAUTERINE)
             {
                 pageIndex = 0;
                 stringValue = _stringExtractor.getValueBeforeSearchString(_pageList[pageIndex], "Prescription dose per fraction/pulse (Gy):", pageIndex);
@@ -279,11 +282,8 @@ namespace WpfApp1
             {
                 stringValue = _stringExtractor.getValueFromSpaceSeparetedString(_pageList[pageIndex], "Planned Source Strength:", 0);
             }
-            else if (_tabType == TabType.CYLINDER)
-            {
-                stringValue = _stringExtractor.getValueAfterSearchString(_pageList[pageIndex], "and treatment date and time (days):", pageIndex);
-            }
-            else if (_tabType == TabType.INTRAUTERINE)
+            else if (_tabType == TabType.CYLINDER ||
+                _tabType == TabType.INTRAUTERINE)
             {
                 stringValue = _stringExtractor.getValueAfterSearchString(_pageList[pageIndex], "and treatment date and time (days):", pageIndex);
             }
@@ -302,7 +302,8 @@ namespace WpfApp1
                 stringValue = "-1";
             }
             decimal decimalValue = Convert.ToDecimal(stringValue);
-            if (_tabType == TabType.CYLINDER)
+            if (_tabType == TabType.CYLINDER ||
+                _tabType == TabType.INTRAUTERINE)
             {
                 decimalValue *= 1000.0m;
             }
@@ -340,7 +341,7 @@ namespace WpfApp1
             }
             else if (_tabType == TabType.INTRAUTERINE)
             {
-                pageIndex = 1;
+                pageIndex = 2;
                 stringValue = _stringExtractor.getStringAfterStartWithSearchString(_pageList[pageIndex], "Total treatment time (sec.):");
             }
             return stringValue;
@@ -389,7 +390,7 @@ namespace WpfApp1
             }
             else if (_tabType == TabType.INTRAUTERINE)
             {
-                setCatheterToChannelNumber();
+                setCatheterToChannelNumberAndLengths();
                 return intrauterineLiveCatheters().OrderBy(o => o.catheterNumber()).ToList();
             }
             else // Only added to get rid of build warnings.
@@ -735,7 +736,7 @@ namespace WpfApp1
         }
 
 
-        private void setCatheterToChannelNumber()
+        private void setCatheterToChannelNumberAndLengths()
         {
             _catheterTochannel.Clear();
             //_catheterTochannel.Add("1", "1");
@@ -760,19 +761,27 @@ namespace WpfApp1
                         LiveCatheter liveCatheter = new LiveCatheter();
                         startTableIndex = offsetIndex;
                         endTableIndex = getIntrauterineSourcePositionsTableEndIndex(page, startTableIndex + 1);
-                        List<string> allValues = _stringExtractor.allValuesInInterval(page, startTableIndex + 17, endTableIndex);
+                        List<string> allValues = _stringExtractor.allValuesInInterval(page, startTableIndex + 15, endTableIndex - 2);
                         List<string> catheterAndCannels = new List<string>();
                         for (int i = 0; i < allValues.Count; ++i)
                         {
                             if (allValues[i].Contains("(") &&
-                                allValues[i].Contains(")") &&
-                                !allValues[i].Contains("mm"))
+                                allValues[i].Contains(")"))
                             {
-                                catheterAndCannels.Add(allValues[i]);
+                                if (!allValues[i].Contains("mm"))
+                                {
+                                    catheterAndCannels.Add(allValues[i]);
+                                }
+                                else
+                                {
+                                    int from = 0;
+                                    int to = allValues[i].IndexOf("(");
+                                    _catheterLengths.Add(allValues[i].Substring(from, to).Trim());
+                                }
                             }
                         }
 
-                        foreach (var catheterAndCannel in catheterAndCannels)
+                foreach (var catheterAndCannel in catheterAndCannels)
                         {
                             int from = 0;
                             int to = catheterAndCannel.IndexOf("(");
@@ -797,6 +806,10 @@ namespace WpfApp1
             }
         }
 
+        public List<string> catheterLengths()
+        {
+            return _catheterLengths;
+        }
 
         public List<LiveCatheter> intrauterineLiveCatheters()
         {

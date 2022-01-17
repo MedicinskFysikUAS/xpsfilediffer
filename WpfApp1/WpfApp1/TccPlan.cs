@@ -11,6 +11,7 @@ namespace WpfApp1
         private List<List<string>> _pageList;
         private StringExtractor _stringExtractor = new StringExtractor();
         private List<LiveCatheter> _liveCatheters = new List<LiveCatheter>();
+        private Dictionary<string, string> _catheterTochannel = new Dictionary<string, string>();
 
 
         public TccPlan(List<List<string>> pageList, List<LiveCatheter> liveCatheters)
@@ -67,7 +68,6 @@ namespace WpfApp1
             {
                 return "";
             }
-
         }
 
         public string statusSetDateTime()
@@ -147,6 +147,43 @@ namespace WpfApp1
         public List<LiveCatheter> liveCatheters()
         {
             return _liveCatheters.OrderBy(o => o.catheterNumber()).ToList();
+        }
+
+        public Dictionary<string, string>  catheterTochannel()
+        {
+            List<LiveCatheter> sortedLiveCatheters = liveCatheters();
+            int counter = 0;
+            _catheterTochannel.Clear();
+            foreach (var sortedLiveCatheter in sortedLiveCatheters)
+            {
+                _catheterTochannel.Add(counter.ToString(), sortedLiveCatheter.catheterNumber().ToString());
+                counter++;
+            }
+            return _catheterTochannel;
+        }
+
+        public List<string> catheterLengths()
+        {
+            int pageIndex = 1;
+            int start = _pageList[pageIndex].IndexOf("KateterKanalKanallängd (mm)Kanaltid (sek.)");
+            int stop = _pageList[pageIndex].IndexOf("Positionstider (sek.)");
+            List<string> allValues = _stringExtractor.allValuesInInterval(_pageList[pageIndex], 
+                start, stop);
+            List<string> catheterLengthList = new List<string>();
+            if (catheterTochannel().Count != allValues.Count)
+            {
+                return catheterLengthList;
+            }
+            Dictionary<string, string> catheterTochannelDict = catheterTochannel();
+            for (int i = 0; i < catheterTochannelDict.Count; i++)
+            {
+                int characterLength = _catheterTochannel[_catheterTochannel.ElementAt(i).Key].Length +
+                    _catheterTochannel.ElementAt(i).Key.Length;
+                int channelLengthCharacterLength = 6;
+                int from = characterLength;
+                catheterLengthList.Add(allValues[i].Substring(from, channelLengthCharacterLength).Trim());
+            }
+            return catheterLengthList;
         }
     }
 }

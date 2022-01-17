@@ -312,6 +312,33 @@ namespace WpfApp1
             return true;
         }
 
+        private List<string> toDotSeparated(List<string> commaSeparated)
+        {
+            List<string> dotSeparated = new List<string>();
+            foreach (var item in commaSeparated)
+            {
+                dotSeparated.Add(item.Replace(',', '.'));
+            }
+            return dotSeparated;
+        }
+
+        private bool treatmentPlanTccHasSameChannelLengths()
+        {
+            if (_treatmentPlan.catheterLengths().Count != _tccPlan.catheterLengths().Count)
+            {
+                return false;
+            }
+            else
+            {
+                List<string> treatmentPlanCatheterLengths = _treatmentPlan.catheterLengths();
+                List<string> tccPlanCatheterLengths = toDotSeparated(_tccPlan.catheterLengths());
+                var firstNotSecond = treatmentPlanCatheterLengths.Except(tccPlanCatheterLengths).ToList();
+                var secondNotFirst = tccPlanCatheterLengths.Except(treatmentPlanCatheterLengths).ToList();
+                return firstNotSecond.Count == 0 &&
+                    secondNotFirst.Count == 0;
+            }
+        }
+
         public bool treatmentPlanHasExpectedDepth(decimal expectedDepth, decimal needleDepthEpsilon)
         {
             foreach (var catheter in _treatmentPlan.treatmentPlanCatheters())
@@ -712,6 +739,26 @@ namespace WpfApp1
             return resultRow;
         }
 
+        private List<string> checkIntrauterineChannelLengths()
+        {
+            List<string> resultRow = new List<string>();
+            resultRow.Add("Kanalängd dosplan vs tcc");
+            string descriptionString = "";
+            if (treatmentPlanTccHasSameChannelLengths())
+            {
+                resultRow.Add("OK");
+                descriptionString = "Kanallängderna i dosplan och TCC plan är lika för samtliga kanaler.";
+            }
+            else
+            {
+                resultRow.Add("Inte OK");
+                descriptionString = "Kanallängderna i dosplan och TCC plan är INTE lika.";
+            }
+            resultRow.Add(descriptionString);
+            return resultRow;
+        }
+
+
         public List<string> headerResultRow(string description)
         {
             List<string> resultRow = new List<string>();
@@ -859,7 +906,7 @@ namespace WpfApp1
             if (guiPlanTccPresciptionDoseIsTheSame(guiPresciptionDose, treatmentPlanPrescriptionDose, tccPrescriptionDose))
             {
                 resultRow.Add("OK");
-                descriptionString = "Den angivna ordinerade dosen är den samma som i planen och TCC planen";
+                descriptionString = "Den angivna ordinerade dosen är den samma som i dosplanen och TCC planen";
             }
             else
             {
@@ -943,7 +990,7 @@ namespace WpfApp1
             List<string> resultRow = new List<string>();
             resultRow.Add("Plannamn");
             string descriptionString = "";
-            descriptionString = "Det förväntade plannamnet är: " + expectedPlanName + " planens plannamn är " + _treatmentPlan.cylindricPlanName();
+            descriptionString = "Det förväntade plannamnet är: " + expectedPlanName + " dosplanens plannamn är " + _treatmentPlan.cylindricPlanName();
             if (expectedPlanName == _treatmentPlan.cylindricPlanName())
             {
                 resultRow.Add("OK");
@@ -1001,6 +1048,14 @@ namespace WpfApp1
             resultRows.Add(headerResultRow("Plan"));
             resultRows.Add(checkTreatmentPlanChannelLength(_specifications.ExpectedChannelLength));
             return resultRows;
+        }
+
+        public List<List<string>> intrauterineChannelLengthsResultRows()
+        {
+            List<List<string>> resultRows = new List<List<string>>();
+            resultRows.Add(checkIntrauterineChannelLengths());
+            return resultRows;
+
         }
 
         public List<List<string>> cylinderTreatmentPlanAndCylinderSettingsResultRows(DataForTreatmentTimeEstimate dataForTreatmentTimeEstimate)
@@ -1100,6 +1155,21 @@ namespace WpfApp1
         {
             List<List<string>> resultRows = new List<List<string>>();
             resultRows.Add(checkGuiPlanTccPresciptionDoseylinder(_specifications.PrescriptionDoseCylinder, _treatmentPlan.PrescribedDose(),
+                _tccPlan.PrescribedDose()));
+            return resultRows;
+        }
+        public List<List<string>> planCodeResultRowsIntrauterine()
+        {
+            List<List<string>> resultRows = new List<List<string>>();
+            resultRows.Add(checkGuiPlanTccPlanCodeCylinder(_specifications.PlanCodeIntrauterine, _treatmentPlan.planCode(),
+                _tccPlan.planCode()));
+            return resultRows;
+        }
+
+        public List<List<string>> prescriptionDoseResultRowsIntrauterine()
+        {
+            List<List<string>> resultRows = new List<List<string>>();
+            resultRows.Add(checkGuiPlanTccPresciptionDoseylinder(_specifications.PrescriptionDoseIntrauterine, _treatmentPlan.PrescribedDose(),
                 _tccPlan.PrescribedDose()));
             return resultRows;
         }

@@ -43,6 +43,7 @@ namespace WpfApp1
 
         private TabType _tabType;
         private List<int> _comboboxDiameters;
+        private List<int> _comboboxApplicatorDiameters;
         private bool _isSameSource;
         private bool _sameSourceSet;
 
@@ -61,7 +62,9 @@ namespace WpfApp1
             resultSummaryLabel.Content = "";
             _specifications = new Specifications();
             initiateCylinderTypeComboBox();
+            initiateApplicatorTypeComboBox();
             _comboboxDiameters = new List<int>();
+            _comboboxApplicatorDiameters = new List<int>();
             initiateSameSourceCombobox();
             // debug
             //PageReader tccPlanPageReader = new PageReader("C:\\work\\git\\xpsfilediffer\\xpsFiles\\A92DTcc.xps");
@@ -117,12 +120,21 @@ namespace WpfApp1
             cylinderTypeComboBox.Items.Add("SVC/AVC");
         }
 
+        public void initiateApplicatorTypeComboBox()
+        {
+            applicatorTypeComboBox.Items.Add("Ringapplikator");
+            applicatorTypeComboBox.Items.Add("Venezia");
+            applicatorTypeComboBox.Items.Add("MCVC");
+        }
+
         public void initiateSameSourceCombobox()
         {
             sameSourceCombobox0.Items.Add("Ja");
             sameSourceCombobox0.Items.Add("Nej");
             sameSourceCombobox1.Items.Add("Ja");
             sameSourceCombobox1.Items.Add("Nej");
+            sameSourceCombobox2.Items.Add("Ja");
+            sameSourceCombobox2.Items.Add("Nej");
         }
 
         public void calculateLengthAndFreeLength()
@@ -210,14 +222,14 @@ namespace WpfApp1
             }
             else if (_tabType == TabType.INTRAUTERINE)
             {
-                _specifications.ExpectedChannelLength = 1300.0m;
-                if (prescriptionDoseIsSetCylinder())
+                _specifications.ExpectedChannelLength = -1.0m;
+                if (prescriptionDoseIsSetIntrauterine())
                 {
-                    _specifications.PrescriptionDoseCylinder = stringExtractor.decimalStringToDecimal(cylindricPrescribedDoseText.Text);
+                    _specifications.PrescriptionDoseIntrauterine = stringExtractor.decimalStringToDecimal(intrauterinePrescribedDoseText.Text);
                 }
-                if (planCodeTextCylinder.Text.Length > 0)
+                if (planCodeTextIntrauterine.Text.Length > 0)
                 {
-                    _specifications.PlanCodeCylinder = planCodeTextCylinder.Text;
+                    _specifications.PlanCodeIntrauterine = planCodeTextIntrauterine.Text;
                 }
             }
         }
@@ -242,6 +254,11 @@ namespace WpfApp1
             return (planCodeTextCylinder.Text.Length > 0);
         }
 
+        public bool planCodeIsSetIntrauterine()
+        {
+            return (planCodeTextIntrauterine.Text.Length > 0);
+        }
+
         public bool prescriptionDoseIsSetCylinder()
         {
             return (cylindricPrescribedDoseText.Text.Length > 0);
@@ -257,6 +274,13 @@ namespace WpfApp1
             bool typIsSet = cylinderTypeComboBox.SelectedIndex != -1;
             bool diameterIsSet = cylinderDiameterComboBox.SelectedIndex != -1;
             return (typIsSet && diameterIsSet && treatmentLengthText.Text.Length > 0 && cylindricPrescribedDoseText.Text.Length > 0);
+        }
+
+        public bool intrauterineTypeDiamterAndDoseIsSet()
+        {
+            bool typIsSet = applicatorTypeComboBox.SelectedIndex != -1;
+            bool diameterIsSet = applicatorDiameterComboBox.SelectedIndex != -1;
+            return (typIsSet && diameterIsSet && intrauterinePrescribedDoseText.Text.Length > 0);
         }
 
         private void updateInputFilePaths()
@@ -306,6 +330,11 @@ namespace WpfApp1
             return sameSourceCombobox2.SelectedIndex == 0;
         }
 
+        private bool sameSourceSetIntrauterine()
+        {
+            return sameSourceCombobox2.SelectedIndex != -1;
+        }
+
         private void updateSameSourceSelected()
         {
             if (ProstateTab.IsSelected)
@@ -321,7 +350,7 @@ namespace WpfApp1
             else if (IntraUterineTab.IsSelected)
             {
                 _isSameSource = sameSourceIntrauterine();
-                _sameSourceSet = sameSourceIntrauterine();
+                _sameSourceSet = sameSourceSetIntrauterine();
             }
         }
 
@@ -559,7 +588,18 @@ namespace WpfApp1
                 comparator.treatmentPlan = treatmentPlan;
                 _resultRows.AddRange(comparator.intrauterineTreatmentPlanResultRows());
             }
-           
+
+            if (intrauterineTypeDiamterAndDoseIsSet() && _treatmentPlanXpsFilePath != null)
+            {
+                PageReader treatmentPlanPageReader = new PageReader(_treatmentPlanXpsFilePath);
+                List<List<string>> treatmentPlanPageList = treatmentPlanPageReader.getPages();
+                TreatmentPlan treatmentPlan = new TreatmentPlan(treatmentPlanPageList, _tabType);
+                comparator.treatmentPlan = treatmentPlan;
+                DataForTreatmentTimeEstimate dataForTreatmentTimeEstimate = getDataForTreatmentTimeEstimate();
+                // TODO:
+                //_resultRows.AddRange(comparator.cylinderTreatmentPlanAndCylinderSettingsResultRows(dataForTreatmentTimeEstimate));
+            }
+
             if (_treatmentPlanXpsFilePath != null && _tccPlanXpsFilePath != null)
             {
                 PageReader treatmentPlanPageReader = new PageReader(_treatmentPlanXpsFilePath);
@@ -574,21 +614,22 @@ namespace WpfApp1
                 bool skipApprovalTest = true;
                 bool useRelativeEpsilon = true;
                 _resultRows.AddRange(comparator.resultRows(skipApprovalTest, useRelativeEpsilon));
+                _resultRows.AddRange(comparator.intrauterineChannelLengthsResultRows());
                 if (_sameSourceSet)
                 {
                     _resultRows.AddRange(comparator.sourceComparisonResultRows(_isSameSource));
                 }
-                if (prescriptionDoseIsSetCylinder())
+                if (prescriptionDoseIsSetIntrauterine())
                 {
-                    _resultRows.AddRange(comparator.prescriptionDoseResultRowsCylinder());
+                    _resultRows.AddRange(comparator.prescriptionDoseResultRowsIntrauterine());
                 }
                 else
                 {
                     _resultRows.AddRange(comparator.errorResultRows("Angiven ordinationsdos", "Ordinationsdosen är inte angiven."));
                 }
-                if (planCodeIsSetCylinder())
+                if (planCodeIsSetIntrauterine())
                 {
-                    _resultRows.AddRange(comparator.planCodeResultRowsCylinder());
+                    _resultRows.AddRange(comparator.planCodeResultRowsIntrauterine());
                 }
                 else
                 {
@@ -1133,6 +1174,7 @@ namespace WpfApp1
         private void cylinderTypeComboBox_DropDownClosed(object sender, EventArgs e)
         {
             cylinderDiameterComboBox.Items.Clear();
+            _comboboxDiameters.Clear();
 
             if (cylinderTypeComboBox.SelectedIndex == 0) //sel ind already updated
             {
@@ -1159,6 +1201,43 @@ namespace WpfApp1
                 _comboboxDiameters.Add(40);
             }
         }
+
+        private void applicatorTypeComboBox_DropDownClosed(object sender, EventArgs e)
+        {
+            applicatorDiameterComboBox.Items.Clear();
+            _comboboxDiameters.Clear();
+            // "Ringapplikator 0
+            // "Venezia" 1
+            // "MCVC" 2
+            if (applicatorTypeComboBox.SelectedIndex == 0)
+            {
+                applicatorDiameterComboBox.Items.Add("26");
+                _comboboxApplicatorDiameters.Add(20);
+                applicatorDiameterComboBox.Items.Add("30");
+                _comboboxApplicatorDiameters.Add(25);
+                applicatorDiameterComboBox.Items.Add("34");
+            }
+
+            if (applicatorTypeComboBox.SelectedIndex == 1)
+            {
+                applicatorDiameterComboBox.Items.Add("TODO");
+                _comboboxApplicatorDiameters.Add(25);
+            }
+
+                if (applicatorTypeComboBox.SelectedIndex == 2)
+            {
+                applicatorDiameterComboBox.Items.Add("25");
+                _comboboxApplicatorDiameters.Add(25);
+                applicatorDiameterComboBox.Items.Add("30");
+                _comboboxApplicatorDiameters.Add(30);
+                applicatorDiameterComboBox.Items.Add("35");
+                _comboboxApplicatorDiameters.Add(35);
+                cylinderDiameterComboBox.Items.Add("40");
+                _comboboxApplicatorDiameters.Add(40);
+            }
+        }
+
+
         private void catheterInfo_Click(object sender, RoutedEventArgs e)
         {
             CatheterInfoWindow catheterInfoWindow = new CatheterInfoWindow();

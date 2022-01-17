@@ -123,7 +123,7 @@
                         <Button x:Name="IntraUterinBtnCheck" Click="BtnCheck_Click" Content="Kontrollera" HorizontalAlignment="Left" Margin="573,123,0,0" VerticalAlignment="Top" Width="64" Height="26" RenderTransformOrigin="0.469,-2.114"/>
                         <TextBox x:Name="estimatedTreatmentTimeText2" VerticalAlignment="Top" RenderTransformOrigin="2.125,0.281" Margin="363,27,233,10"  IsReadOnly="True" Height="22"/>
                         <Label x:Name="estimatedTreatmentTimeLabel2" Content="Uppsk. behandlingstid [sek]:" HorizontalAlignment="Left" Margin="202,23,0,0" VerticalAlignment="Top" Height="26" Width="166"/>
-                        <Label x:Name="cylinderTypeLabel2" Content="Cylindertyp: " HorizontalAlignment="Left" Margin="2,-8,0,0" VerticalAlignment="Top" Height="26" Width="136"/>
+                        <Label x:Name="applicatorTypeTypeLabel" Content="Applikatorstyp: " HorizontalAlignment="Left" Margin="2,-8,0,0" VerticalAlignment="Top" Height="26" Width="136"/>
                         <Label x:Name="treatmentLengthLabel2" Content="Behandlingslängd [mm]: " HorizontalAlignment="Left" Margin="2,58,0,0" VerticalAlignment="Top" Height="26" Width="138"/>
                         <TextBox x:Name="treatmentLengthText2" HorizontalAlignment="Left" Margin="140,58,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="45" Height="26" TextChanged="TextBox_TextChanged"/>
                         <Label x:Name="calculatedLabel2" Content="Beräknat:" HorizontalAlignment="Left" Margin="202,0,0,0" VerticalAlignment="Top" FontStyle="Italic"/>
@@ -139,13 +139,13 @@
                             </Label.RenderTransform>
                         </Label>
                         <TextBox x:Name="intrauterinePrescribedDoseText" HorizontalAlignment="Left" Margin="113,89,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="44" Height="26" TextChanged="TextBox_TextChanged"/>
-                        <ComboBox x:Name="cylinderTypeComboBox2" HorizontalAlignment="Left" Margin="117,-4,0,0" VerticalAlignment="Top" Width="80" DropDownClosed="cylinderTypeComboBox_DropDownClosed" />
-                        <Label x:Name="cylinderDiameterLabel2" Content="Cylinderdiameter [mm]: " HorizontalAlignment="Left" Margin="3,23,0,0" VerticalAlignment="Top" Height="26" Width="136"/>
-                        <ComboBox x:Name="cylinderDiameterComboBox2" HorizontalAlignment="Left" Margin="144,27,0,0" VerticalAlignment="Top" Width="53"/>
+                        <ComboBox x:Name="applicatorTypeComboBox" HorizontalAlignment="Left" Margin="117,-4,0,0" VerticalAlignment="Top" Width="80" DropDownClosed="applicatorTypeComboBox_DropDownClosed" />
+                        <Label x:Name="applicatorDiameterLabel" Content="ApplikatorDiameter [mm]: " HorizontalAlignment="Left" Margin="3,23,0,0" VerticalAlignment="Top" Height="26" Width="136"/>
+                        <ComboBox x:Name="applicatorDiameterComboBox" HorizontalAlignment="Left" Margin="144,27,0,0" VerticalAlignment="Top" Width="53"/>
                         <Label x:Name="planCodeLabelCylinder2" Content="Plankod: " HorizontalAlignment="Left" Margin="2,119,0,0" VerticalAlignment="Top"/>
-                        <TextBox x:Name="planCodeTextCylinder2" HorizontalAlignment="Left" Margin="58,121,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="139" Height="22"  TextChanged="TextBox_TextChanged"/>
+                        <TextBox x:Name="planCodeTextIntrauterine" HorizontalAlignment="Left" Margin="58,121,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="139" Height="22"  TextChanged="TextBox_TextChanged"/>
                     </Grid>
-                    <Grid HorizontalAlignment="Left" Height="71" Margin="10,7,0,0" VerticalAlignment="Top" Width="597" Grid.ColumnSpan="3">
+                    <Grid HorizontalAlignment="Left" Height="71" Margin="10,8,0,0" VerticalAlignment="Top" Width="597" Grid.ColumnSpan="3">
                         <Label x:Name="TPXpsPathLabel2" Content="Inte vald" HorizontalAlignment="Left" Margin="120,0,0,0" VerticalAlignment="Top" Height="26" Width="482"/>
                         <Button x:Name="BtnOpenTPFile2" Click="BtnOpenTPFile_Click" Content="Treatment plan file:" HorizontalAlignment="Left" Margin="0,3,0,0" VerticalAlignment="Top" Width="115" Height="23"/>
                         <Button x:Name="BtnOpenTCCFile2" Click="BtnOpenTCCFile_Click" Content="TCC file:" HorizontalAlignment="Left" Margin="0,37,0,0" VerticalAlignment="Top" Height="20" Width="46"/>
