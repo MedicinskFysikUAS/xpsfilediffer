@@ -15,6 +15,8 @@ namespace WpfApp1
         private TabType _tabType;
         private Dictionary<string, string> _catheterTochannel = new Dictionary<string, string>();
         private List<string> _catheterLengths = new List<string>();
+        private List<string> _catheterWithNamLengths = new List<string>();
+        private List<string> _catheterWithoutNamLengths = new List<string>();
         private Dictionary<string, string> _catheterAndTime = new Dictionary<string, string>();
 
         public TreatmentPlan(List<List<string>> pageList, TabType tabType)
@@ -735,19 +737,46 @@ namespace WpfApp1
             return liveCatheters;
         }
 
+        public string applicatorName()
+        {
+            string applicatorName = "";
+            int pageIndex = 1;
+            if (_tabType == TabType.INTRAUTERINE)
+            {
+                applicatorName = _stringExtractor.getValueAfterSearchString(_pageList[pageIndex], "Applicator set:", 0);
+
+            }
+            return applicatorName;
+        }
+
+        public string applicatorStringFromApplicationType(IntrauterineApplicatorType applicatorType)
+        {
+            string applicatorString = "";
+            if (applicatorType == IntrauterineApplicatorType.RINGAPPLIKATOR)
+            {
+                applicatorString = "R";
+            }
+            else if (applicatorType == IntrauterineApplicatorType.VENEZIA)
+            {
+                applicatorString = "V";
+            }
+            else if (applicatorType == IntrauterineApplicatorType.MCVC)
+            {
+                applicatorString = "M";
+            }
+            return applicatorString;
+        }
+
+        public string intrauterinePlanName()
+        {
+            int pageIndex = 0;
+            string stringValue = _pageList[pageIndex][5];
+            return stringValue.Trim();
+        }
 
         private void setCatheterToChannelNumberAndLengths()
         {
             _catheterTochannel.Clear();
-            //_catheterTochannel.Add("1", "1");
-            //_catheterTochannel.Add("2", "3");
-            //_catheterTochannel.Add("3", "5");
-            //_catheterTochannel.Add("4", "12");
-            //_catheterTochannel.Add("5", "14");
-            //_catheterTochannel.Add("6", "22");
-            //_catheterTochannel.Add("7", "24");
-
-
             int startTableIndex = -1;
             int endTableIndex = -1;
             foreach (var page in _pageList)
@@ -776,7 +805,17 @@ namespace WpfApp1
                                 {
                                     int from = 0;
                                     int to = allValues[i].IndexOf("(");
+                                    string lengthString = allValues[i].Substring(from, to).Trim();
                                     _catheterLengths.Add(allValues[i].Substring(from, to).Trim());
+                                    if (i == 0 || ((i + 4 < allValues.Count) && allValues[i + 4].Contains("mm")))
+                                    {
+                                        _catheterWithNamLengths.Add(lengthString);
+                                    }
+                                    else
+                                    {
+                                        _catheterWithoutNamLengths.Add(lengthString);
+                                    }
+
                                 }
                             }
                         }

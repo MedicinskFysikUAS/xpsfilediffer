@@ -231,6 +231,29 @@ namespace WpfApp1
                 {
                     _specifications.PlanCodeIntrauterine = planCodeTextIntrauterine.Text;
                 }
+
+                IntrauterineApplicatorType intrauterineApplicatorType = IntrauterineApplicatorType.UNKNOWN;
+                if (applicatorTypeComboBox.SelectedIndex == 0)
+                {
+                    intrauterineApplicatorType = IntrauterineApplicatorType.RINGAPPLIKATOR;
+                }
+                else if (applicatorTypeComboBox.SelectedIndex == 1)
+                {
+                    intrauterineApplicatorType = IntrauterineApplicatorType.VENEZIA;
+                }
+                else if (applicatorTypeComboBox.SelectedIndex == 2)
+                {
+                    intrauterineApplicatorType = IntrauterineApplicatorType.MCVC;
+                }
+                _specifications.IntrauterineApplicatorType = intrauterineApplicatorType;
+
+                int applicatorDiameter = -1;
+                if (applicatorDiameterComboBox.SelectedIndex != -1 &&
+                    applicatorDiameterComboBox.SelectedIndex < _comboboxApplicatorDiameters.Count)
+                {
+                    applicatorDiameter = _comboboxApplicatorDiameters[applicatorDiameterComboBox.SelectedIndex];
+                }
+                _specifications.ApplicatorDiameter = applicatorDiameter;
             }
         }
 
@@ -584,7 +607,7 @@ namespace WpfApp1
             {
                 PageReader treatmentPlanPageReader = new PageReader(_treatmentPlanXpsFilePath);
                 List<List<string>> treatmentPlanPageList = treatmentPlanPageReader.getPages();
-                TreatmentPlan treatmentPlan = new TreatmentPlan(treatmentPlanPageList, _tabType); // TODO Add support for tabType Intrauterine
+                TreatmentPlan treatmentPlan = new TreatmentPlan(treatmentPlanPageList, _tabType); 
                 comparator.treatmentPlan = treatmentPlan;
                 _resultRows.AddRange(comparator.intrauterineTreatmentPlanResultRows());
             }
@@ -595,9 +618,10 @@ namespace WpfApp1
                 List<List<string>> treatmentPlanPageList = treatmentPlanPageReader.getPages();
                 TreatmentPlan treatmentPlan = new TreatmentPlan(treatmentPlanPageList, _tabType);
                 comparator.treatmentPlan = treatmentPlan;
-                DataForTreatmentTimeEstimate dataForTreatmentTimeEstimate = getDataForTreatmentTimeEstimate();
-                // TODO:
+                // DataForTreatmentTimeEstimate dataForTreatmentTimeEstimate = getDataForTreatmentTimeEstimate();
+                // TBD: I think we could skip this test as we use SunCheck
                 //_resultRows.AddRange(comparator.cylinderTreatmentPlanAndCylinderSettingsResultRows(dataForTreatmentTimeEstimate));
+                _resultRows.AddRange(comparator.intrauterineTreatmentPlanAndIntrauterineSettingsResultRows());
             }
 
             if (_treatmentPlanXpsFilePath != null && _tccPlanXpsFilePath != null)
@@ -1205,26 +1229,29 @@ namespace WpfApp1
         private void applicatorTypeComboBox_DropDownClosed(object sender, EventArgs e)
         {
             applicatorDiameterComboBox.Items.Clear();
-            _comboboxDiameters.Clear();
+            _comboboxApplicatorDiameters.Clear();
             // "Ringapplikator 0
             // "Venezia" 1
             // "MCVC" 2
             if (applicatorTypeComboBox.SelectedIndex == 0)
             {
                 applicatorDiameterComboBox.Items.Add("26");
-                _comboboxApplicatorDiameters.Add(20);
+                _comboboxApplicatorDiameters.Add(26);
                 applicatorDiameterComboBox.Items.Add("30");
-                _comboboxApplicatorDiameters.Add(25);
+                _comboboxApplicatorDiameters.Add(30);
                 applicatorDiameterComboBox.Items.Add("34");
+                _comboboxApplicatorDiameters.Add(34);
             }
-
             if (applicatorTypeComboBox.SelectedIndex == 1)
             {
-                applicatorDiameterComboBox.Items.Add("TODO");
-                _comboboxApplicatorDiameters.Add(25);
+                applicatorDiameterComboBox.Items.Add("22");
+                _comboboxApplicatorDiameters.Add(22);
+                applicatorDiameterComboBox.Items.Add("26");
+                _comboboxApplicatorDiameters.Add(26);
+                applicatorDiameterComboBox.Items.Add("30");
+                _comboboxApplicatorDiameters.Add(30);
             }
-
-                if (applicatorTypeComboBox.SelectedIndex == 2)
+            if (applicatorTypeComboBox.SelectedIndex == 2)
             {
                 applicatorDiameterComboBox.Items.Add("25");
                 _comboboxApplicatorDiameters.Add(25);

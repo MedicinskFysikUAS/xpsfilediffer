@@ -14,6 +14,16 @@
         SVC = 1
     }
 
+    // See initiateApplicatorTypeComboBox
+    public enum IntrauterineApplicatorType
+    {
+        RINGAPPLIKATOR = 0,
+        VENEZIA = 1,
+        MCVC = 2,
+        UNKNOWN = 3
+    }
+    //applicatorDiameterComboBox
+
     public enum XpsFileType
     {
         ONCENTRA_PROSTATE_TREATMENT_PLAN = 0,

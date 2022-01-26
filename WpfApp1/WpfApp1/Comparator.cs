@@ -1003,6 +1003,46 @@ namespace WpfApp1
             return resultRow;
         }
 
+        public List<string> checkPlanNameIntrauterine()
+        {
+            List<string> resultRow = new List<string>();
+            resultRow.Add("Plannamn");
+            string treatmentPlanApplicatorName = _treatmentPlan.applicatorName();
+            List<string> strings = treatmentPlanApplicatorName.Split(' ').ToList();
+            string treatmentPlanPlanName = _treatmentPlan.intrauterinePlanName();
+            bool planNameInTreatmentPlanIsConsistent = false;
+            string userInputTypeString = _treatmentPlan.applicatorStringFromApplicationType(_specifications.IntrauterineApplicatorType);
+            int userInputDiameter = _specifications.ApplicatorDiameter;
+            string expectedPlanName = userInputTypeString + userInputDiameter.ToString();
+            bool inputPlanNameIsOk = false;
+            foreach (var item in strings)
+            {
+                if (treatmentPlanPlanName.Contains(item))
+                {
+                    planNameInTreatmentPlanIsConsistent = true;
+                }
+                if (item.Contains(expectedPlanName))
+                {
+                    inputPlanNameIsOk = true;
+                }
+            }
+            string description = "";
+            description += planNameInTreatmentPlanIsConsistent ? "Plannamnet och applikatorsnamnet i planen stämmer.":
+            "Plannamnet och applikatorsnamnet i planen stämmer inte.";
+            description += inputPlanNameIsOk ? " Den angivna applikatorstypen stämmer med applikatorsnamnet i planen." :
+                " Den angivna applikatorstypen stämmer inte med applikatorsnamnet i planen.";
+            if (planNameInTreatmentPlanIsConsistent && inputPlanNameIsOk)
+            {
+                resultRow.Add("OK");
+            }
+            else
+            {
+                resultRow.Add("Inte OK");
+            }
+            resultRow.Add(description);
+            return resultRow;
+        }
+
         public List<List<string>> treatmentPlanAndDvhResultRows()
         {
             List<List<string>> resultRows = new List<List<string>>();
@@ -1077,6 +1117,15 @@ namespace WpfApp1
                 dataForTreatmentTimeEstimate.TreatmentLength.ToString() +
                 "flex";
             resultRows.Add(checkPlanName(expectedPlanName));
+            return resultRows;
+        }
+
+        public List<List<string>> intrauterineTreatmentPlanAndIntrauterineSettingsResultRows()
+        {
+            List<List<string>> resultRows = new List<List<string>>();
+            resultRows.Add(headerResultRow("Plan & info"));
+            Calculator calculator = new Calculator();
+            resultRows.Add(checkPlanNameIntrauterine());
             return resultRows;
         }
 

@@ -27,6 +27,8 @@ namespace WpfApp1
         private string _planCodeCylinder;
         private decimal _prescriptionDoseIntrauterine;
         private string _planCodeIntrauterine;
+        private IntrauterineApplicatorType _intrauterineApplicatorType;
+        private int _applicatorDiameter;
 
         public decimal NeedleDepth { get => _needleDepth; set => _needleDepth = value; }
         public decimal FreeLength { get => _freeLength; set => _freeLength = value; }
@@ -46,5 +48,7 @@ namespace WpfApp1
         public string PlanCodeCylinder { get => _planCodeCylinder; set => _planCodeCylinder = value; }
         public decimal PrescriptionDoseIntrauterine { get => _prescriptionDoseIntrauterine; set => _prescriptionDoseIntrauterine = value; }
         public string PlanCodeIntrauterine { get => _planCodeIntrauterine; set => _planCodeIntrauterine = value; }
+        public IntrauterineApplicatorType IntrauterineApplicatorType { get => _intrauterineApplicatorType; set => _intrauterineApplicatorType = value; }
+        public int ApplicatorDiameter { get => _applicatorDiameter; set => _applicatorDiameter = value; }
     }
 }
