@@ -185,5 +185,31 @@ namespace WpfApp1
             }
             return catheterLengthList;
         }
+
+        public List<string> intrauterineCatheters()
+        {
+            int pageIndex = 1;
+            int start = _pageList[pageIndex].IndexOf("KateterKanalKanallängd (mm)Kanaltid (sek.)");
+            int stop = _pageList[pageIndex].IndexOf("Positionstider (sek.)");
+            List<string> allValues = _stringExtractor.allValuesInInterval(_pageList[pageIndex],
+                start, stop);
+            List<string> catheterLengthList = new List<string>();
+            if (catheterTochannel().Count != allValues.Count)
+            {
+                return catheterLengthList;
+            }
+            Dictionary<string, string> catheterTochannelDict = catheterTochannel();
+            for (int i = 0; i < catheterTochannelDict.Count; i++)
+            {
+                int characterLength = _catheterTochannel[_catheterTochannel.ElementAt(i).Key].Length +
+                    _catheterTochannel.ElementAt(i).Key.Length;
+                int channelLengthCharacterLength = 6;
+                int from = characterLength;
+                catheterLengthList.Add(allValues[i].Substring(from, channelLengthCharacterLength).Trim());
+            }
+            return catheterLengthList;
+
+        }
+
     }
 }

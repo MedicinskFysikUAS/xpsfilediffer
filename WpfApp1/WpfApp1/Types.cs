@@ -24,6 +24,12 @@
     }
     //applicatorDiameterComboBox
 
+    public enum IntrauterineCatheterType
+    {
+        MODEL = 0,
+        MANUAL = 1
+    }
+
     public enum XpsFileType
     {
         ONCENTRA_PROSTATE_TREATMENT_PLAN = 0,

@@ -637,8 +637,8 @@ namespace WpfApp1
                 comparator.tccPlan = tccPlan;
                 bool skipApprovalTest = true;
                 bool useRelativeEpsilon = true;
+                _resultRows.AddRange(comparator.intrauterineTccPlanResultRows());
                 _resultRows.AddRange(comparator.resultRows(skipApprovalTest, useRelativeEpsilon));
-                _resultRows.AddRange(comparator.intrauterineChannelLengthsResultRows());
                 if (_sameSourceSet)
                 {
                     _resultRows.AddRange(comparator.sourceComparisonResultRows(_isSameSource));

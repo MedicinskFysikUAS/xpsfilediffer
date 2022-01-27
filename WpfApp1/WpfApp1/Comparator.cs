@@ -419,6 +419,48 @@ namespace WpfApp1
                     stringExtractor.stringToDateTime(_tccPlan.realizationDateAndTime()));
 
         }
+
+        private bool channelLengthInIntrauterinePlanIsOk()
+        {
+            List<IntrauterineCatheter> intrauterineCatheters = _treatmentPlan.intrauterineCatheters();
+            bool isOk = true;
+            if (intrauterineCatheters.Count == 0)
+            {
+                isOk = false;
+            }
+
+            foreach (var item in intrauterineCatheters)
+            {
+                if (item.IntrauterineCatheterType == IntrauterineCatheterType.MODEL)
+                {
+                    if (Math.Abs(item.CatheterLength - _specifications.ExpectedLengthModelCatheter) >
+                        _specifications.ExpectedLengthModelManualCatheterEpsilon)
+                    {
+                        isOk = false;
+                        break;
+                    }
+                }
+                else if (item.IntrauterineCatheterType == IntrauterineCatheterType.MANUAL)
+                {
+                    if (Math.Abs(item.CatheterLength - _specifications.ExpectedLengthManualCatheter) >
+                        _specifications.ExpectedLengthModelManualCatheterEpsilon)
+                    {
+                        isOk = false;
+                        break;
+                    }
+                }
+            }
+            return isOk;
+        }
+
+        private bool channelLengthInIntrauterineTccPlanIsOk()
+        {
+            //List<IntrauterineCatheter> intrauterineCatheters = _treatmentPlan.intrauterineCatheters();
+            List<string> intrauterineCatheters = _tccPlan.intrauterineCatheters();
+            bool isOk = true;
+            return isOk;
+        }
+
         // check -----------------------
 
         public List<string> checkPatientName()
@@ -739,25 +781,6 @@ namespace WpfApp1
             return resultRow;
         }
 
-        private List<string> checkIntrauterineChannelLengths()
-        {
-            List<string> resultRow = new List<string>();
-            resultRow.Add("Kanalängd dosplan vs tcc");
-            string descriptionString = "";
-            if (treatmentPlanTccHasSameChannelLengths())
-            {
-                resultRow.Add("OK");
-                descriptionString = "Kanallängderna i dosplan och TCC plan är lika för samtliga kanaler.";
-            }
-            else
-            {
-                resultRow.Add("Inte OK");
-                descriptionString = "Kanallängderna i dosplan och TCC plan är INTE lika.";
-            }
-            resultRow.Add(descriptionString);
-            return resultRow;
-        }
-
 
         public List<string> headerResultRow(string description)
         {
@@ -1003,6 +1026,37 @@ namespace WpfApp1
             return resultRow;
         }
 
+        public List<string> checkIntrauterinePlanCatheterLengths()
+        {
+            List<string> resultRow = new List<string>();
+            resultRow.Add("Channel length i dosplan");
+            bool resultOK = channelLengthInIntrauterinePlanIsOk();
+            string expectedValueString = "de förväntade längderna på " + _specifications.ExpectedLengthModelCatheter +
+                " respektive " + _specifications.ExpectedLengthManualCatheter + " mm.";
+            string descriptionString = resultOK ? "Ring/IU-rör respektive ringnålar har " + expectedValueString :
+                "Ring/IU-rör respektive ringnålar har inte " + expectedValueString;
+            if (resultOK)
+            {
+                resultRow.Add("OK");
+            }
+            else
+            {
+                resultRow.Add("Inte OK");
+            }
+            resultRow.Add(descriptionString);
+            return resultRow;
+        }
+
+        public List<string> checkIntrauterineTccPlanCatheterLengths()
+        {
+            List<string> resultRow = new List<string>();
+            resultRow.Add("Channel length i TCC plan");
+            bool resultOK = channelLengthInIntrauterineTccPlanIsOk();
+            resultRow.Add("Inte OK");
+            resultRow.Add("description");
+            return resultRow;
+        }
+
         public List<string> checkPlanNameIntrauterine()
         {
             List<string> resultRow = new List<string>();
@@ -1086,16 +1140,15 @@ namespace WpfApp1
         {
             List<List<string>> resultRows = new List<List<string>>();
             resultRows.Add(headerResultRow("Plan"));
-            resultRows.Add(checkTreatmentPlanChannelLength(_specifications.ExpectedChannelLength));
+            resultRows.Add(checkIntrauterinePlanCatheterLengths());
             return resultRows;
         }
 
-        public List<List<string>> intrauterineChannelLengthsResultRows()
+        public List<List<string>> intrauterineTccPlanResultRows()
         {
             List<List<string>> resultRows = new List<List<string>>();
-            resultRows.Add(checkIntrauterineChannelLengths());
+            resultRows.Add(checkIntrauterineTccPlanCatheterLengths());
             return resultRows;
-
         }
 
         public List<List<string>> cylinderTreatmentPlanAndCylinderSettingsResultRows(DataForTreatmentTimeEstimate dataForTreatmentTimeEstimate)

@@ -18,6 +18,8 @@ namespace WpfApp1
         private List<string> _catheterWithNamLengths = new List<string>();
         private List<string> _catheterWithoutNamLengths = new List<string>();
         private Dictionary<string, string> _catheterAndTime = new Dictionary<string, string>();
+        private List<IntrauterineCatheter> _intrauterineCatheters = new List<IntrauterineCatheter>();
+
 
         public TreatmentPlan(List<List<string>> pageList, TabType tabType)
         {
@@ -792,6 +794,8 @@ namespace WpfApp1
                         endTableIndex = getIntrauterineSourcePositionsTableEndIndex(page, startTableIndex + 1);
                         List<string> allValues = _stringExtractor.allValuesInInterval(page, startTableIndex + 15, endTableIndex - 2);
                         List<string> catheterAndCannels = new List<string>();
+                        _intrauterineCatheters.Clear();
+                        int counter = 1;
                         for (int i = 0; i < allValues.Count; ++i)
                         {
                             if (allValues[i].Contains("(") &&
@@ -810,17 +814,29 @@ namespace WpfApp1
                                     if (i == 0 || ((i + 4 < allValues.Count) && allValues[i + 4].Contains("mm")))
                                     {
                                         _catheterWithNamLengths.Add(lengthString);
+                                        IntrauterineCatheter intrauterineCatheter = new IntrauterineCatheter();
+                                        intrauterineCatheter.CatheterNumber = counter.ToString();
+                                        intrauterineCatheter.IntrauterineCatheterType = IntrauterineCatheterType.MODEL;
+                                        intrauterineCatheter.CatheterLength = _stringExtractor.decimalStringToDecimal(lengthString);
+                                        _intrauterineCatheters.Add(intrauterineCatheter);
+                                        counter++;
                                     }
                                     else
                                     {
                                         _catheterWithoutNamLengths.Add(lengthString);
+                                        IntrauterineCatheter intrauterineCatheter = new IntrauterineCatheter();
+                                        intrauterineCatheter.CatheterNumber = counter.ToString();
+                                        intrauterineCatheter.IntrauterineCatheterType = IntrauterineCatheterType.MANUAL;
+                                        intrauterineCatheter.CatheterLength = _stringExtractor.decimalStringToDecimal(lengthString);
+                                        _intrauterineCatheters.Add(intrauterineCatheter);
+                                        counter++;
                                     }
 
                                 }
                             }
                         }
 
-                foreach (var catheterAndCannel in catheterAndCannels)
+                        foreach (var catheterAndCannel in catheterAndCannels)
                         {
                             int from = 0;
                             int to = catheterAndCannel.IndexOf("(");
@@ -848,6 +864,12 @@ namespace WpfApp1
         public List<string> catheterLengths()
         {
             return _catheterLengths;
+        }
+              
+        public List<IntrauterineCatheter> intrauterineCatheters()
+        {
+            setCatheterToChannelNumberAndLengths();
+            return _intrauterineCatheters;
         }
 
         public List<LiveCatheter> intrauterineLiveCatheters()

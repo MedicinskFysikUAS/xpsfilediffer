@@ -29,6 +29,9 @@ namespace WpfApp1
         private string _planCodeIntrauterine;
         private IntrauterineApplicatorType _intrauterineApplicatorType;
         private int _applicatorDiameter;
+        private decimal _expectedLengthModelCatheter = 1300.0m;
+        private decimal _expectedLengthManualCatheter = 1288.0m;
+        private decimal _expectedLengthModelManualCatheterEpsilon = 0.1m;
 
         public decimal NeedleDepth { get => _needleDepth; set => _needleDepth = value; }
         public decimal FreeLength { get => _freeLength; set => _freeLength = value; }
@@ -50,5 +53,8 @@ namespace WpfApp1
         public string PlanCodeIntrauterine { get => _planCodeIntrauterine; set => _planCodeIntrauterine = value; }
         public IntrauterineApplicatorType IntrauterineApplicatorType { get => _intrauterineApplicatorType; set => _intrauterineApplicatorType = value; }
         public int ApplicatorDiameter { get => _applicatorDiameter; set => _applicatorDiameter = value; }
+        public decimal ExpectedLengthModelCatheter { get => _expectedLengthModelCatheter; set => _expectedLengthModelCatheter = value; }
+        public decimal ExpectedLengthManualCatheter { get => _expectedLengthManualCatheter; set => _expectedLengthManualCatheter = value; }
+        public decimal ExpectedLengthModelManualCatheterEpsilon { get => _expectedLengthModelManualCatheterEpsilon; set => _expectedLengthModelManualCatheterEpsilon = value; }
     }
 }
