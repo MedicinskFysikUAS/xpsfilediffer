@@ -14,6 +14,7 @@ namespace WpfApp1
         private decimal _needleDepthEpsilon = 0.2m;
         private decimal _timeEpsilon = 0.0549m;
         private decimal _relativeTimeEpsilon = 0.8m;
+        private decimal _relativeTimeEpsilonÏntrauterine = 0.9m;
         //private decimal _expectedChannelLength = 1190.0m;
         private decimal _expectedChannelLength;
         private decimal _treatmentTimeEpsilon = 0.1m;
@@ -56,5 +57,6 @@ namespace WpfApp1
         public decimal ExpectedLengthModelCatheter { get => _expectedLengthModelCatheter; set => _expectedLengthModelCatheter = value; }
         public decimal ExpectedLengthManualCatheter { get => _expectedLengthManualCatheter; set => _expectedLengthManualCatheter = value; }
         public decimal ExpectedLengthModelManualCatheterEpsilon { get => _expectedLengthModelManualCatheterEpsilon; set => _expectedLengthModelManualCatheterEpsilon = value; }
+        public decimal RelativeTimeEpsilonÏntrauterine { get => _relativeTimeEpsilonÏntrauterine; set => _relativeTimeEpsilonÏntrauterine = value; }
     }
 }

@@ -863,6 +863,7 @@ namespace WpfApp1
 
         public List<string> catheterLengths()
         {
+            setCatheterToChannelNumberAndLengths();
             return _catheterLengths;
         }
               
@@ -886,6 +887,12 @@ namespace WpfApp1
                     int offsetIndex = _stringExtractor.getIndexOnPageForStartWithStringFromIndex(page, currentIndex, "Offset (mm):");
                     if (offsetIndex != -1)
                     {
+                        string offsetString  = page[offsetIndex];
+                        int startIndex = page[offsetIndex].IndexOf(':') + 1;
+                        int length = offsetString.Length - startIndex;
+                        string offsetValueString = offsetString.Substring(startIndex, length);
+                        decimal offsetValue;
+                        offsetValue = _stringExtractor.decimalStringToDecimal(offsetValueString);
                         LiveCatheter liveCatheter = new LiveCatheter();
                         startTableIndex = offsetIndex;
                         endTableIndex = getIntrauterineCatheterTableEndIndex(page, startTableIndex + 1);
@@ -898,8 +905,9 @@ namespace WpfApp1
                             positonTimePairs.Add(tuple);
                         }
                         int channelNumber = -1;
-                        Int32.TryParse(_catheterTochannel[catheterNumberCounter.ToString()], out channelNumber);
+                        bool conversionWasOk = Int32.TryParse(_catheterTochannel[catheterNumberCounter.ToString()], out channelNumber);
                         liveCatheter.setCatheterNumber(channelNumber);
+                        liveCatheter.setOffsetLength(offsetValue);
                         liveCatheter.setPositonTimePairs(positonTimePairs);
                         liveCatheters.Add(liveCatheter);
                         catheterNumberCounter++;

@@ -453,17 +453,38 @@ namespace WpfApp1
             return isOk;
         }
 
-        private bool channelLengthInIntrauterineTccPlanIsOk()
+        private bool offsetLengthInPlanIsOkchannelLengthInIntrauterinePlanIsOk()
         {
-            //List<IntrauterineCatheter> intrauterineCatheters = _treatmentPlan.intrauterineCatheters();
-            List<string> intrauterineCatheters = _tccPlan.intrauterineCatheters();
-            bool isOk = true;
-            return isOk;
+            List<LiveCatheter> liveCatheters = _treatmentPlan.liveCatheters();
+            List<IntrauterineCatheter> intrauterineCatheters = _treatmentPlan.intrauterineCatheters();
+            if (liveCatheters.Count != intrauterineCatheters.Count)
+            {
+                return false;
+            }
+
+            for (int i = 0; i < liveCatheters.Count; i++)
+            {
+                if (intrauterineCatheters[i].IntrauterineCatheterType == IntrauterineCatheterType.MODEL)
+                {
+                    if (Math.Abs(liveCatheters[i].offsetLength() - 0.0m) > 0.001m )
+                    {
+                        return false;
+                    }
+                }
+                else if (intrauterineCatheters[i].IntrauterineCatheterType == IntrauterineCatheterType.MANUAL)
+                {
+                    if (Math.Abs(liveCatheters[i].offsetLength() + 6.0m) > 0.001m)
+                    {
+                        return false;
+                    }
+                }
+            }
+            return true;
         }
 
-        // check -----------------------
+            // check -----------------------
 
-        public List<string> checkPatientName()
+            public List<string> checkPatientName()
         {
             List<string> resultRow = new List<string>();
             resultRow.Add("Samma patientnamn");
@@ -1029,7 +1050,7 @@ namespace WpfApp1
         public List<string> checkIntrauterinePlanCatheterLengths()
         {
             List<string> resultRow = new List<string>();
-            resultRow.Add("Channel length i dosplan");
+            resultRow.Add("Kanallängd i dosplan");
             bool resultOK = channelLengthInIntrauterinePlanIsOk();
             string expectedValueString = "de förväntade längderna på " + _specifications.ExpectedLengthModelCatheter +
                 " respektive " + _specifications.ExpectedLengthManualCatheter + " mm.";
@@ -1047,15 +1068,39 @@ namespace WpfApp1
             return resultRow;
         }
 
-        public List<string> checkIntrauterineTccPlanCatheterLengths()
+        private List<string> checkIntrauterineOffsetLengths()
         {
             List<string> resultRow = new List<string>();
-            resultRow.Add("Channel length i TCC plan");
-            bool resultOK = channelLengthInIntrauterineTccPlanIsOk();
-            resultRow.Add("Inte OK");
-            resultRow.Add("description");
+            bool result = offsetLengthInPlanIsOkchannelLengthInIntrauterinePlanIsOk();
+            resultRow.Add("Offsetlängder i dosplan");
+            string resultString = result ? "OK" : "Inte OK";
+            resultRow.Add(resultString);
+            string description = result ? "Alla nålar har korrekt offset" : "Alla nålar har inte korrekt offset";
+            resultRow.Add(description);
             return resultRow;
         }
+
+        private List<string> checkIntrauterineTreatmenPlanTccPlanChannelLengths()
+        {
+            List<string> resultRow = new List<string>();
+            resultRow.Add("Kanalängd i dosplan vs tcc");
+            string descriptionString = "";
+            if (treatmentPlanTccHasSameChannelLengths())
+            {
+                resultRow.Add("OK");
+                descriptionString = "Kanallängderna i dosplan och TCC plan är lika för samtliga kanaler.";
+            }
+            else
+            {
+                resultRow.Add("Inte OK");
+                descriptionString = "Kanallängderna i dosplan och TCC plan är INTE lika.";
+            }
+            resultRow.Add(descriptionString);
+            return resultRow;
+        }
+
+        
+
 
         public List<string> checkPlanNameIntrauterine()
         {
@@ -1067,7 +1112,7 @@ namespace WpfApp1
             bool planNameInTreatmentPlanIsConsistent = false;
             string userInputTypeString = _treatmentPlan.applicatorStringFromApplicationType(_specifications.IntrauterineApplicatorType);
             int userInputDiameter = _specifications.ApplicatorDiameter;
-            string expectedPlanName = userInputTypeString + userInputDiameter.ToString();
+            string expectedPlanName = userInputDiameter.ToString();
             bool inputPlanNameIsOk = false;
             foreach (var item in strings)
             {
@@ -1096,7 +1141,71 @@ namespace WpfApp1
             resultRow.Add(description);
             return resultRow;
         }
+        
 
+        public List<string> checkApplicatorTypeIsSet(bool applicatorTypeIsSet)
+        {
+            List<string> resultRow = new List<string>();
+            resultRow.Add("Applikatortyp är angiven");
+            string resultString = applicatorTypeIsSet ? "OK" : "Inte OK";
+            resultRow.Add(resultString);
+            string description = applicatorTypeIsSet ? "Applikatorstyp är angiven" : "Applikatorstyp är inte angiven";
+            resultRow.Add(description);
+            return resultRow;
+        }
+
+        public List<string> checkApplicatorDiameterIsSet(bool applicatordiameterIsSet)
+        {
+            List<string> resultRow = new List<string>();
+            resultRow.Add("Applikatorsdiameter är angiven");
+            string resultString = applicatordiameterIsSet ? "OK" : "Inte OK";
+            resultRow.Add(resultString);
+            string description = applicatordiameterIsSet ? "Applikatorsdiameter är angiven" : "Applikatorsdiameter är inte angiven";
+            resultRow.Add(description);
+            return resultRow;
+        }
+
+        public List<string> checkFractionDoseIsSet(bool fractionDoseIsSet)
+        {
+            List<string> resultRow = new List<string>();
+            resultRow.Add("Ordinerad dos är angiven");
+            string resultString = fractionDoseIsSet ? "OK" : "Inte OK";
+            resultRow.Add(resultString);
+            string description = fractionDoseIsSet ? "Ordinerad dos är angiven" : "Ordinerad dos är inte angiven";
+            resultRow.Add(description);
+            return resultRow;
+        }
+
+        public List<string> checkPlanCodeIsSet(bool sameSourceIsSet)
+        {
+            List<string> resultRow = new List<string>();
+            resultRow.Add("Plankod är angiven");
+            string resultString = sameSourceIsSet ? "OK" : "Inte OK";
+            resultRow.Add(resultString);
+            string description = sameSourceIsSet ? "Plankod är angiven" : "Plankod är inte angiven";
+            resultRow.Add(description);
+            return resultRow;
+        }
+
+        public List<string> checkSameSourceIsSet(bool sameSourceIsSet)
+        {
+            List<string> resultRow = new List<string>();
+            resultRow.Add("Samma källa är angiven");
+            string resultString = sameSourceIsSet ? "OK" : "Inte OK";
+            resultRow.Add(resultString);
+            string description = sameSourceIsSet ? "Samma källa är angiven" : "Samma källa är inte angiven";
+            resultRow.Add(description);
+            return resultRow;
+        }
+
+
+        public List<List<string>> intrauterineTreatmentPlanAndTccPlanResultRows()
+        {
+            List<List<string>> resultRows = new List<List<string>>();
+            resultRows.Add(checkIntrauterineTreatmenPlanTccPlanChannelLengths());
+            return resultRows;
+
+        }
         public List<List<string>> treatmentPlanAndDvhResultRows()
         {
             List<List<string>> resultRows = new List<List<string>>();
@@ -1136,22 +1245,29 @@ namespace WpfApp1
             return resultRows;
         }
 
+
+        public List<List<string>> intrauterineInfoRows(UserInputIntrauterine userInputIntrauterine)
+        {
+            List<List<string>> resultRows = new List<List<string>>();
+            resultRows.Add(headerResultRow("Info"));
+            resultRows.Add(checkApplicatorTypeIsSet(userInputIntrauterine.ApplicatorTypeIsSet));
+            resultRows.Add(checkApplicatorDiameterIsSet(userInputIntrauterine.ApplicatorDiameterIsSet));
+            resultRows.Add(checkFractionDoseIsSet(userInputIntrauterine.FractionDoseIsSet));
+            resultRows.Add(checkPlanCodeIsSet(userInputIntrauterine.PlanCodeIsSet));
+            resultRows.Add(checkSameSourceIsSet(userInputIntrauterine.SameSourceIsSet));
+            return resultRows;
+        }
+
         public List<List<string>> intrauterineTreatmentPlanResultRows()
         {
             List<List<string>> resultRows = new List<List<string>>();
             resultRows.Add(headerResultRow("Plan"));
             resultRows.Add(checkIntrauterinePlanCatheterLengths());
+            resultRows.Add(checkIntrauterineOffsetLengths());
             return resultRows;
         }
 
-        public List<List<string>> intrauterineTccPlanResultRows()
-        {
-            List<List<string>> resultRows = new List<List<string>>();
-            resultRows.Add(checkIntrauterineTccPlanCatheterLengths());
-            return resultRows;
-        }
-
-        public List<List<string>> cylinderTreatmentPlanAndCylinderSettingsResultRows(DataForTreatmentTimeEstimate dataForTreatmentTimeEstimate)
+    public List<List<string>> cylinderTreatmentPlanAndCylinderSettingsResultRows(DataForTreatmentTimeEstimate dataForTreatmentTimeEstimate)
         {
             List<List<string>> resultRows = new List<List<string>>();
             resultRows.Add(headerResultRow("Plan & info"));
@@ -1182,7 +1298,7 @@ namespace WpfApp1
             return resultRows;
         }
 
-        public List<List<string>> resultRows(bool skipApprovalTest = false, bool useRelativeEpsilon = false)
+        public List<List<string>> resultRows(bool skipApprovalTest = false, bool useRelativeEpsilon = false, bool useRelativeEpsilonIntrauterine = false)
         {
             List<List<string>> resultRows = new List<List<string>>();
             resultRows.Add(headerResultRow("Plan & TCC"));
@@ -1199,7 +1315,15 @@ namespace WpfApp1
             decimal timeEpsilon = _specifications.TimeEpsilon;
             if (useRelativeEpsilon)
             {
-                timeEpsilon = _specifications.RelativeTimeEpsilon;
+                if (useRelativeEpsilonIntrauterine)
+                {
+                    timeEpsilon = _specifications.RelativeTimeEpsilonÏntrauterine;
+
+                }
+                else
+                {
+                    timeEpsilon = _specifications.RelativeTimeEpsilon;
+                }
             }
             resultRows.Add(checkCatheterPositionTimePairs(timeEpsilon, useRelativeEpsilon));
             return resultRows;

@@ -8,6 +8,7 @@ namespace WpfApp1
     {
         private List<Tuple<string, string>> _positonTimePairs = new List<Tuple<string, string>>();
         private int _catheterNumber;
+        private decimal _offsetLength;
 
         public void setPositonTimePairs(List<Tuple<string, string>> positonTimePairs)
         {
@@ -32,6 +33,16 @@ namespace WpfApp1
         public int catheterNumber()
         {
             return _catheterNumber;
+        }
+
+        public void setOffsetLength(decimal offsetLength)
+        {
+            _offsetLength = offsetLength;
+        }
+
+        public decimal offsetLength()
+        {
+            return _offsetLength;
         }
     }
 }

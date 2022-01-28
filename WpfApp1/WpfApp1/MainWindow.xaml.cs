@@ -53,6 +53,8 @@ namespace WpfApp1
         List<LiveCatheter> _tccPlanLiveCatheters = new List<LiveCatheter>();
 
         Specifications _specifications;
+
+        UserInputIntrauterine _userInputIntrauterine;
         public MainWindow()
         {
             InitializeComponent();
@@ -358,6 +360,32 @@ namespace WpfApp1
             return sameSourceCombobox2.SelectedIndex != -1;
         }
 
+        private bool applicatorTypeIsSet()
+        {
+            return applicatorTypeComboBox.SelectedIndex != -1;
+        }
+
+        private bool applicatorDiameterIsSet()
+        {
+            return applicatorDiameterComboBox.SelectedIndex != -1;
+        }
+
+        private bool fractionDoseIsSet()
+        {
+            return intrauterinePrescribedDoseText.Text.Length > 0;
+        }
+
+        private bool uterinePlanCodeIsSet()
+        {
+            return planCodeTextIntrauterine.Text.Length > 0;
+        }
+
+        private bool sameSourceIsSet()
+        {
+            return sameSourceCombobox2.SelectedIndex != -1;
+        }
+
+        // TODO: Remane this to something that describes that it also updates user input 
         private void updateSameSourceSelected()
         {
             if (ProstateTab.IsSelected)
@@ -374,6 +402,12 @@ namespace WpfApp1
             {
                 _isSameSource = sameSourceIntrauterine();
                 _sameSourceSet = sameSourceSetIntrauterine();
+                _userInputIntrauterine = new UserInputIntrauterine();
+                _userInputIntrauterine.ApplicatorTypeIsSet = applicatorTypeIsSet();
+                _userInputIntrauterine.ApplicatorDiameterIsSet = applicatorDiameterIsSet();
+                _userInputIntrauterine.FractionDoseIsSet = fractionDoseIsSet();
+                _userInputIntrauterine.PlanCodeIsSet = planCodeIsSetIntrauterine();
+                _userInputIntrauterine.SameSourceIsSet = sameSourceIsSet();
             }
         }
 
@@ -603,6 +637,7 @@ namespace WpfApp1
         private void addIntrauterineResultRows()
         {
             Comparator comparator = new Comparator(_specifications);
+            _resultRows.AddRange(comparator.intrauterineInfoRows(_userInputIntrauterine));
             if (_treatmentPlanXpsFilePath != null)
             {
                 PageReader treatmentPlanPageReader = new PageReader(_treatmentPlanXpsFilePath);
@@ -636,9 +671,10 @@ namespace WpfApp1
                 TccPlan tccPlan = new TccPlan(tccPlanPageList, tccLiveCatheters);
                 comparator.tccPlan = tccPlan;
                 bool skipApprovalTest = true;
-                bool useRelativeEpsilon = true;
-                _resultRows.AddRange(comparator.intrauterineTccPlanResultRows());
-                _resultRows.AddRange(comparator.resultRows(skipApprovalTest, useRelativeEpsilon));
+                bool useRelativeEpsilon = false;
+                bool useRelativeEpsilonIntrauterine = true;
+                _resultRows.AddRange(comparator.intrauterineTreatmentPlanAndTccPlanResultRows());
+                _resultRows.AddRange(comparator.resultRows(skipApprovalTest, useRelativeEpsilon, useRelativeEpsilonIntrauterine));
                 if (_sameSourceSet)
                 {
                     _resultRows.AddRange(comparator.sourceComparisonResultRows(_isSameSource));
