@@ -671,7 +671,7 @@ namespace WpfApp1
                 TccPlan tccPlan = new TccPlan(tccPlanPageList, tccLiveCatheters);
                 comparator.tccPlan = tccPlan;
                 bool skipApprovalTest = true;
-                bool useRelativeEpsilon = false;
+                bool useRelativeEpsilon = true;
                 bool useRelativeEpsilonIntrauterine = true;
                 _resultRows.AddRange(comparator.intrauterineTreatmentPlanAndTccPlanResultRows());
                 _resultRows.AddRange(comparator.resultRows(skipApprovalTest, useRelativeEpsilon, useRelativeEpsilonIntrauterine));
