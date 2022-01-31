@@ -1245,7 +1245,6 @@ namespace WpfApp1
             return resultRows;
         }
 
-
         public List<List<string>> intrauterineInfoRows(UserInputIntrauterine userInputIntrauterine)
         {
             List<List<string>> resultRows = new List<List<string>>();
