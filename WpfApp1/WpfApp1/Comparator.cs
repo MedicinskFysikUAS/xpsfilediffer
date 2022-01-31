@@ -1206,6 +1206,7 @@ namespace WpfApp1
             return resultRows;
 
         }
+
         public List<List<string>> treatmentPlanAndDvhResultRows()
         {
             List<List<string>> resultRows = new List<List<string>>();
