@@ -1198,6 +1198,7 @@ namespace WpfApp1
             return resultRow;
         }
 
+
         public List<List<string>> intrauterineTreatmentPlanAndTccPlanResultRows()
         {
             List<List<string>> resultRows = new List<List<string>>();
