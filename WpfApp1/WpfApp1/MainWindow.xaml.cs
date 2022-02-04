@@ -385,7 +385,7 @@ namespace WpfApp1
             return sameSourceCombobox2.SelectedIndex != -1;
         }
 
-        // TODO: Remane this to something that describes that it also updates user input 
+        // TODO: Rename this to something that describes that it also updates user input 
         private void updateSameSourceSelected()
         {
             if (ProstateTab.IsSelected)
@@ -638,11 +638,12 @@ namespace WpfApp1
         {
             Comparator comparator = new Comparator(_specifications);
             _resultRows.AddRange(comparator.intrauterineInfoRows(_userInputIntrauterine));
-            if (_treatmentPlanXpsFilePath != null)
+            IntrauterineApplicatorType intrauterineApplicatorType = selectedItrauterineApplicatorType();
+            if (_treatmentPlanXpsFilePath != null && applicatorTypeIsSet())
             {
                 PageReader treatmentPlanPageReader = new PageReader(_treatmentPlanXpsFilePath);
                 List<List<string>> treatmentPlanPageList = treatmentPlanPageReader.getPages();
-                TreatmentPlan treatmentPlan = new TreatmentPlan(treatmentPlanPageList, _tabType); 
+                TreatmentPlan treatmentPlan = new TreatmentPlan(treatmentPlanPageList, _tabType, intrauterineApplicatorType); 
                 comparator.treatmentPlan = treatmentPlan;
                 _resultRows.AddRange(comparator.intrauterineTreatmentPlanResultRows());
             }
@@ -651,7 +652,7 @@ namespace WpfApp1
             {
                 PageReader treatmentPlanPageReader = new PageReader(_treatmentPlanXpsFilePath);
                 List<List<string>> treatmentPlanPageList = treatmentPlanPageReader.getPages();
-                TreatmentPlan treatmentPlan = new TreatmentPlan(treatmentPlanPageList, _tabType);
+                TreatmentPlan treatmentPlan = new TreatmentPlan(treatmentPlanPageList, _tabType, intrauterineApplicatorType);
                 comparator.treatmentPlan = treatmentPlan;
                 // DataForTreatmentTimeEstimate dataForTreatmentTimeEstimate = getDataForTreatmentTimeEstimate();
                 // TBD: I think we could skip this test as we use SunCheck
@@ -663,7 +664,7 @@ namespace WpfApp1
             {
                 PageReader treatmentPlanPageReader = new PageReader(_treatmentPlanXpsFilePath);
                 List<List<string>> treatmentPlanPageList = treatmentPlanPageReader.getPages();
-                TreatmentPlan treatmentPlan = new TreatmentPlan(treatmentPlanPageList, _tabType);
+                TreatmentPlan treatmentPlan = new TreatmentPlan(treatmentPlanPageList, _tabType, intrauterineApplicatorType);
                 comparator.treatmentPlan = treatmentPlan;
                 PageReader tccPlanPageReader = new PageReader(_tccPlanXpsFilePath);
                 List<List<string>> tccPlanPageList = tccPlanPageReader.getPages();
@@ -1300,6 +1301,25 @@ namespace WpfApp1
             }
         }
 
+        private IntrauterineApplicatorType selectedItrauterineApplicatorType()
+        {
+            if (applicatorTypeComboBox.SelectedIndex == 0)
+            {
+                return IntrauterineApplicatorType.RINGAPPLIKATOR;
+            }
+            else if (applicatorTypeComboBox.SelectedIndex == 1)
+            {
+                return IntrauterineApplicatorType.VENEZIA;
+            }
+            else if (applicatorTypeComboBox.SelectedIndex == 2)
+            {
+                return IntrauterineApplicatorType.MCVC;
+            }
+            else 
+            {
+                return IntrauterineApplicatorType.UNKNOWN;
+            }
+        }
 
         private void catheterInfo_Click(object sender, RoutedEventArgs e)
         {

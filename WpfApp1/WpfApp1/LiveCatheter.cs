@@ -15,6 +15,11 @@ namespace WpfApp1
             _positonTimePairs = positonTimePairs;
         }
 
+        public void addPositonTimePairs(List<Tuple<string, string>> positonTimePairs)
+        {
+            _positonTimePairs.AddRange(positonTimePairs);
+        }
+
         public void appendPositionTimePairs(List<Tuple<string, string>> positonTimePairs)
         {
             _positonTimePairs.AddRange(positonTimePairs);
