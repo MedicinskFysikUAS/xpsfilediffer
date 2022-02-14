@@ -11,7 +11,7 @@ namespace WpfApp1
         private List<List<string>> _pageList;
         private StringExtractor _stringExtractor = new StringExtractor();
         private List<LiveCatheter> _liveCatheters = new List<LiveCatheter>();
-        private Dictionary<string, string> _catheterTochannel = new Dictionary<string, string>();
+        //private Dictionary<string, string> _catheterTochannel = new Dictionary<string, string>();
 
 
         public TccPlan(List<List<string>> pageList, List<LiveCatheter> liveCatheters)
@@ -149,42 +149,90 @@ namespace WpfApp1
             return _liveCatheters.OrderBy(o => o.catheterNumber()).ToList();
         }
 
-        public Dictionary<string, string>  catheterTochannel()
+        public Dictionary<int, int>  getCatheterTochannel(int startIndex = 0)
         {
             List<LiveCatheter> sortedLiveCatheters = liveCatheters();
-            int counter = 0;
-            _catheterTochannel.Clear();
+            int counter = startIndex;
+            Dictionary<int, int> catheterTochannel = new Dictionary<int, int>();
             foreach (var sortedLiveCatheter in sortedLiveCatheters)
             {
-                _catheterTochannel.Add(counter.ToString(), sortedLiveCatheter.catheterNumber().ToString());
+                catheterTochannel.Add(sortedLiveCatheter.catheterNumber(), counter);
                 counter++;
             }
-            return _catheterTochannel;
+            return catheterTochannel;
         }
 
-        public List<string> catheterLengths()
+
+
+        //private int _catheterNumber;
+        //private decimal _offsetLength;
+        //private bool _isPipe;
+        //private decimal _channelLength;
+
+        public List<Tuple<int, decimal>> getCatheterNumberAndLengths()
         {
             int pageIndex = 1;
             int start = _pageList[pageIndex].IndexOf("KateterKanalKanallängd (mm)Kanaltid (sek.)");
             int stop = _pageList[pageIndex].IndexOf("Positionstider (sek.)");
-            List<string> allValues = _stringExtractor.allValuesInInterval(_pageList[pageIndex], 
+            List<string> allValues = _stringExtractor.allValuesInInterval(_pageList[pageIndex],
                 start, stop);
             List<string> catheterLengthList = new List<string>();
-            if (catheterTochannel().Count != allValues.Count)
+            List<Tuple<int, decimal>> catheterNumberAndLengths = new List<Tuple<int, decimal>>();
+            if (getCatheterTochannel().Count != allValues.Count)
             {
-                return catheterLengthList;
+                return catheterNumberAndLengths;
             }
-            Dictionary<string, string> catheterTochannelDict = catheterTochannel();
+            char startIndexChar = allValues[0][0];
+            int startIndex = 0;
+            if (Char.IsDigit(startIndexChar))
+            {
+                startIndex = startIndexChar - '0';
+            }
+            Dictionary<int, int> catheterTochannelDict = getCatheterTochannel(startIndex);
             for (int i = 0; i < catheterTochannelDict.Count; i++)
             {
-                int characterLength = _catheterTochannel[_catheterTochannel.ElementAt(i).Key].Length +
-                    _catheterTochannel.ElementAt(i).Key.Length;
+                int characterLength = catheterTochannelDict[catheterTochannelDict.ElementAt(i).Key].ToString().Length +
+                    catheterTochannelDict.ElementAt(i).Key.ToString().Length;
                 int channelLengthCharacterLength = 6;
                 int from = characterLength;
                 catheterLengthList.Add(allValues[i].Substring(from, channelLengthCharacterLength).Trim());
+                decimal x = 0.0m;
+                decimal.TryParse(allValues[i].Substring(from, channelLengthCharacterLength).Trim(), out x);
+                catheterNumberAndLengths.Add(new Tuple<int, decimal>(catheterTochannelDict[catheterTochannelDict.ElementAt(i).Key], x));
             }
-            return catheterLengthList;
+            return catheterNumberAndLengths;
+
         }
+
+        //public List<string> catheterLengths()
+        //{
+        //    int pageIndex = 1;
+        //    int start = _pageList[pageIndex].IndexOf("KateterKanalKanallängd (mm)Kanaltid (sek.)");
+        //    int stop = _pageList[pageIndex].IndexOf("Positionstider (sek.)");
+        //    List<string> allValues = _stringExtractor.allValuesInInterval(_pageList[pageIndex], 
+        //        start, stop);
+        //    List<string> catheterLengthList = new List<string>();
+        //    if (catheterTochannel().Count != allValues.Count)
+        //    {
+        //        return catheterLengthList;
+        //    }
+        //    char startIndexChar = allValues[0][0];
+        //    int startIndex = 0;
+        //    if (Char.IsDigit(startIndexChar))
+        //    {
+        //        startIndex = startIndexChar - '0';
+        //    }
+        //    Dictionary<string, string> catheterTochannelDict = catheterTochannel(startIndex);
+        //    for (int i = 0; i < catheterTochannelDict.Count; i++)
+        //    {
+        //        int characterLength = _catheterTochannel[_catheterTochannel.ElementAt(i).Key].Length +
+        //            _catheterTochannel.ElementAt(i).Key.Length;
+        //        int channelLengthCharacterLength = 6;
+        //        int from = characterLength;
+        //        catheterLengthList.Add(allValues[i].Substring(from, channelLengthCharacterLength).Trim());
+        //    }
+        //    return catheterLengthList;
+        //}
 
 
     }

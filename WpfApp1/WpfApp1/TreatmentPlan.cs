@@ -398,8 +398,23 @@ namespace WpfApp1
             else if (_tabType == TabType.INTRAUTERINE)
             {
                 //setCatheterToChannelNumberAndLengths(IntrauterineApplicatorType.MCVC); // TODO
-                setCatheterToChannelNumberAndLengths(_intrauterineApplicatorType); // TODO
-                return intrauterineLiveCatheters().OrderBy(o => o.catheterNumber()).ToList();
+                if (_intrauterineApplicatorType == IntrauterineApplicatorType.UNKNOWN)
+                {
+                    List<LiveCatheter> liveCatheters = new List<LiveCatheter>();
+                    return liveCatheters;
+                }
+                else
+                {
+                    setCatheterToChannelNumberAndLengths(_intrauterineApplicatorType); // TODO
+                    if (_intrauterineApplicatorType == IntrauterineApplicatorType.VENEZIA)
+                    {
+                        return intrauterineLiveCathetersVenezia().OrderBy(o => o.catheterNumber()).ToList();
+                    }
+                    else
+                    {
+                        return intrauterineLiveCatheters().OrderBy(o => o.catheterNumber()).ToList();
+                    }
+                }
             }
             else // Only added to get rid of build warnings.
             {
@@ -818,6 +833,7 @@ namespace WpfApp1
             if (intrauterineApplicatorType == IntrauterineApplicatorType.MCVC)
             {
                 setCatheterToChannelNumberAndLengthsMcvcRing();
+                return;
             }
             else if (intrauterineApplicatorType == IntrauterineApplicatorType.RINGAPPLIKATOR)
             {
@@ -999,7 +1015,7 @@ namespace WpfApp1
 
         public List<string> catheterLengths()
         {
-            setCatheterToChannelNumberAndLengths(_intrauterineApplicatorType); // TODO
+            setCatheterToChannelNumberAndLengths(_intrauterineApplicatorType);
             return _catheterLengths;
         }
               
@@ -1027,6 +1043,30 @@ namespace WpfApp1
             return offsetValueHasNoActivePair;
         }
 
+
+        private bool channelNumberIsPipe(int channelNumber)
+        {
+            return channelNumber == 1 ||
+                channelNumber == 3 ||
+                channelNumber == 5;
+        }
+
+        private decimal channelLengthFromCatheterNumber(int catheterNumber)
+        {
+            foreach (var item in _intrauterineCatheters)
+            {
+                int x = 0;
+                Int32.TryParse(item.CatheterNumber, out x);
+                if (Int32.TryParse(item.CatheterNumber, out x) &&
+                    x == catheterNumber)
+                {
+                    return item.CatheterLength;
+                }
+            }
+
+            return -1.0m;
+        }
+
         public List<LiveCatheter> intrauterineLiveCatheters()
         {
             List<LiveCatheter> liveCatheters = new List<LiveCatheter>();
@@ -1037,7 +1077,7 @@ namespace WpfApp1
             foreach (var page in _pageList)
             {
                 int currentIndex = 0;
-                while (currentIndex != -1)
+                while (currentIndex != -1 && catheterNumberCounter < 200)
                 {
                     int offsetIndex = _stringExtractor.getIndexOnPageForStartWithStringFromIndex(page, currentIndex, "Offset (mm):");
                     if (offsetIndex != -1)
@@ -1070,7 +1110,10 @@ namespace WpfApp1
                             positonTimePairs.Add(tuple);
                         }
                         int channelNumber = -1;
-                        bool conversionWasOk = Int32.TryParse(_catheterTochannel[catheterNumberCounter.ToString()], out channelNumber);
+                        if (_catheterTochannel.Count > 0)
+                        {
+                            bool conversionWasOk = Int32.TryParse(_catheterTochannel[catheterNumberCounter.ToString()], out channelNumber);
+                        }
                         LiveCatheter liveCatheter = new LiveCatheter();
                         bool existingCatheter = false;
                         foreach (var item in liveCatheters)
@@ -1083,6 +1126,8 @@ namespace WpfApp1
                         }
                         if (!existingCatheter)
                         {
+                            liveCatheter.IsPipe = channelNumberIsPipe(channelNumber);
+                            liveCatheter.ChannelLength = channelLengthFromCatheterNumber(catheterNumberCounter);
                             liveCatheter.setCatheterNumber(channelNumber);
                             liveCatheter.setOffsetLength(offsetValue);
                             liveCatheter.setPositonTimePairs(positonTimePairs);
@@ -1107,6 +1152,59 @@ namespace WpfApp1
             }
             return liveCatheters;
         }
+
+
+        public List<LiveCatheter> intrauterineLiveCathetersVenezia()
+        {
+            List<LiveCatheter> liveCatheters = new List<LiveCatheter>();
+            int startTableIndex = -1;
+            int endTableIndex = -1;
+            int catheterNumberCounter = 1;
+            foreach (var page in _pageList)
+            {
+                int currentIndex = 0;
+                while (currentIndex != -1)
+                {
+                    int offsetIndex = _stringExtractor.getIndexOnPageForStartWithStringFromIndex(page, currentIndex, "Offset (mm):");
+                    if (offsetIndex != -1)
+                    {
+                        string offsetString = page[offsetIndex];
+                        int startIndex = page[offsetIndex].IndexOf(':') + 1;
+                        int length = offsetString.Length - startIndex;
+                        string offsetValueString = offsetString.Substring(startIndex, length);
+                        decimal offsetValue;
+                        offsetValue = _stringExtractor.decimalStringToDecimal(offsetValueString);
+                        LiveCatheter liveCatheter = new LiveCatheter();
+                        startTableIndex = offsetIndex;
+                        endTableIndex = getIntrauterineCatheterTableEndIndex(page, startTableIndex + 1);
+                        List<string> allValues = _stringExtractor.allValuesInInterval(page, startTableIndex, endTableIndex);
+                        List<List<string>> catheterTableLines = _stringExtractor.nColumnsRowsInInterval(6, allValues);
+                        List<Tuple<string, string>> positonTimePairs = new List<Tuple<string, string>>();
+                        foreach (var catheterTableLine in catheterTableLines)
+                        {
+                            Tuple<string, string> tuple = new Tuple<string, string>(catheterTableLine[5], catheterTableLine[0]);
+                            positonTimePairs.Add(tuple);
+                        }
+                        int channelNumber = -1;
+                        bool conversionWasOk = Int32.TryParse(_catheterTochannel[catheterNumberCounter.ToString()], out channelNumber);
+                        liveCatheter.IsPipe = channelNumberIsPipe(channelNumber);
+                        liveCatheter.ChannelLength = channelLengthFromCatheterNumber(catheterNumberCounter);
+                        liveCatheter.setCatheterNumber(channelNumber);
+                        liveCatheter.setOffsetLength(offsetValue);
+                        liveCatheter.setPositonTimePairs(positonTimePairs);
+                        liveCatheters.Add(liveCatheter);
+                        catheterNumberCounter++;
+                        currentIndex = endTableIndex;
+                    }
+                    else
+                    {
+                        currentIndex = -1;
+                    }
+                }
+            }
+            return liveCatheters;
+        }
+
 
 
     }

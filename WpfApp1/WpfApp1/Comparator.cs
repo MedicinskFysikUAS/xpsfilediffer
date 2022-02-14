@@ -324,18 +324,28 @@ namespace WpfApp1
 
         private bool treatmentPlanTccHasSameChannelLengths()
         {
-            if (_treatmentPlan.catheterLengths().Count != _tccPlan.catheterLengths().Count)
+            List<Tuple<int, decimal>> tccCatheterNumberAndLengths = _tccPlan.getCatheterNumberAndLengths();
+            List<LiveCatheter>  treatmentPlanLiveCatheters = _treatmentPlan.liveCatheters();
+
+            if (treatmentPlanLiveCatheters.Count== 0 ||
+                tccCatheterNumberAndLengths.Count == 0)
             {
                 return false;
             }
             else
             {
+                foreach (var tccCatheterNumberAndLength in tccCatheterNumberAndLengths)
+                {
+
+                }
+
                 List<string> treatmentPlanCatheterLengths = _treatmentPlan.catheterLengths();
-                List<string> tccPlanCatheterLengths = toDotSeparated(_tccPlan.catheterLengths());
-                var firstNotSecond = treatmentPlanCatheterLengths.Except(tccPlanCatheterLengths).ToList();
-                var secondNotFirst = tccPlanCatheterLengths.Except(treatmentPlanCatheterLengths).ToList();
-                return firstNotSecond.Count == 0 &&
-                    secondNotFirst.Count == 0;
+                return true;
+                //List<string> tccPlanCatheterLengths = toDotSeparated(_tccPlan.catheterLengths());
+                //var firstNotSecond = treatmentPlanCatheterLengths.Except(tccPlanCatheterLengths).ToList();
+                //var secondNotFirst = tccPlanCatheterLengths.Except(treatmentPlanCatheterLengths).ToList();
+                //return firstNotSecond.Count == 0 &&
+                //    secondNotFirst.Count == 0;
             }
         }
 
@@ -420,30 +430,63 @@ namespace WpfApp1
 
         }
 
+        //private bool channelLengthInIntrauterinePlanIsOkOld()
+        //{
+        //    List<IntrauterineCatheter> intrauterineCatheters = _treatmentPlan.intrauterineCatheters();
+        //    bool isOk = true;
+        //    if (intrauterineCatheters.Count == 0)
+        //    {
+        //        isOk = false;
+        //    }
+
+        //    foreach (var item in intrauterineCatheters)
+        //    {
+        //        if (item.IntrauterineCatheterType == IntrauterineCatheterType.MODEL)
+        //        {
+        //            if (Math.Abs(item.CatheterLength - _specifications.ExpectedLengthModelCatheter) >
+        //                _specifications.ExpectedLengthModelManualCatheterEpsilon)
+        //            {
+        //                isOk = false;
+        //                break;
+        //            }
+        //        }
+        //        else if (item.IntrauterineCatheterType == IntrauterineCatheterType.MANUAL)
+        //        {
+        //            if (Math.Abs(item.CatheterLength - _specifications.ExpectedLengthManualCatheter) >
+        //                _specifications.ExpectedLengthModelManualCatheterEpsilon)
+        //            {
+        //                isOk = false;
+        //                break;
+        //            }
+        //        }
+        //    }
+        //    return isOk;
+        //}
+
         private bool channelLengthInIntrauterinePlanIsOk()
         {
-            List<IntrauterineCatheter> intrauterineCatheters = _treatmentPlan.intrauterineCatheters();
+            List<LiveCatheter> liveCatheters = _treatmentPlan.liveCatheters();
             bool isOk = true;
-            if (intrauterineCatheters.Count == 0)
+            if (liveCatheters.Count == 0)
             {
                 isOk = false;
             }
 
-            foreach (var item in intrauterineCatheters)
+            foreach (var item in liveCatheters)
             {
-                if (item.IntrauterineCatheterType == IntrauterineCatheterType.MODEL)
+                if (item.IsPipe)
                 {
-                    if (Math.Abs(item.CatheterLength - _specifications.ExpectedLengthModelCatheter) >
-                        _specifications.ExpectedLengthModelManualCatheterEpsilon)
+                    if (Math.Abs(item.ChannelLength - _specifications.ExpectedLengthPipeCatheter) >
+                        _specifications.ExpectedLengthPipeCatheterEpsilon)
                     {
                         isOk = false;
                         break;
                     }
                 }
-                else if (item.IntrauterineCatheterType == IntrauterineCatheterType.MANUAL)
+                else
                 {
-                    if (Math.Abs(item.CatheterLength - _specifications.ExpectedLengthManualCatheter) >
-                        _specifications.ExpectedLengthModelManualCatheterEpsilon)
+                    if (Math.Abs(item.ChannelLength - _specifications.ExpectedLengthNonPipeCatheter) >
+                        _specifications.ExpectedLengthPipeCatheterEpsilon)
                     {
                         isOk = false;
                         break;
@@ -453,7 +496,7 @@ namespace WpfApp1
             return isOk;
         }
 
-        private bool offsetLengthInPlanIsOkchannelLengthInIntrauterinePlanIsOk()
+        private bool offsetLengthInPlanIsOk()
         {
             List<LiveCatheter> liveCatheters = _treatmentPlan.liveCatheters();
             List<IntrauterineCatheter> intrauterineCatheters = _treatmentPlan.intrauterineCatheters();
@@ -464,14 +507,21 @@ namespace WpfApp1
 
             for (int i = 0; i < liveCatheters.Count; i++)
             {
-                if (intrauterineCatheters[i].IntrauterineCatheterType == IntrauterineCatheterType.MODEL)
+                if (liveCatheters[i].IsPipe)
                 {
                     if (Math.Abs(liveCatheters[i].offsetLength() - 0.0m) > 0.001m )
                     {
                         return false;
                     }
                 }
-                else if (intrauterineCatheters[i].IntrauterineCatheterType == IntrauterineCatheterType.MANUAL)
+                else if (_treatmentPlan.IntrauterineApplicatorType == IntrauterineApplicatorType.MCVC)
+                {
+                    if (Math.Abs(liveCatheters[i].offsetLength() - 0.0m) > 0.001m)
+                    {
+                        return false;
+                    }
+                }
+                else
                 {
                     if (Math.Abs(liveCatheters[i].offsetLength() + 6.0m) > 0.001m)
                     {
@@ -1052,8 +1102,8 @@ namespace WpfApp1
             List<string> resultRow = new List<string>();
             resultRow.Add("Kanallängd i dosplan");
             bool resultOK = channelLengthInIntrauterinePlanIsOk();
-            string expectedValueString = "de förväntade längderna på " + _specifications.ExpectedLengthModelCatheter +
-                " respektive " + _specifications.ExpectedLengthManualCatheter + " mm.";
+            string expectedValueString = "de förväntade längderna på " + _specifications.ExpectedLengthPipeCatheter +
+                " respektive " + _specifications.ExpectedLengthNonPipeCatheter + " mm.";
             string descriptionString = resultOK ? "Ring/IU-rör respektive ringnålar har " + expectedValueString :
                 "Ring/IU-rör respektive ringnålar har inte " + expectedValueString;
             if (resultOK)
@@ -1071,7 +1121,7 @@ namespace WpfApp1
         private List<string> checkIntrauterineOffsetLengths()
         {
             List<string> resultRow = new List<string>();
-            bool result = offsetLengthInPlanIsOkchannelLengthInIntrauterinePlanIsOk();
+            bool result = offsetLengthInPlanIsOk();
             resultRow.Add("Offsetlängder i dosplan");
             string resultString = result ? "OK" : "Inte OK";
             resultRow.Add(resultString);

@@ -9,6 +9,11 @@ namespace WpfApp1
         private List<Tuple<string, string>> _positonTimePairs = new List<Tuple<string, string>>();
         private int _catheterNumber;
         private decimal _offsetLength;
+        private bool _isPipe;
+        private decimal _channelLength;
+
+        public bool IsPipe { get => _isPipe; set => _isPipe = value; }
+        public decimal ChannelLength { get => _channelLength; set => _channelLength = value; }
 
         public void setPositonTimePairs(List<Tuple<string, string>> positonTimePairs)
         {

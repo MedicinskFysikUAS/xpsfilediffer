@@ -752,11 +752,12 @@ namespace WpfApp1
         private void updateCatheters()
         {
             Comparator comparator = new Comparator(_specifications);
+            IntrauterineApplicatorType intrauterineApplicatorType = selectedItrauterineApplicatorType();
             if (_treatmentPlanXpsFilePath != null && _tccPlanXpsFilePath != null)
             {
                 PageReader treatmentPlanPageReader = new PageReader(_treatmentPlanXpsFilePath);
                 List<List<string>> treatmentPlanPageList = treatmentPlanPageReader.getPages();
-                TreatmentPlan treatmentPlan = new TreatmentPlan(treatmentPlanPageList, _tabType);
+                TreatmentPlan treatmentPlan = new TreatmentPlan(treatmentPlanPageList, _tabType, intrauterineApplicatorType);
                 comparator.treatmentPlan = treatmentPlan;
                 _treatmentPlanLiveCatheters = comparator.treatmentPlanLiveCatheters();
                 catheterInfoButton.Visibility = Visibility.Visible;
@@ -776,7 +777,7 @@ namespace WpfApp1
             {
                 PageReader treatmentPlanPageReader = new PageReader(_treatmentPlanXpsFilePath);
                 List<List<string>> treatmentPlanPageList = treatmentPlanPageReader.getPages();
-                TreatmentPlan treatmentPlan = new TreatmentPlan(treatmentPlanPageList, _tabType);
+                TreatmentPlan treatmentPlan = new TreatmentPlan(treatmentPlanPageList, _tabType, intrauterineApplicatorType);
                 comparator.treatmentPlan = treatmentPlan;
                 _treatmentPlanLiveCatheters = comparator.treatmentPlanLiveCatheters();
                 catheterInfoButton.Visibility = Visibility.Visible;
