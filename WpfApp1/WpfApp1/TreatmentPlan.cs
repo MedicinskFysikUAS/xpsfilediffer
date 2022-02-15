@@ -385,7 +385,7 @@ namespace WpfApp1
         }
 
 
-        public List<LiveCatheter> liveCatheters()
+        public List<LiveCatheter> liveCatheters(bool skipNoActivePositions = false)
         {
             if (_tabType == TabType.PROSTATE)
             {
@@ -397,7 +397,6 @@ namespace WpfApp1
             }
             else if (_tabType == TabType.INTRAUTERINE)
             {
-                //setCatheterToChannelNumberAndLengths(IntrauterineApplicatorType.MCVC); // TODO
                 if (_intrauterineApplicatorType == IntrauterineApplicatorType.UNKNOWN)
                 {
                     List<LiveCatheter> liveCatheters = new List<LiveCatheter>();
@@ -408,11 +407,11 @@ namespace WpfApp1
                     setCatheterToChannelNumberAndLengths(_intrauterineApplicatorType); // TODO
                     if (_intrauterineApplicatorType == IntrauterineApplicatorType.VENEZIA)
                     {
-                        return intrauterineLiveCathetersVenezia().OrderBy(o => o.catheterNumber()).ToList();
+                        return intrauterineLiveCathetersVenezia(skipNoActivePositions).OrderBy(o => o.catheterNumber()).ToList();
                     }
                     else
                     {
-                        return intrauterineLiveCatheters().OrderBy(o => o.catheterNumber()).ToList();
+                        return intrauterineLiveCatheters(skipNoActivePositions).OrderBy(o => o.catheterNumber()).ToList();
                     }
                 }
             }
@@ -837,11 +836,12 @@ namespace WpfApp1
             }
             else if (intrauterineApplicatorType == IntrauterineApplicatorType.RINGAPPLIKATOR)
             {
-                return; // TODO: This is not supported
+                setCatheterToChannelNumberAndLengthsMcvcRing();
+                return;
             }
             else if (intrauterineApplicatorType == IntrauterineApplicatorType.UNKNOWN)
             {
-                return; // TODO: Fix this
+                return; 
             }
 
             _catheterTochannel.Clear();
@@ -1067,7 +1067,7 @@ namespace WpfApp1
             return -1.0m;
         }
 
-        public List<LiveCatheter> intrauterineLiveCatheters()
+        public List<LiveCatheter> intrauterineLiveCatheters(bool skipNoActivePositions = false)
         {
             List<LiveCatheter> liveCatheters = new List<LiveCatheter>();
             int startTableIndex = -1;
@@ -1110,7 +1110,7 @@ namespace WpfApp1
                             positonTimePairs.Add(tuple);
                         }
                         int channelNumber = -1;
-                        if (_catheterTochannel.Count > 0)
+                        if (_catheterTochannel.Count > 0 && _catheterTochannel.ContainsKey(catheterNumberCounter.ToString()))
                         {
                             bool conversionWasOk = Int32.TryParse(_catheterTochannel[catheterNumberCounter.ToString()], out channelNumber);
                         }
@@ -1131,7 +1131,17 @@ namespace WpfApp1
                             liveCatheter.setCatheterNumber(channelNumber);
                             liveCatheter.setOffsetLength(offsetValue);
                             liveCatheter.setPositonTimePairs(positonTimePairs);
-                            liveCatheters.Add(liveCatheter);
+                            if (skipNoActivePositions)
+                            {
+                                if (positonTimePairs.Count != 0)
+                                {
+                                    liveCatheters.Add(liveCatheter);
+                                }
+                            }
+                            else
+                            {
+                                liveCatheters.Add(liveCatheter);
+                            }
                         }
 
                         if (increaseCatheterNumberCounter)
@@ -1154,7 +1164,7 @@ namespace WpfApp1
         }
 
 
-        public List<LiveCatheter> intrauterineLiveCathetersVenezia()
+        public List<LiveCatheter> intrauterineLiveCathetersVenezia(bool skipNoActivePositions = false)
         {
             List<LiveCatheter> liveCatheters = new List<LiveCatheter>();
             int startTableIndex = -1;
@@ -1186,13 +1196,26 @@ namespace WpfApp1
                             positonTimePairs.Add(tuple);
                         }
                         int channelNumber = -1;
-                        bool conversionWasOk = Int32.TryParse(_catheterTochannel[catheterNumberCounter.ToString()], out channelNumber);
+                        if (_catheterTochannel.ContainsKey(catheterNumberCounter.ToString()))
+                        {
+                            bool conversionWasOk = Int32.TryParse(_catheterTochannel[catheterNumberCounter.ToString()], out channelNumber);
+                        }
                         liveCatheter.IsPipe = channelNumberIsPipe(channelNumber);
                         liveCatheter.ChannelLength = channelLengthFromCatheterNumber(catheterNumberCounter);
                         liveCatheter.setCatheterNumber(channelNumber);
                         liveCatheter.setOffsetLength(offsetValue);
                         liveCatheter.setPositonTimePairs(positonTimePairs);
-                        liveCatheters.Add(liveCatheter);
+                        if (skipNoActivePositions)
+                        {
+                            if (positonTimePairs.Count != 0)
+                            {
+                                liveCatheters.Add(liveCatheter);
+                            }
+                        }
+                        else
+                        {
+                            liveCatheters.Add(liveCatheter);
+                        }
                         catheterNumberCounter++;
                         currentIndex = endTableIndex;
                     }

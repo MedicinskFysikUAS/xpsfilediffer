@@ -125,7 +125,7 @@ namespace WpfApp1
         public void initiateApplicatorTypeComboBox()
         {
             applicatorTypeComboBox.Items.Add("Ringapplikator");
-            applicatorTypeComboBox.Items.Add("Venezia");
+            applicatorTypeComboBox.Items.Add("Venezia (utan matris)");
             applicatorTypeComboBox.Items.Add("MCVC");
         }
 
@@ -673,7 +673,7 @@ namespace WpfApp1
                 comparator.tccPlan = tccPlan;
                 bool skipApprovalTest = true;
                 bool useRelativeEpsilon = true;
-                bool useRelativeEpsilonIntrauterine = true;
+                bool useRelativeEpsilonIntrauterine = false;
                 _resultRows.AddRange(comparator.intrauterineTreatmentPlanAndTccPlanResultRows());
                 _resultRows.AddRange(comparator.resultRows(skipApprovalTest, useRelativeEpsilon, useRelativeEpsilonIntrauterine));
                 if (_sameSourceSet)
@@ -918,7 +918,10 @@ namespace WpfApp1
                     }
                     dataTable.Rows.Add(dataRow);
                 }
-                ++counter;
+               //if (item.positonTimePairs().Count > 0)
+               // {
+                    ++counter;
+                //}
             }
             return dataTable;
         }

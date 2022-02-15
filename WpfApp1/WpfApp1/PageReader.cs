@@ -82,7 +82,7 @@ namespace WpfApp1
                 {
                     return true;
                 }
-                else if (xpsFileType == XpsFileType.ONCENTRA_INTRAUTERINE_TREATMENT_PLAN && stringsOnPage.Count > 51 && stringsOnPage[50] == "Oncentra Brachy ")
+                else if (xpsFileType == XpsFileType.ONCENTRA_INTRAUTERINE_TREATMENT_PLAN && stringsOnPage.Count > 51 && (stringsOnPage[50] == "Oncentra Brachy " || stringsOnPage[52] == "Oncentra Brachy "))
                 {
                     return true;
                 }
@@ -258,7 +258,8 @@ namespace WpfApp1
             if (tabType == TabType.INTRAUTERINE)
             {
                 startOrigin = 6818;
-                deltaWidth = 1845;
+                //deltaWidth = 1845;
+                deltaWidth = 1839;
             }
 
             int margin = 50;

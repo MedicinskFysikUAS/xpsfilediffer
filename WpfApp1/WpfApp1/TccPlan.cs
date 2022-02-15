@@ -149,27 +149,20 @@ namespace WpfApp1
             return _liveCatheters.OrderBy(o => o.catheterNumber()).ToList();
         }
 
-        public Dictionary<int, int>  getCatheterTochannel(int startIndex = 0)
+        public Dictionary<int, int>  getCatheterTochannel(int firstCatheterNumber = 0)
         {
             List<LiveCatheter> sortedLiveCatheters = liveCatheters();
-            int counter = startIndex;
+            int counter = firstCatheterNumber;
             Dictionary<int, int> catheterTochannel = new Dictionary<int, int>();
             foreach (var sortedLiveCatheter in sortedLiveCatheters)
             {
-                catheterTochannel.Add(sortedLiveCatheter.catheterNumber(), counter);
+                catheterTochannel.Add(counter, sortedLiveCatheter.catheterNumber());
                 counter++;
             }
             return catheterTochannel;
         }
 
-
-
-        //private int _catheterNumber;
-        //private decimal _offsetLength;
-        //private bool _isPipe;
-        //private decimal _channelLength;
-
-        public List<Tuple<int, decimal>> getCatheterNumberAndLengths()
+        public List<Tuple<int, decimal>> getChannelNumberAndLengths()
         {
             int pageIndex = 1;
             int start = _pageList[pageIndex].IndexOf("KateterKanalKanallängd (mm)Kanaltid (sek.)");
@@ -183,12 +176,12 @@ namespace WpfApp1
                 return catheterNumberAndLengths;
             }
             char startIndexChar = allValues[0][0];
-            int startIndex = 0;
+            int firstCatheterNumber = 0;
             if (Char.IsDigit(startIndexChar))
             {
-                startIndex = startIndexChar - '0';
+                firstCatheterNumber = startIndexChar - '0';
             }
-            Dictionary<int, int> catheterTochannelDict = getCatheterTochannel(startIndex);
+            Dictionary<int, int> catheterTochannelDict = getCatheterTochannel(firstCatheterNumber);
             for (int i = 0; i < catheterTochannelDict.Count; i++)
             {
                 int characterLength = catheterTochannelDict[catheterTochannelDict.ElementAt(i).Key].ToString().Length +

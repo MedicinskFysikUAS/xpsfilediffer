@@ -214,7 +214,7 @@ namespace WpfApp1
 
         ErrorCode hasSameCatheterPositionTimePairs(decimal timeEpsilon, bool useRelativeEpsilon)
         {
-            Tuple<List<LiveCatheter>, List<LiveCatheter>> tuple =  makeCorrectedTpLiveCathetersAboveThreshold(_treatmentPlan.liveCatheters(), _tccPlan.liveCatheters());
+            Tuple<List<LiveCatheter>, List<LiveCatheter>> tuple =  makeCorrectedTpLiveCathetersAboveThreshold(_treatmentPlan.liveCatheters(true), _tccPlan.liveCatheters());
             List<LiveCatheter> tpLiveCatheters = tuple.Item1;
             List<LiveCatheter> tccLiveCatheters = tuple.Item2;
             ErrorCode errorCode = new ErrorCode();
@@ -322,31 +322,68 @@ namespace WpfApp1
             return dotSeparated;
         }
 
+        private List<Tuple<int, decimal>> getNumberAndLengthFromLiveCatheters(List<LiveCatheter> liveCatheters)
+        {
+            List<Tuple<int, decimal>> numberAndLengthFromLiveCatheters = new List<Tuple<int, decimal>>();
+            foreach (var item in liveCatheters)
+            {
+                numberAndLengthFromLiveCatheters.Add(new Tuple<int, decimal>(item.catheterNumber(), item.ChannelLength));
+            }
+            return numberAndLengthFromLiveCatheters;
+        }
+
         private bool treatmentPlanTccHasSameChannelLengths()
         {
-            List<Tuple<int, decimal>> tccCatheterNumberAndLengths = _tccPlan.getCatheterNumberAndLengths();
-            List<LiveCatheter>  treatmentPlanLiveCatheters = _treatmentPlan.liveCatheters();
-
-            if (treatmentPlanLiveCatheters.Count== 0 ||
-                tccCatheterNumberAndLengths.Count == 0)
+            List<Tuple<int, decimal>> tccChannelNumberAndLengths = _tccPlan.getChannelNumberAndLengths();
+            List<Tuple<int, decimal>> tpsChannelNumberAndLengths = getNumberAndLengthFromLiveCatheters(_treatmentPlan.liveCatheters());
+            bool foundAll = true;
+            if (tccChannelNumberAndLengths.Count == 0 || tpsChannelNumberAndLengths.Count == 0)
             {
-                return false;
+                foundAll = false;
             }
-            else
+            foreach (var tccItem in tccChannelNumberAndLengths)
             {
-                foreach (var tccCatheterNumberAndLength in tccCatheterNumberAndLengths)
+                bool foundItem = false;
+                foreach (var tpsItem in tpsChannelNumberAndLengths)
                 {
-
+                    if (tccItem.Item1 == tpsItem.Item1 && tccItem.Item2 == tpsItem.Item2)
+                    {
+                        foundItem = true;
+                        break;
+                    }
                 }
-
-                List<string> treatmentPlanCatheterLengths = _treatmentPlan.catheterLengths();
-                return true;
-                //List<string> tccPlanCatheterLengths = toDotSeparated(_tccPlan.catheterLengths());
-                //var firstNotSecond = treatmentPlanCatheterLengths.Except(tccPlanCatheterLengths).ToList();
-                //var secondNotFirst = tccPlanCatheterLengths.Except(treatmentPlanCatheterLengths).ToList();
-                //return firstNotSecond.Count == 0 &&
-                //    secondNotFirst.Count == 0;
+                if (!foundItem)
+                {
+                    foundAll = false;
+                    break;
+                }
             }
+            return foundAll;
+
+
+
+            //List<LiveCatheter>  treatmentPlanLiveCatheters = _treatmentPlan.liveCatheters();
+
+            //if (treatmentPlanLiveCatheters.Count== 0 ||
+            //    tccCatheterNumberAndLengths.Count == 0)
+            //{
+            //    return false;
+            //}
+            //else
+            //{
+            //    foreach (var tccCatheterNumberAndLength in tccCatheterNumberAndLengths)
+            //    {
+
+            //    }
+
+            //    List<string> treatmentPlanCatheterLengths = _treatmentPlan.catheterLengths();
+            //    return true;
+            //    //List<string> tccPlanCatheterLengths = toDotSeparated(_tccPlan.catheterLengths());
+            //    //var firstNotSecond = treatmentPlanCatheterLengths.Except(tccPlanCatheterLengths).ToList();
+            //    //var secondNotFirst = tccPlanCatheterLengths.Except(treatmentPlanCatheterLengths).ToList();
+            //    //return firstNotSecond.Count == 0 &&
+            //    //    secondNotFirst.Count == 0;
+            //}
         }
 
         public bool treatmentPlanHasExpectedDepth(decimal expectedDepth, decimal needleDepthEpsilon)
@@ -1133,7 +1170,7 @@ namespace WpfApp1
         private List<string> checkIntrauterineTreatmenPlanTccPlanChannelLengths()
         {
             List<string> resultRow = new List<string>();
-            resultRow.Add("Kanalängd i dosplan vs tcc");
+            resultRow.Add("Kanallängd i dosplan vs tcc");
             string descriptionString = "";
             if (treatmentPlanTccHasSameChannelLengths())
             {
@@ -1149,8 +1186,62 @@ namespace WpfApp1
             return resultRow;
         }
 
-        
 
+        private string getAppicationTypeString(IntrauterineApplicatorType intrauterineApplicatorType)
+        {
+            string appicationTypeString = "";
+            if (intrauterineApplicatorType == IntrauterineApplicatorType.MCVC)
+            {
+                appicationTypeString = "MCVC";
+            }
+            else if (intrauterineApplicatorType == IntrauterineApplicatorType.RINGAPPLIKATOR)
+            {
+                appicationTypeString = "Ring";
+            }
+            else if (intrauterineApplicatorType == IntrauterineApplicatorType.VENEZIA)
+            {
+                appicationTypeString = "Venezia";
+            }
+            return appicationTypeString;
+        }
+
+        public List<string> checkSelectedApplicatorTypeAndDiamterWithApplicatorName()
+        {
+            List<string> resultRow = new List<string>();
+            resultRow.Add("Vald applikator och diameter");
+            string treatmentPlanApplicatorName = _treatmentPlan.applicatorName();
+            List<string> strings = treatmentPlanApplicatorName.Split(' ').ToList();
+            string selectedApplicationTypeString = getAppicationTypeString(_specifications.IntrauterineApplicatorType);
+            string selectedDiameter = _specifications.ApplicatorDiameter.ToString();
+            bool applicatorNameIsOk = false;
+            bool applicatorDiameterIsOk = false;
+            foreach (var item in strings)
+            {
+                if (item.Contains(selectedApplicationTypeString))
+                {
+                    applicatorNameIsOk = true;
+                }
+                if (item.Contains(selectedDiameter))
+                {
+                    applicatorDiameterIsOk = true;
+                }
+            }
+            string description = "";
+            description += applicatorNameIsOk ? "Vald applikator och applikator i planen stämmer. " :
+            "Vald applikator och applikator i planen stämmer inte. ";
+            description += applicatorDiameterIsOk ? "Vald diameter och applikator i planen stämmer. " :
+            "Vald diameter och applikator i planen stämmer inte. ";
+            if (applicatorNameIsOk && applicatorDiameterIsOk)
+            {
+                resultRow.Add("OK");
+            }
+            else
+            {
+                resultRow.Add("Inte OK");
+            }
+            resultRow.Add(description);
+            return resultRow;
+        }
 
         public List<string> checkPlanNameIntrauterine()
         {
@@ -1159,28 +1250,27 @@ namespace WpfApp1
             string treatmentPlanApplicatorName = _treatmentPlan.applicatorName();
             List<string> strings = treatmentPlanApplicatorName.Split(' ').ToList();
             string treatmentPlanPlanName = _treatmentPlan.intrauterinePlanName();
-            bool planNameInTreatmentPlanIsConsistent = false;
-            string userInputTypeString = _treatmentPlan.applicatorStringFromApplicationType(_specifications.IntrauterineApplicatorType);
-            int userInputDiameter = _specifications.ApplicatorDiameter;
-            string expectedPlanName = userInputDiameter.ToString();
-            bool inputPlanNameIsOk = false;
+            string expectedFirstCharacter = _treatmentPlan.applicatorStringFromApplicationType(_specifications.IntrauterineApplicatorType);
+            string userInputDiameter = _specifications.ApplicatorDiameter.ToString();
+            bool applicatorNameIsOk = false;
+            bool applicatorDiameterIsOk = false;
             foreach (var item in strings)
             {
-                if (treatmentPlanPlanName.Contains(item))
+                if (item.StartsWith(expectedFirstCharacter))
                 {
-                    planNameInTreatmentPlanIsConsistent = true;
+                    applicatorNameIsOk = true;
                 }
-                if (item.Contains(expectedPlanName))
+                if (item.Contains(userInputDiameter))
                 {
-                    inputPlanNameIsOk = true;
+                    applicatorDiameterIsOk = true;
                 }
             }
             string description = "";
-            description += planNameInTreatmentPlanIsConsistent ? "Plannamnet och applikatorsnamnet i planen stämmer.":
-            "Plannamnet och applikatorsnamnet i planen stämmer inte.";
-            description += inputPlanNameIsOk ? " Den angivna applikatorstypen stämmer med applikatorsnamnet i planen." :
-                " Den angivna applikatorstypen stämmer inte med applikatorsnamnet i planen.";
-            if (planNameInTreatmentPlanIsConsistent && inputPlanNameIsOk)
+            description += applicatorNameIsOk ? "Vald applikator och plannamnet stämmer. " :
+            "Vald applikator och plannamnet stämmer inte. ";
+            description += applicatorDiameterIsOk ? "Vald diameter och och plannamnet stämmer. " :
+            "Vald diameter och plannamnet stämmer inte. ";
+            if (applicatorNameIsOk && applicatorDiameterIsOk)
             {
                 resultRow.Add("OK");
             }
@@ -1344,6 +1434,7 @@ namespace WpfApp1
             List<List<string>> resultRows = new List<List<string>>();
             resultRows.Add(headerResultRow("Plan & info"));
             Calculator calculator = new Calculator();
+            resultRows.Add(checkSelectedApplicatorTypeAndDiamterWithApplicatorName());
             resultRows.Add(checkPlanNameIntrauterine());
             return resultRows;
         }
@@ -1459,7 +1550,7 @@ namespace WpfApp1
         {
             List<LiveCatheter> LiveCatheters = new List<LiveCatheter>();
             StringExtractor stringExtractor = new StringExtractor();
-            foreach (var item in _treatmentPlan.liveCatheters())
+            foreach (var item in _treatmentPlan.liveCatheters(true))
             {
                 List<Tuple<string, string>> positionTimePairs = new List<Tuple<string, string>>();
                 foreach (var subItem in item.positonTimePairs())

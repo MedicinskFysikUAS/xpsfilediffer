@@ -361,7 +361,16 @@ namespace WpfApp1
             {
                 localDecimalString = decimalString.Replace('.', ',');
             }
-            return Convert.ToDecimal(localDecimalString);
+            decimal decimalValue = -1.0m;
+            try
+            {
+                decimalValue = Convert.ToDecimal(localDecimalString);
+            }
+            catch
+            {
+                decimalValue = -1.0m;
+            }
+            return decimalValue;
         }
 
         public int catheterNumberFromString(string catheterString)
