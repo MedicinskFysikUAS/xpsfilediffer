@@ -126,6 +126,7 @@ namespace WpfApp1
         {
             applicatorTypeComboBox.Items.Add("Ringapplikator");
             applicatorTypeComboBox.Items.Add("Venezia (utan matris)");
+            applicatorTypeComboBox.Items.Add("Venezia (med matris)");
             applicatorTypeComboBox.Items.Add("MCVC");
         }
 
@@ -244,6 +245,10 @@ namespace WpfApp1
                     intrauterineApplicatorType = IntrauterineApplicatorType.VENEZIA;
                 }
                 else if (applicatorTypeComboBox.SelectedIndex == 2)
+                {
+                    intrauterineApplicatorType = IntrauterineApplicatorType.VENEZIA_M_MATRIS;
+                }
+                else if (applicatorTypeComboBox.SelectedIndex == 3)
                 {
                     intrauterineApplicatorType = IntrauterineApplicatorType.MCVC;
                 }
@@ -672,10 +677,15 @@ namespace WpfApp1
                 TccPlan tccPlan = new TccPlan(tccPlanPageList, tccLiveCatheters);
                 comparator.tccPlan = tccPlan;
                 bool skipApprovalTest = true;
-                bool useRelativeEpsilon = true;
-                bool useRelativeEpsilonIntrauterine = false;
+                bool useRelativeEpsilon = false;
+                bool useTimeEpsilonVenezia = false;
+                if (intrauterineApplicatorType  == IntrauterineApplicatorType.VENEZIA ||
+                    intrauterineApplicatorType == IntrauterineApplicatorType.VENEZIA_M_MATRIS)
+                {
+                    useTimeEpsilonVenezia = true;
+                }
                 _resultRows.AddRange(comparator.intrauterineTreatmentPlanAndTccPlanResultRows());
-                _resultRows.AddRange(comparator.resultRows(skipApprovalTest, useRelativeEpsilon, useRelativeEpsilonIntrauterine));
+                _resultRows.AddRange(comparator.resultRows(skipApprovalTest, useRelativeEpsilon, useTimeEpsilonVenezia));
                 if (_sameSourceSet)
                 {
                     _resultRows.AddRange(comparator.sourceComparisonResultRows(_isSameSource));
@@ -884,8 +894,7 @@ namespace WpfApp1
             List<LiveCatheter> tccPlanLiveCatheters = _tccPlanLiveCatheters;
             foreach (var item in _treatmentPlanLiveCathetersCorr)
             {
-            StringExtractor stringExtractor = new StringExtractor();
-
+                StringExtractor stringExtractor = new StringExtractor();
                 foreach (var subItem in item.positonTimePairs())
                 {
                     DataRow dataRow = dataTable.NewRow();
@@ -918,10 +927,7 @@ namespace WpfApp1
                     }
                     dataTable.Rows.Add(dataRow);
                 }
-               //if (item.positonTimePairs().Count > 0)
-               // {
-                    ++counter;
-                //}
+                ++counter;
             }
             return dataTable;
         }
@@ -1272,8 +1278,9 @@ namespace WpfApp1
             applicatorDiameterComboBox.Items.Clear();
             _comboboxApplicatorDiameters.Clear();
             // "Ringapplikator 0
-            // "Venezia" 1
-            // "MCVC" 2
+            // "Venezia utan matris" 1
+            // "Venezia med matris" 2
+            // "MCVC" 3
             if (applicatorTypeComboBox.SelectedIndex == 0)
             {
                 applicatorDiameterComboBox.Items.Add("26");
@@ -1293,6 +1300,15 @@ namespace WpfApp1
                 _comboboxApplicatorDiameters.Add(30);
             }
             if (applicatorTypeComboBox.SelectedIndex == 2)
+            {
+                applicatorDiameterComboBox.Items.Add("22");
+                _comboboxApplicatorDiameters.Add(22);
+                applicatorDiameterComboBox.Items.Add("26");
+                _comboboxApplicatorDiameters.Add(26);
+                applicatorDiameterComboBox.Items.Add("30");
+                _comboboxApplicatorDiameters.Add(30);
+            }
+            if (applicatorTypeComboBox.SelectedIndex == 3)
             {
                 applicatorDiameterComboBox.Items.Add("25");
                 _comboboxApplicatorDiameters.Add(25);
@@ -1316,6 +1332,10 @@ namespace WpfApp1
                 return IntrauterineApplicatorType.VENEZIA;
             }
             else if (applicatorTypeComboBox.SelectedIndex == 2)
+            {
+                return IntrauterineApplicatorType.VENEZIA_M_MATRIS;
+            }
+            else if (applicatorTypeComboBox.SelectedIndex == 3)
             {
                 return IntrauterineApplicatorType.MCVC;
             }

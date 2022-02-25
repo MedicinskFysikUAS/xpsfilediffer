@@ -19,8 +19,9 @@
     {
         RINGAPPLIKATOR = 0,
         VENEZIA = 1,
-        MCVC = 2,
-        UNKNOWN = 3
+        VENEZIA_M_MATRIS = 2,
+        MCVC = 3,
+        UNKNOWN = 4
     }
     //applicatorDiameterComboBox
 

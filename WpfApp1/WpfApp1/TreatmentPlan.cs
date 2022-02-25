@@ -404,7 +404,7 @@ namespace WpfApp1
                 }
                 else
                 {
-                    setCatheterToChannelNumberAndLengths(_intrauterineApplicatorType); // TODO
+                    setCatheterToChannelNumberAndLengths(_intrauterineApplicatorType);
                     if (_intrauterineApplicatorType == IntrauterineApplicatorType.VENEZIA)
                     {
                         return intrauterineLiveCathetersVenezia(skipNoActivePositions).OrderBy(o => o.catheterNumber()).ToList();
@@ -813,6 +813,10 @@ namespace WpfApp1
             {
                 applicatorString = "V";
             }
+            else if (applicatorType == IntrauterineApplicatorType.VENEZIA_M_MATRIS)
+            {
+                applicatorString = "V";
+            }
             else if (applicatorType == IntrauterineApplicatorType.MCVC)
             {
                 applicatorString = "M";
@@ -829,21 +833,30 @@ namespace WpfApp1
 
         private void setCatheterToChannelNumberAndLengths(IntrauterineApplicatorType intrauterineApplicatorType)
         {
-            if (intrauterineApplicatorType == IntrauterineApplicatorType.MCVC)
+            if (intrauterineApplicatorType == IntrauterineApplicatorType.MCVC ||
+                intrauterineApplicatorType == IntrauterineApplicatorType.RINGAPPLIKATOR)
             {
                 setCatheterToChannelNumberAndLengthsMcvcRing();
                 return;
             }
-            else if (intrauterineApplicatorType == IntrauterineApplicatorType.RINGAPPLIKATOR)
+            else if (intrauterineApplicatorType == IntrauterineApplicatorType.VENEZIA)
             {
-                setCatheterToChannelNumberAndLengthsMcvcRing();
+                setCatheterToChannelNumberAndLengthsVenezia();
                 return;
             }
-            else if (intrauterineApplicatorType == IntrauterineApplicatorType.UNKNOWN)
+            else if (intrauterineApplicatorType == IntrauterineApplicatorType.VENEZIA_M_MATRIS)
             {
-                return; 
+                setCatheterToChannelNumberAndLengthsVeneziaWMatrix();
+                return;
             }
+            else
+            {
+                return;
+            }
+        }
 
+        private void setCatheterToChannelNumberAndLengthsVenezia()
+        {
             _catheterTochannel.Clear();
             int startTableIndex = -1;
             int endTableIndex = -1;
@@ -927,9 +940,97 @@ namespace WpfApp1
             }
         }
 
+
+        // TODO: Adjust this to read the sample xps-file from Samuel
+        private void setCatheterToChannelNumberAndLengthsVeneziaWMatrix()
+        {
+            _catheterTochannel.Clear();
+            int startTableIndex = -1;
+            int endTableIndex = -1;
+            foreach (var page in _pageList)
+            {
+                int currentIndex = 0;
+                while (currentIndex != -1)
+                {
+                    int offsetIndex = _stringExtractor.getIndexOnPageForStartWithStringFromIndex(page, currentIndex, "Source position separation (mm):");
+                    if (offsetIndex != -1)
+                    {
+                        LiveCatheter liveCatheter = new LiveCatheter();
+                        startTableIndex = getIndexForSearchedString(page, 0, "|    |");
+                        endTableIndex = offsetIndex - 2;
+                        List<string> allValues = _stringExtractor.allValuesInInterval(page, startTableIndex + 1, endTableIndex);
+                        List<string> catheterAndCannels = new List<string>();
+                        _intrauterineCatheters.Clear();
+                        int counter = 1;
+                        for (int i = 0; i < allValues.Count; ++i)
+                        {
+                            if (allValues[i].Contains("(") &&
+                                allValues[i].Contains(")"))
+                            {
+                                if (!allValues[i].Contains("mm"))
+                                {
+                                    catheterAndCannels.Add(allValues[i]);
+                                }
+                                else
+                                {
+                                    int from = 0;
+                                    int to = allValues[i].IndexOf("(");
+                                    string lengthString = allValues[i].Substring(from, to).Trim();
+                                    _catheterLengths.Add(allValues[i].Substring(from, to).Trim());
+                                    if ((i == 0 && allValues[i + 1] != "VT") || ((i + 4 < allValues.Count) && allValues[i + 4].Contains("mm")))
+                                    {
+                                        _catheterWithNamLengths.Add(lengthString);
+                                        IntrauterineCatheter intrauterineCatheter = new IntrauterineCatheter();
+                                        intrauterineCatheter.CatheterNumber = counter.ToString();
+                                        //intrauterineCatheter.IntrauterineCatheterType = IntrauterineCatheterType.MODEL;
+                                        intrauterineCatheter.IntrauterineCatheterType = IntrauterineCatheterType.MODEL;
+                                        intrauterineCatheter.CatheterLength = _stringExtractor.decimalStringToDecimal(lengthString);
+                                        _intrauterineCatheters.Add(intrauterineCatheter);
+                                        counter++;
+                                    }
+                                    else
+                                    {
+                                        _catheterWithoutNamLengths.Add(lengthString);
+                                        IntrauterineCatheter intrauterineCatheter = new IntrauterineCatheter();
+                                        intrauterineCatheter.CatheterNumber = counter.ToString();
+                                        intrauterineCatheter.IntrauterineCatheterType = IntrauterineCatheterType.MODEL;
+                                        intrauterineCatheter.CatheterLength = _stringExtractor.decimalStringToDecimal(lengthString);
+                                        _intrauterineCatheters.Add(intrauterineCatheter);
+                                        counter++;
+                                    }
+
+                                }
+                            }
+                        }
+
+                        foreach (var catheterAndCannel in catheterAndCannels)
+                        {
+                            int from = 0;
+                            int to = catheterAndCannel.IndexOf("(");
+                            string catheterNumber = catheterAndCannel.Substring(from, to).Trim();
+                            from = catheterAndCannel.IndexOf("(") + "(".Length;
+                            to = catheterAndCannel.LastIndexOf(")");
+                            string channelNumber = catheterAndCannel.Substring(from, to - from).Trim();
+                            int n;
+                            if (int.TryParse(catheterNumber, out n) &&
+                                int.TryParse(channelNumber, out n))
+                            {
+                                _catheterTochannel.Add(catheterNumber, channelNumber);
+                            }
+                        }
+                        currentIndex = -1;
+                    }
+                    else
+                    {
+                        currentIndex = -1;
+                    }
+                }
+            }
+        }
+
         private void setCatheterToChannelNumberAndLengthsMcvcRing()
         {
-            _catheterTochannel.Clear(); // NOTE!! This has to change or??
+            _catheterTochannel.Clear();
             int startTableIndex = -1;
             int endTableIndex = -1;
             foreach (var page in _pageList)

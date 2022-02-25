@@ -11,8 +11,6 @@ namespace WpfApp1
         private List<List<string>> _pageList;
         private StringExtractor _stringExtractor = new StringExtractor();
         private List<LiveCatheter> _liveCatheters = new List<LiveCatheter>();
-        //private Dictionary<string, string> _catheterTochannel = new Dictionary<string, string>();
-
 
         public TccPlan(List<List<string>> pageList, List<LiveCatheter> liveCatheters)
         {
@@ -197,36 +195,6 @@ namespace WpfApp1
 
         }
 
-        //public List<string> catheterLengths()
-        //{
-        //    int pageIndex = 1;
-        //    int start = _pageList[pageIndex].IndexOf("KateterKanalKanallängd (mm)Kanaltid (sek.)");
-        //    int stop = _pageList[pageIndex].IndexOf("Positionstider (sek.)");
-        //    List<string> allValues = _stringExtractor.allValuesInInterval(_pageList[pageIndex], 
-        //        start, stop);
-        //    List<string> catheterLengthList = new List<string>();
-        //    if (catheterTochannel().Count != allValues.Count)
-        //    {
-        //        return catheterLengthList;
-        //    }
-        //    char startIndexChar = allValues[0][0];
-        //    int startIndex = 0;
-        //    if (Char.IsDigit(startIndexChar))
-        //    {
-        //        startIndex = startIndexChar - '0';
-        //    }
-        //    Dictionary<string, string> catheterTochannelDict = catheterTochannel(startIndex);
-        //    for (int i = 0; i < catheterTochannelDict.Count; i++)
-        //    {
-        //        int characterLength = _catheterTochannel[_catheterTochannel.ElementAt(i).Key].Length +
-        //            _catheterTochannel.ElementAt(i).Key.Length;
-        //        int channelLengthCharacterLength = 6;
-        //        int from = characterLength;
-        //        catheterLengthList.Add(allValues[i].Substring(from, channelLengthCharacterLength).Trim());
-        //    }
-        //    return catheterLengthList;
-        //}
 
-
-    }
+    } // Class
 }

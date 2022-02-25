@@ -359,31 +359,6 @@ namespace WpfApp1
                 }
             }
             return foundAll;
-
-
-
-            //List<LiveCatheter>  treatmentPlanLiveCatheters = _treatmentPlan.liveCatheters();
-
-            //if (treatmentPlanLiveCatheters.Count== 0 ||
-            //    tccCatheterNumberAndLengths.Count == 0)
-            //{
-            //    return false;
-            //}
-            //else
-            //{
-            //    foreach (var tccCatheterNumberAndLength in tccCatheterNumberAndLengths)
-            //    {
-
-            //    }
-
-            //    List<string> treatmentPlanCatheterLengths = _treatmentPlan.catheterLengths();
-            //    return true;
-            //    //List<string> tccPlanCatheterLengths = toDotSeparated(_tccPlan.catheterLengths());
-            //    //var firstNotSecond = treatmentPlanCatheterLengths.Except(tccPlanCatheterLengths).ToList();
-            //    //var secondNotFirst = tccPlanCatheterLengths.Except(treatmentPlanCatheterLengths).ToList();
-            //    //return firstNotSecond.Count == 0 &&
-            //    //    secondNotFirst.Count == 0;
-            //}
         }
 
         public bool treatmentPlanHasExpectedDepth(decimal expectedDepth, decimal needleDepthEpsilon)
@@ -467,38 +442,7 @@ namespace WpfApp1
 
         }
 
-        //private bool channelLengthInIntrauterinePlanIsOkOld()
-        //{
-        //    List<IntrauterineCatheter> intrauterineCatheters = _treatmentPlan.intrauterineCatheters();
-        //    bool isOk = true;
-        //    if (intrauterineCatheters.Count == 0)
-        //    {
-        //        isOk = false;
-        //    }
-
-        //    foreach (var item in intrauterineCatheters)
-        //    {
-        //        if (item.IntrauterineCatheterType == IntrauterineCatheterType.MODEL)
-        //        {
-        //            if (Math.Abs(item.CatheterLength - _specifications.ExpectedLengthModelCatheter) >
-        //                _specifications.ExpectedLengthModelManualCatheterEpsilon)
-        //            {
-        //                isOk = false;
-        //                break;
-        //            }
-        //        }
-        //        else if (item.IntrauterineCatheterType == IntrauterineCatheterType.MANUAL)
-        //        {
-        //            if (Math.Abs(item.CatheterLength - _specifications.ExpectedLengthManualCatheter) >
-        //                _specifications.ExpectedLengthModelManualCatheterEpsilon)
-        //            {
-        //                isOk = false;
-        //                break;
-        //            }
-        //        }
-        //    }
-        //    return isOk;
-        //}
+        
 
         private bool channelLengthInIntrauterinePlanIsOk()
         {
@@ -1202,6 +1146,10 @@ namespace WpfApp1
             {
                 appicationTypeString = "Venezia";
             }
+            else if (intrauterineApplicatorType == IntrauterineApplicatorType.VENEZIA_M_MATRIS)
+            {
+                appicationTypeString = "Vmix";
+            }
             return appicationTypeString;
         }
 
@@ -1212,7 +1160,9 @@ namespace WpfApp1
             string treatmentPlanApplicatorName = _treatmentPlan.applicatorName();
             List<string> strings = treatmentPlanApplicatorName.Split(' ').ToList();
             string selectedApplicationTypeString = getAppicationTypeString(_specifications.IntrauterineApplicatorType);
+            string expectedFirstCharacter = _treatmentPlan.applicatorStringFromApplicationType(_specifications.IntrauterineApplicatorType);
             string selectedDiameter = _specifications.ApplicatorDiameter.ToString();
+            string searchedDiameterString = expectedFirstCharacter + selectedDiameter;
             bool applicatorNameIsOk = false;
             bool applicatorDiameterIsOk = false;
             foreach (var item in strings)
@@ -1221,16 +1171,16 @@ namespace WpfApp1
                 {
                     applicatorNameIsOk = true;
                 }
-                if (item.Contains(selectedDiameter))
+                if (item.Contains(searchedDiameterString))
                 {
                     applicatorDiameterIsOk = true;
                 }
             }
             string description = "";
-            description += applicatorNameIsOk ? "Vald applikator och applikator i planen stämmer. " :
-            "Vald applikator och applikator i planen stämmer inte. ";
-            description += applicatorDiameterIsOk ? "Vald diameter och applikator i planen stämmer. " :
-            "Vald diameter och applikator i planen stämmer inte. ";
+            description += applicatorNameIsOk ? "Vald applikator stämmer med planen. " :
+            "Vald applikator stämmer inte med planen. ";
+            description += applicatorDiameterIsOk ? "Vald diameter stämmer med planen. " :
+            "Vald diameter stämmer inte med planen. ";
             if (applicatorNameIsOk && applicatorDiameterIsOk)
             {
                 resultRow.Add("OK");
@@ -1247,30 +1197,23 @@ namespace WpfApp1
         {
             List<string> resultRow = new List<string>();
             resultRow.Add("Plannamn");
-            string treatmentPlanApplicatorName = _treatmentPlan.applicatorName();
-            List<string> strings = treatmentPlanApplicatorName.Split(' ').ToList();
-            string treatmentPlanPlanName = _treatmentPlan.intrauterinePlanName();
+            string treatmentPlanName = _treatmentPlan.intrauterinePlanName();
+            List<string> strings = treatmentPlanName.Split(' ').ToList();
             string expectedFirstCharacter = _treatmentPlan.applicatorStringFromApplicationType(_specifications.IntrauterineApplicatorType);
             string userInputDiameter = _specifications.ApplicatorDiameter.ToString();
-            bool applicatorNameIsOk = false;
-            bool applicatorDiameterIsOk = false;
+            string searchedString = expectedFirstCharacter + userInputDiameter;
+            bool applicatorNameAndDiameterIsOk = false;
             foreach (var item in strings)
             {
-                if (item.StartsWith(expectedFirstCharacter))
+                if (item.Contains(searchedString))
                 {
-                    applicatorNameIsOk = true;
-                }
-                if (item.Contains(userInputDiameter))
-                {
-                    applicatorDiameterIsOk = true;
+                    applicatorNameAndDiameterIsOk = true;
                 }
             }
             string description = "";
-            description += applicatorNameIsOk ? "Vald applikator och plannamnet stämmer. " :
-            "Vald applikator och plannamnet stämmer inte. ";
-            description += applicatorDiameterIsOk ? "Vald diameter och och plannamnet stämmer. " :
-            "Vald diameter och plannamnet stämmer inte. ";
-            if (applicatorNameIsOk && applicatorDiameterIsOk)
+            description += applicatorNameAndDiameterIsOk ? "Vald applikator och diameter stämmer med plannamnet. " :
+            "Vald applikator och diameter stämmer inte med plannamnet. ";
+            if (applicatorNameAndDiameterIsOk)
             {
                 resultRow.Add("OK");
             }
@@ -1281,7 +1224,6 @@ namespace WpfApp1
             resultRow.Add(description);
             return resultRow;
         }
-        
 
         public List<string> checkApplicatorTypeIsSet(bool applicatorTypeIsSet)
         {
@@ -1439,7 +1381,7 @@ namespace WpfApp1
             return resultRows;
         }
 
-        public List<List<string>> resultRows(bool skipApprovalTest = false, bool useRelativeEpsilon = false, bool useRelativeEpsilonIntrauterine = false)
+        public List<List<string>> resultRows(bool skipApprovalTest = false, bool useRelativeEpsilon = false, bool useTimeEpsilonVenezia = false)
         {
             List<List<string>> resultRows = new List<List<string>>();
             resultRows.Add(headerResultRow("Plan & TCC"));
@@ -1456,15 +1398,11 @@ namespace WpfApp1
             decimal timeEpsilon = _specifications.TimeEpsilon;
             if (useRelativeEpsilon)
             {
-                if (useRelativeEpsilonIntrauterine)
-                {
-                    timeEpsilon = _specifications.RelativeTimeEpsilonÏntrauterine;
-
-                }
-                else
-                {
-                    timeEpsilon = _specifications.RelativeTimeEpsilon;
-                }
+                timeEpsilon = _specifications.RelativeTimeEpsilon;
+            }
+            if (useTimeEpsilonVenezia)
+            {
+                timeEpsilon = _specifications.TimeEpsilonVenezia;
             }
             resultRows.Add(checkCatheterPositionTimePairs(timeEpsilon, useRelativeEpsilon));
             return resultRows;
