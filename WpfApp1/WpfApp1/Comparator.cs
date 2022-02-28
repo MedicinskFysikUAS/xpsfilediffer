@@ -466,11 +466,24 @@ namespace WpfApp1
                 }
                 else
                 {
-                    if (Math.Abs(item.ChannelLength - _specifications.ExpectedLengthNonPipeCatheter) >
-                        _specifications.ExpectedLengthPipeCatheterEpsilon)
+                    if (item.catheterNumber() < 30)
                     {
-                        isOk = false;
-                        break;
+
+                        if (Math.Abs(item.ChannelLength - _specifications.ExpectedLengthNonPipeCatheter) >
+                            _specifications.ExpectedLengthPipeCatheterEpsilon)
+                        {
+                            isOk = false;
+                            break;
+                        }
+                    }
+                    else
+                    {
+                        if (Math.Abs(item.ChannelLength - _specifications.ExpectedLengthNonPipeCatheterAbove29) >
+                           _specifications.ExpectedLengthPipeCatheterEpsilon)
+                        {
+                            isOk = false;
+                            break;
+                        }
                     }
                 }
             }
@@ -1084,7 +1097,12 @@ namespace WpfApp1
             resultRow.Add("Kanallängd i dosplan");
             bool resultOK = channelLengthInIntrauterinePlanIsOk();
             string expectedValueString = "de förväntade längderna på " + _specifications.ExpectedLengthPipeCatheter +
-                " respektive " + _specifications.ExpectedLengthNonPipeCatheter + " mm.";
+                " respektive " + _specifications.ExpectedLengthNonPipeCatheter;
+            if (_treatmentPlan.IntrauterineApplicatorType == IntrauterineApplicatorType.VENEZIA_M_MATRIS)
+            {
+                expectedValueString += " respektive " + _specifications.ExpectedLengthNonPipeCatheterAbove29;
+            }
+            expectedValueString += " mm.";
             string descriptionString = resultOK ? "Ring/IU-rör respektive ringnålar har " + expectedValueString :
                 "Ring/IU-rör respektive ringnålar har inte " + expectedValueString;
             if (resultOK)

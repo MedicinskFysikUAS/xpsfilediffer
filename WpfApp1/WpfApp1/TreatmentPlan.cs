@@ -350,6 +350,10 @@ namespace WpfApp1
             {
                 pageIndex = 2;
                 stringValue = _stringExtractor.getStringAfterStartWithSearchString(_pageList[pageIndex], "Total treatment time (sec.):");
+                if (stringValue.Length == 0)
+                {
+                    stringValue = _stringExtractor.getStringAfterStartWithSearchString(_pageList[3], "Total treatment time (sec.):");
+                }
             }
             return stringValue;
         }
@@ -834,19 +838,15 @@ namespace WpfApp1
         private void setCatheterToChannelNumberAndLengths(IntrauterineApplicatorType intrauterineApplicatorType)
         {
             if (intrauterineApplicatorType == IntrauterineApplicatorType.MCVC ||
-                intrauterineApplicatorType == IntrauterineApplicatorType.RINGAPPLIKATOR)
+                intrauterineApplicatorType == IntrauterineApplicatorType.RINGAPPLIKATOR ||
+                intrauterineApplicatorType == IntrauterineApplicatorType.VENEZIA_M_MATRIS)
             {
-                setCatheterToChannelNumberAndLengthsMcvcRing();
+                setCatheterToChannelNumberAndLengthsMcvcRingVeneziaMMatris();
                 return;
             }
             else if (intrauterineApplicatorType == IntrauterineApplicatorType.VENEZIA)
             {
                 setCatheterToChannelNumberAndLengthsVenezia();
-                return;
-            }
-            else if (intrauterineApplicatorType == IntrauterineApplicatorType.VENEZIA_M_MATRIS)
-            {
-                setCatheterToChannelNumberAndLengthsVeneziaWMatrix();
                 return;
             }
             else
@@ -941,7 +941,7 @@ namespace WpfApp1
         }
 
 
-        // TODO: Adjust this to read the sample xps-file from Samuel
+        // TODO: Remove this when tested that it is not needed.
         private void setCatheterToChannelNumberAndLengthsVeneziaWMatrix()
         {
             _catheterTochannel.Clear();
@@ -1028,7 +1028,7 @@ namespace WpfApp1
             }
         }
 
-        private void setCatheterToChannelNumberAndLengthsMcvcRing()
+        private void setCatheterToChannelNumberAndLengthsMcvcRingVeneziaMMatris()
         {
             _catheterTochannel.Clear();
             int startTableIndex = -1;
@@ -1208,7 +1208,11 @@ namespace WpfApp1
                         foreach (var catheterTableLine in catheterTableLines)
                         {
                             Tuple<string, string> tuple = new Tuple<string, string>(catheterTableLine[5], catheterTableLine[0]);
-                            positonTimePairs.Add(tuple);
+                            if (_stringExtractor.decimalStringToDecimal(catheterTableLine[0]) != -1 &&
+                                (_stringExtractor.decimalStringToDecimal(catheterTableLine[5]) != -1))
+                            {
+                                positonTimePairs.Add(tuple);
+                            }
                         }
                         int channelNumber = -1;
                         if (_catheterTochannel.Count > 0 && _catheterTochannel.ContainsKey(catheterNumberCounter.ToString()))
