@@ -109,7 +109,7 @@ namespace WpfApp1
             return stringValue;
         }
 
-        // For Oncentra Brach is the plan status a png image and cannot be tested.
+        // For Oncentra Brachy is the plan status a png image and cannot be tested.
         public string planStatus()
         {
             int pageIndex = 0;

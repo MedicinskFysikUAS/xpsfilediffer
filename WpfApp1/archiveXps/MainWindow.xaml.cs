@@ -52,7 +52,7 @@ namespace archiveXps
         {
             PageReader pageReader = new PageReader(filePath);
             XpsFileInfo xpsFileInfo = new XpsFileInfo();
-            xpsFileInfo.OutputDirectoryName = "xps_filer_arkiv";
+            xpsFileInfo.OutputDirectoryName = "xps_filer_arkiv_test";
             try
             {
                 if (pageReader.isFileType(XpsFileType.ONCENTRA_PROSTATE_TREATMENT_PLAN))

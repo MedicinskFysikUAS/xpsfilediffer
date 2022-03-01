@@ -125,8 +125,8 @@ namespace WpfApp1
         public void initiateApplicatorTypeComboBox()
         {
             applicatorTypeComboBox.Items.Add("Ringapplikator");
-            applicatorTypeComboBox.Items.Add("Venezia (utan matris)");
-            applicatorTypeComboBox.Items.Add("Venezia (med matris)");
+            applicatorTypeComboBox.Items.Add("Venezia utan matris");
+            applicatorTypeComboBox.Items.Add("Venezia med matris");
             applicatorTypeComboBox.Items.Add("MCVC");
         }
 
@@ -678,14 +678,15 @@ namespace WpfApp1
                 comparator.tccPlan = tccPlan;
                 bool skipApprovalTest = true;
                 bool useRelativeEpsilon = false;
-                bool useTimeEpsilonVenezia = false;
+                bool useTimeEpsilonVeneziaAndRings = false;
                 if (intrauterineApplicatorType  == IntrauterineApplicatorType.VENEZIA ||
-                    intrauterineApplicatorType == IntrauterineApplicatorType.VENEZIA_M_MATRIS)
+                    intrauterineApplicatorType == IntrauterineApplicatorType.VENEZIA_M_MATRIS ||
+                    intrauterineApplicatorType == IntrauterineApplicatorType.RINGAPPLIKATOR)
                 {
-                    useTimeEpsilonVenezia = true;
+                    useTimeEpsilonVeneziaAndRings = true;
                 }
                 _resultRows.AddRange(comparator.intrauterineTreatmentPlanAndTccPlanResultRows());
-                _resultRows.AddRange(comparator.resultRows(skipApprovalTest, useRelativeEpsilon, useTimeEpsilonVenezia));
+                _resultRows.AddRange(comparator.resultRows(skipApprovalTest, useRelativeEpsilon, useTimeEpsilonVeneziaAndRings));
                 if (_sameSourceSet)
                 {
                     _resultRows.AddRange(comparator.sourceComparisonResultRows(_isSameSource));
@@ -866,14 +867,31 @@ namespace WpfApp1
                 return false;
             }
             else if ((Math.Abs(stringExtractor.decimalStringToDecimal(planTime) -
-            stringExtractor.decimalStringToDecimal(tccTime)) < timeEpsilon))
-            {
-                return false;
-            }
-            else
+            stringExtractor.decimalStringToDecimal(tccTime)) > timeEpsilon))
             {
                 return true;
             }
+            else
+            {
+                return false;
+            }
+        }
+
+        private bool useTimeEpsilonVenezia()
+        {
+            bool useTimeEpsilonVenezia = false;
+            if (_tabType == TabType.INTRAUTERINE)
+            {
+                IntrauterineApplicatorType intrauterineApplicatorType = selectedItrauterineApplicatorType();
+                if (intrauterineApplicatorType == IntrauterineApplicatorType.RINGAPPLIKATOR ||
+                    intrauterineApplicatorType == IntrauterineApplicatorType.VENEZIA ||
+                    intrauterineApplicatorType == IntrauterineApplicatorType.VENEZIA_M_MATRIS)
+                {
+                    useTimeEpsilonVenezia = true;
+                }
+
+            }
+            return useTimeEpsilonVenezia;
         }
 
         public DataTable treatmentAndTccPlanDataTable()
@@ -921,7 +939,8 @@ namespace WpfApp1
                     {
                         dataRow[3] = "";
                     }
-                    if (addVarning(specifications.TimeEpsilon, dataRow[2].ToString(), dataRow[3].ToString()))
+                    decimal timeEpsilon = useTimeEpsilonVenezia() ? specifications.TimeEpsilonVenezia : specifications.TimeEpsilon;
+                    if (addVarning(timeEpsilon, dataRow[2].ToString(), dataRow[3].ToString()))
                     {
                         dataRow[4] = "?";
                     }
@@ -1070,7 +1089,6 @@ namespace WpfApp1
                 }
             }
         }
-
 
         private void BtnCheck_Click(object sender, RoutedEventArgs e)
         {
