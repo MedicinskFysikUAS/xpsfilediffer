@@ -823,7 +823,7 @@ namespace WpfApp1
             }
             else if (applicatorType == IntrauterineApplicatorType.MCVC)
             {
-                applicatorString = "M";
+                applicatorString = "MCVC";
             }
             return applicatorString;
         }
