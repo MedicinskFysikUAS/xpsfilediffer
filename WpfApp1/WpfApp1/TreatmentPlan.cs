@@ -641,8 +641,11 @@ namespace WpfApp1
             if (_stringExtractor.getIndexOnPageForStartWithStringFromIndex(page, startIndex, "Source position separation (mm):") != -1)
             {
                 return _stringExtractor.getIndexOnPageForStartWithStringFromIndex(page, startIndex, "Source position separation (mm):");
+            } 
+            else if (_stringExtractor.getIndexOnPageForStartWithStringFromIndex(page, startIndex, "Signed for approval") != -1)
+            {
+                return _stringExtractor.getIndexOnPageForStartWithStringFromIndex(page, startIndex, "Signed for approval");
             }
-            else
             {
                 return -1;
             }
@@ -1312,14 +1315,18 @@ namespace WpfApp1
                         liveCatheter.setPositonTimePairs(positonTimePairs);
                         if (skipNoActivePositions)
                         {
-                            if (positonTimePairs.Count != 0)
+                            if (positonTimePairs.Count != 0 ||
+                                liveCatheter.ChannelLength != -1)
                             {
                                 liveCatheters.Add(liveCatheter);
                             }
                         }
                         else
                         {
-                            liveCatheters.Add(liveCatheter);
+                            if (liveCatheter.ChannelLength != -1)
+                            {
+                                liveCatheters.Add(liveCatheter);
+                            }
                         }
                         catheterNumberCounter++;
                         currentIndex = endTableIndex;
