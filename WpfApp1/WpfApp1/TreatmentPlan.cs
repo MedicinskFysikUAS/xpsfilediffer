@@ -589,7 +589,13 @@ namespace WpfApp1
             }
         }
 
-        public int getIntrauterineCatheterTableEndIndex(List<string> page, int startIndex)
+        public bool pageEndsWithContinued(List<string> page, int startIndex)
+        {
+            return _stringExtractor.getIndexOnPageForStartWithStringFromIndex(page, startIndex, "Offset (mm):") == -1 &&
+                _stringExtractor.getIndexOnPageForSearchedStringFromIndex(page, startIndex, "Continued") != -1;
+        }
+
+    public int getIntrauterineCatheterTableEndIndex(List<string> page, int startIndex)
         {
             if (_stringExtractor.getIndexOnPageForStartWithStringFromIndex(page, startIndex, "Offset (mm):") != -1)
             {
@@ -1295,6 +1301,7 @@ namespace WpfApp1
                         LiveCatheter liveCatheter = new LiveCatheter();
                         startTableIndex = offsetIndex;
                         endTableIndex = getIntrauterineCatheterTableEndIndex(page, startTableIndex + 1);
+                        bool pageEndsWithCont = pageEndsWithContinued(page, startTableIndex + 1);
                         List<string> allValues = _stringExtractor.allValuesInInterval(page, startTableIndex, endTableIndex);
                         List<List<string>> catheterTableLines = _stringExtractor.nColumnsRowsInInterval(6, allValues);
                         List<Tuple<string, string>> positonTimePairs = new List<Tuple<string, string>>();
@@ -1315,7 +1322,7 @@ namespace WpfApp1
                         liveCatheter.setPositonTimePairs(positonTimePairs);
                         if (skipNoActivePositions)
                         {
-                            if (positonTimePairs.Count != 0 ||
+                            if (positonTimePairs.Count != 0 &&
                                 liveCatheter.ChannelLength != -1)
                             {
                                 liveCatheters.Add(liveCatheter);
@@ -1328,7 +1335,10 @@ namespace WpfApp1
                                 liveCatheters.Add(liveCatheter);
                             }
                         }
-                        catheterNumberCounter++;
+                        if (!pageEndsWithCont)
+                        {
+                            catheterNumberCounter++;
+                        }
                         currentIndex = endTableIndex;
                     }
                     else
@@ -1337,7 +1347,25 @@ namespace WpfApp1
                     }
                 }
             }
-            return liveCatheters;
+            List<LiveCatheter> mergedLiveCatheters = new List<LiveCatheter>();
+            for (int i = 0; i < liveCatheters.Count; i++)
+            {
+                if (i < liveCatheters.Count - 1 &&
+                    liveCatheters[i].catheterNumber() == liveCatheters[i + 1].catheterNumber())
+                {
+                    LiveCatheter liveCatheter = new LiveCatheter();
+                    liveCatheter = liveCatheters[i];
+                    liveCatheter.appendPositionTimePairs(liveCatheters[i + 1].positonTimePairs());
+                    mergedLiveCatheters.Add(liveCatheter);
+                    i++;
+                }
+                else
+                {
+                    mergedLiveCatheters.Add(liveCatheters[i]);
+                }
+            }
+
+            return mergedLiveCatheters;
         }
 
 
