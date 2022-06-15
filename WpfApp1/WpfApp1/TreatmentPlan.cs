@@ -5,6 +5,7 @@ using System.Text;
 using System.Windows.Controls;
 using System.Globalization;
 using System.Linq;
+using System.Diagnostics;
 
 namespace WpfApp1
 {
@@ -633,7 +634,7 @@ namespace WpfApp1
                 }
                 else
                 {
-                    return _stringExtractor.getIndexOnPageForSearchedStringFromIndex(page, startIndex, "P1") - 8;
+                    return _stringExtractor.getIndexOnPageForSearchedStringFromIndex(page, startIndex, "P1") - 8;// TODO: This is wrong for some patients!!
                 }
             }
             else
@@ -880,7 +881,8 @@ namespace WpfApp1
                         LiveCatheter liveCatheter = new LiveCatheter();
                         startTableIndex = offsetIndex;
                         endTableIndex = getIntrauterineSourcePositionsTableEndIndex(page, startTableIndex + 1);
-                        List<string> allValues = _stringExtractor.allValuesInInterval(page, startTableIndex + 15, endTableIndex - 2);
+                        //List<string> allValues = _stringExtractor.allValuesInInterval(page, startTableIndex + 15, endTableIndex - 2);
+                        List<string> allValues = _stringExtractor.allValuesInInterval(page, startTableIndex + 14, endTableIndex - 2);
                         List<string> catheterAndCannels = new List<string>();
                         _intrauterineCatheters.Clear();
                         int counter = 1;
@@ -895,6 +897,9 @@ namespace WpfApp1
                                 }
                                 else
                                 {
+                                    // Debug
+                                    Trace.WriteLine(allValues[i]);
+                                    // end
                                     int from = 0;
                                     int to = allValues[i].IndexOf("(");
                                     string lengthString = allValues[i].Substring(from, to).Trim();
