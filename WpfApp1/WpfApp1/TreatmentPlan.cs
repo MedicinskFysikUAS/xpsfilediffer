@@ -349,11 +349,15 @@ namespace WpfApp1
             }
             else if (_tabType == TabType.INTRAUTERINE)
             {
-                pageIndex = 2;
+                pageIndex = 1;
                 stringValue = _stringExtractor.getStringAfterStartWithSearchString(_pageList[pageIndex], "Total treatment time (sec.):");
                 if (stringValue.Length == 0)
                 {
-                    stringValue = _stringExtractor.getStringAfterStartWithSearchString(_pageList[3], "Total treatment time (sec.):");
+                    stringValue = _stringExtractor.getStringAfterStartWithSearchString(_pageList[pageIndex + 1], "Total treatment time (sec.):");
+                }
+                if (stringValue.Length == 0)
+                {
+                    stringValue = _stringExtractor.getStringAfterStartWithSearchString(_pageList[pageIndex + 2], "Total treatment time (sec.):");
                 }
             }
             return stringValue;
@@ -598,6 +602,8 @@ namespace WpfApp1
 
     public int getIntrauterineCatheterTableEndIndex(List<string> page, int startIndex)
         {
+            int nColumnsInPatientPointsTable = 6;
+            int nStepsBack = nColumnsInPatientPointsTable + 1;
             if (_stringExtractor.getIndexOnPageForStartWithStringFromIndex(page, startIndex, "Offset (mm):") != -1)
             {
                 return _stringExtractor.getIndexOnPageForStartWithStringFromIndex(page, startIndex, "Offset (mm):");
@@ -622,7 +628,8 @@ namespace WpfApp1
             else if (_stringExtractor.getIndexOnPageForSearchedStringFromIndex(page, startIndex, "Signed for approval") == -1 &&
                 _stringExtractor.getIndexOnPageForSearchedStringFromIndex(page, startIndex, "P1") != -1)
             {
-                return _stringExtractor.getIndexOnPageForSearchedStringFromIndex(page, startIndex, "P1") - 8;
+                return _stringExtractor.getIndexOnPageForSearchedStringFromIndex(page, startIndex, "P1") -
+                    nStepsBack;
             }
             else if (_stringExtractor.getIndexOnPageForSearchedStringFromIndex(page, startIndex, "Signed for approval") != -1 &&
                 _stringExtractor.getIndexOnPageForSearchedStringFromIndex(page, startIndex, "P1") != -1)
@@ -634,7 +641,8 @@ namespace WpfApp1
                 }
                 else
                 {
-                    return _stringExtractor.getIndexOnPageForSearchedStringFromIndex(page, startIndex, "P1") - 8;// TODO: This is wrong for some patients!!
+                    return _stringExtractor.getIndexOnPageForSearchedStringFromIndex(page, startIndex, "P1") -
+                        nStepsBack;
                 }
             }
             else
