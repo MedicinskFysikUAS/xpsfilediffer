@@ -27,10 +27,19 @@ namespace WpfApp1
         public decimal PtvVolume()
         {
             int pageIndex = 0;
-            string stringValue = _stringExtractor.getValueBetweenSearchStrings(_pageList[pageIndex], "PTV (CTV1):V =", "mm");
+            string stringValue = _stringExtractor.getValueBetweenSearchStringsUsingContains(_pageList[pageIndex], "(CTV1):V =", "mm");
+            if (stringValue.Length == 0)
+            {
+                stringValue = _stringExtractor.getValueBetweenSearchStringsUsingContains(_pageList[pageIndex], "(CTV2):V =", "mm");
+            }
             if (stringValue.Contains('.'))
             {
                 stringValue = stringValue.Replace('.', ',');
+                decimal number;
+                if (!Decimal.TryParse(stringValue, out number))
+                {
+                    stringValue = "-1.0";
+                }
             }
             return Convert.ToDecimal(stringValue);
         }

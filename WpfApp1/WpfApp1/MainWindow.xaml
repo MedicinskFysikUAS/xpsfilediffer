@@ -158,6 +158,7 @@
         <Label x:Name="resultSummaryLabel" Content="label" HorizontalAlignment="Left" Margin="152,565,0,0" VerticalAlignment="Top" Width="124" Grid.Column="1" Height="29"/>
         <Button x:Name="catheterInfoButton" Click="catheterInfo_Click" Content="KateterInfo" Grid.Column="2" HorizontalAlignment="Left" Margin="65,565,0,0" VerticalAlignment="Top" Height="29" Grid.ColumnSpan="2" Width="75"/>
         <Label Content="Label" Grid.Column="4" HorizontalAlignment="Left" Margin="210,24,0,0" VerticalAlignment="Top"/>
+        <ComboBox x:Name="applicatorDiameterComboBoxNr2" HorizontalAlignment="Left" Margin="244,152,0,0" VerticalAlignment="Top" Width="61" Grid.Column="1"/>
 
 
     </Grid>

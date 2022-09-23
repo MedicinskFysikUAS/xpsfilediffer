@@ -71,6 +71,22 @@ namespace WpfApp1
             return stringValue;
         }
 
+        public string getValueBetweenSearchStringsUsingContains(List<string> stringsOnPage, string startString, string endString)
+        {
+            int foundIndex = stringsOnPage.FindIndex(x => x.Contains(startString));
+            string stringValue = "";
+            if (foundIndex != -1)
+            {
+                string fullString = stringsOnPage[foundIndex];
+                int startIndex = fullString.IndexOf(startString) + startString.Length;
+                int endIndex = fullString.IndexOf(endString);
+                if (endIndex > startIndex)
+                {
+                    stringValue = fullString.Substring(startIndex, endIndex - startIndex).Trim();
+                }
+            }
+            return stringValue;
+        }
 
         public string getValueAfterSearchString(List<string> stringsOnPage, string searchedString, int stringIndex)
         {
