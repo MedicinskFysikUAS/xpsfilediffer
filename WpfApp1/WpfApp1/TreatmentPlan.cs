@@ -603,7 +603,7 @@ namespace WpfApp1
     public int getIntrauterineCatheterTableEndIndex(List<string> page, int startIndex)
         {
             int nColumnsInPatientPointsTable = 6;
-            int nStepsBack = nColumnsInPatientPointsTable + 1;
+            int nStepsBack = nColumnsInPatientPointsTable - 1;
             if (_stringExtractor.getIndexOnPageForStartWithStringFromIndex(page, startIndex, "Offset (mm):") != -1)
             {
                 return _stringExtractor.getIndexOnPageForStartWithStringFromIndex(page, startIndex, "Offset (mm):");
