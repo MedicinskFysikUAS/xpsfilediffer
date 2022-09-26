@@ -1205,9 +1205,15 @@ namespace WpfApp1
                 }
                 if (isVmix)
                 {
-                    if (item.Contains(searchedDiameterStringNr2))
+                    if (item != "Vmix" && 
+                        item.ToUpper().StartsWith("V") &&
+                        item.Length > 4)
                     {
-                        applicatorDiameterNr2IsOk = true;
+                        string tmp = item.Substring(3, item.Length - 3);
+                        if (item.Substring(3, item.Length - 3).Contains(selectedDiameterNr2))
+                        {
+                            applicatorDiameterNr2IsOk = true;
+                        }   
                     }
                 }
             }
@@ -1284,6 +1290,18 @@ namespace WpfApp1
             string resultString = applicatordiameterIsSet ? "OK" : "Inte OK";
             resultRow.Add(resultString);
             string description = applicatordiameterIsSet ? "Applikatorsdiameter är angiven" : "Applikatorsdiameter är inte angiven";
+            resultRow.Add(description);
+            return resultRow;
+        }
+
+        public List<string> checkApplicatorDiameterNr2IsSet(bool applicatordiameterNrIsSet)
+        {
+            List<string> resultRow = new List<string>();
+            resultRow.Add("Andra applikatorsdiametern är angiven");
+            string resultString = applicatordiameterNrIsSet ? "OK" : "Inte OK";
+            resultRow.Add(resultString);
+            string description = applicatordiameterNrIsSet ? "Den andra applikatorsdiameter är angiven" :
+                "Den andra applikatorsdiameter är inte angiven";
             resultRow.Add(description);
             return resultRow;
         }
@@ -1375,6 +1393,11 @@ namespace WpfApp1
             resultRows.Add(headerResultRow("Info"));
             resultRows.Add(checkApplicatorTypeIsSet(userInputIntrauterine.ApplicatorTypeIsSet));
             resultRows.Add(checkApplicatorDiameterIsSet(userInputIntrauterine.ApplicatorDiameterIsSet));
+            if (_specifications.IntrauterineApplicatorType == IntrauterineApplicatorType.VMIX ||
+                _specifications.IntrauterineApplicatorType == IntrauterineApplicatorType.VMIX_M_MATRIS)
+            {
+                resultRows.Add(checkApplicatorDiameterNr2IsSet(userInputIntrauterine.ApplicatorDiameterNr2IsSet));
+            }
             resultRows.Add(checkFractionDoseIsSet(userInputIntrauterine.FractionDoseIsSet));
             resultRows.Add(checkPlanCodeIsSet(userInputIntrauterine.PlanCodeIsSet));
             resultRows.Add(checkSameSourceIsSet(userInputIntrauterine.SameSourceIsSet));

@@ -132,6 +132,7 @@ namespace WpfApp1
             applicatorTypeComboBox.Items.Add("MCVC");
             applicatorTypeComboBox.Items.Add("Vmix utan matris");
             applicatorTypeComboBox.Items.Add("Vmix med matris");
+            applicatorDiameterComboBoxNr2.Visibility = System.Windows.Visibility.Hidden;
         }
 
         public void initiateSameSourceCombobox()
@@ -280,8 +281,6 @@ namespace WpfApp1
                     applicatorDiameterNr2 = _comboboxApplicatorDiametersNr2[applicatorDiameterComboBoxNr2.SelectedIndex];
                 }
                 _specifications.ApplicatorDiameterNr2 = applicatorDiameterNr2;
-
-
             }
         }
 
@@ -443,6 +442,7 @@ namespace WpfApp1
                 _userInputIntrauterine = new UserInputIntrauterine();
                 _userInputIntrauterine.ApplicatorTypeIsSet = applicatorTypeIsSet();
                 _userInputIntrauterine.ApplicatorDiameterIsSet = applicatorDiameterIsSet();
+                _userInputIntrauterine.ApplicatorDiameterNr2IsSet = applicatorDiameterNr2IsSet();
                 _userInputIntrauterine.FractionDoseIsSet = fractionDoseIsSet();
                 _userInputIntrauterine.PlanCodeIsSet = planCodeIsSetIntrauterine();
                 _userInputIntrauterine.SameSourceIsSet = sameSourceIsSet();
@@ -686,7 +686,8 @@ namespace WpfApp1
                 _resultRows.AddRange(comparator.intrauterineTreatmentPlanResultRows());
             }
 
-            if (intrauterineTypeDiamterAndDoseIsSet() && _treatmentPlanXpsFilePath != null)
+            if ((intrauterineTypeDiamterAndDoseIsSet() && _treatmentPlanXpsFilePath != null) ||
+                    (intrauterineTypeDiamterNr2AndDoseIsSet() && _treatmentPlanXpsFilePath != null))
             {
                 PageReader treatmentPlanPageReader = new PageReader(_treatmentPlanXpsFilePath);
                 List<List<string>> treatmentPlanPageList = treatmentPlanPageReader.getPages();
@@ -1343,6 +1344,7 @@ namespace WpfApp1
                 _comboboxApplicatorDiameters.Add(30);
                 applicatorDiameterComboBox.Items.Add("34");
                 _comboboxApplicatorDiameters.Add(34);
+                applicatorDiameterComboBoxNr2.Visibility = System.Windows.Visibility.Hidden;
             }
             if (applicatorTypeComboBox.SelectedIndex == 1)
             {
@@ -1352,6 +1354,7 @@ namespace WpfApp1
                 _comboboxApplicatorDiameters.Add(26);
                 applicatorDiameterComboBox.Items.Add("30");
                 _comboboxApplicatorDiameters.Add(30);
+                applicatorDiameterComboBoxNr2.Visibility = System.Windows.Visibility.Hidden;
             }
             if (applicatorTypeComboBox.SelectedIndex == 2)
             {
@@ -1361,6 +1364,7 @@ namespace WpfApp1
                 _comboboxApplicatorDiameters.Add(26);
                 applicatorDiameterComboBox.Items.Add("30");
                 _comboboxApplicatorDiameters.Add(30);
+                applicatorDiameterComboBoxNr2.Visibility = System.Windows.Visibility.Hidden;
             }
             if (applicatorTypeComboBox.SelectedIndex == 3)
             {
@@ -1372,6 +1376,7 @@ namespace WpfApp1
                 _comboboxApplicatorDiameters.Add(35);
                 cylinderDiameterComboBox.Items.Add("40");
                 _comboboxApplicatorDiameters.Add(40);
+                applicatorDiameterComboBoxNr2.Visibility = System.Windows.Visibility.Hidden;
             }
             if (applicatorTypeComboBox.SelectedIndex == 4)
             {
@@ -1388,7 +1393,7 @@ namespace WpfApp1
                 _comboboxApplicatorDiametersNr2.Add(26);
                 applicatorDiameterComboBoxNr2.Items.Add("30");
                 _comboboxApplicatorDiametersNr2.Add(30);
-                // TODO Make comboboxApplicatorDiametersNr2 visable
+                applicatorDiameterComboBoxNr2.Visibility = System.Windows.Visibility.Visible;
             }
             if (applicatorTypeComboBox.SelectedIndex == 5)
             {
@@ -1405,7 +1410,7 @@ namespace WpfApp1
                 _comboboxApplicatorDiametersNr2.Add(26);
                 applicatorDiameterComboBoxNr2.Items.Add("30");
                 _comboboxApplicatorDiametersNr2.Add(30);
-                // TODO Make comboboxApplicatorDiametersNr2 visable
+                applicatorDiameterComboBoxNr2.Visibility = System.Windows.Visibility.Visible;
             }
         }
 
