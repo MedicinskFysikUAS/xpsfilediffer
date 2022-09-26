@@ -31,6 +31,7 @@ namespace WpfApp1
         private string _planCodeIntrauterine;
         private IntrauterineApplicatorType _intrauterineApplicatorType;
         private int _applicatorDiameter;
+        private int _applicatorDiameterNr2;
         private decimal _expectedLengthPipeCatheter = 1300.0m;
         private decimal _expectedLengthNonPipeCatheter = 1288.0m;
         private decimal _expectedLengthNonPipeCatheterAbove29 = 1234.0m;
@@ -62,5 +63,6 @@ namespace WpfApp1
         public decimal RelativeTimeEpsilonÏntrauterine { get => _relativeTimeEpsilonÏntrauterine; set => _relativeTimeEpsilonÏntrauterine = value; }
         public decimal TimeEpsilonVenezia { get => _timeEpsilonVenezia; set => _timeEpsilonVenezia = value; }
         public decimal ExpectedLengthNonPipeCatheterAbove29 { get => _expectedLengthNonPipeCatheterAbove29; set => _expectedLengthNonPipeCatheterAbove29 = value; }
+        public int ApplicatorDiameterNr2 { get => _applicatorDiameterNr2; set => _applicatorDiameterNr2 = value; }
     }
 }

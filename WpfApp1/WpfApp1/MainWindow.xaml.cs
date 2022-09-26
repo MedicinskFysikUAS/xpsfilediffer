@@ -44,6 +44,7 @@ namespace WpfApp1
         private TabType _tabType;
         private List<int> _comboboxDiameters;
         private List<int> _comboboxApplicatorDiameters;
+        private List<int> _comboboxApplicatorDiametersNr2;
         private bool _isSameSource;
         private bool _sameSourceSet;
 
@@ -67,6 +68,7 @@ namespace WpfApp1
             initiateApplicatorTypeComboBox();
             _comboboxDiameters = new List<int>();
             _comboboxApplicatorDiameters = new List<int>();
+            _comboboxApplicatorDiametersNr2 = new List<int>();
             initiateSameSourceCombobox();
             // debug
             //PageReader tccPlanPageReader = new PageReader("C:\\work\\git\\xpsfilediffer\\xpsFiles\\A92DTcc.xps");
@@ -128,6 +130,9 @@ namespace WpfApp1
             applicatorTypeComboBox.Items.Add("Venezia utan matris");
             applicatorTypeComboBox.Items.Add("Venezia med matris");
             applicatorTypeComboBox.Items.Add("MCVC");
+            applicatorTypeComboBox.Items.Add("Vmix utan matris");
+            applicatorTypeComboBox.Items.Add("Vmix med matris");
+            applicatorDiameterComboBoxNr2.Visibility = System.Windows.Visibility.Hidden;
         }
 
         public void initiateSameSourceCombobox()
@@ -252,6 +257,14 @@ namespace WpfApp1
                 {
                     intrauterineApplicatorType = IntrauterineApplicatorType.MCVC;
                 }
+                else if (applicatorTypeComboBox.SelectedIndex == 4)
+                {
+                    intrauterineApplicatorType = IntrauterineApplicatorType.VMIX;
+                }
+                else if (applicatorTypeComboBox.SelectedIndex == 5)
+                {
+                    intrauterineApplicatorType = IntrauterineApplicatorType.VMIX_M_MATRIS;
+                }
                 _specifications.IntrauterineApplicatorType = intrauterineApplicatorType;
 
                 int applicatorDiameter = -1;
@@ -261,6 +274,13 @@ namespace WpfApp1
                     applicatorDiameter = _comboboxApplicatorDiameters[applicatorDiameterComboBox.SelectedIndex];
                 }
                 _specifications.ApplicatorDiameter = applicatorDiameter;
+                int applicatorDiameterNr2 = -1;
+                if (applicatorDiameterComboBoxNr2.SelectedIndex != -1 &&
+                    applicatorDiameterComboBoxNr2.SelectedIndex < _comboboxApplicatorDiametersNr2.Count)
+                {
+                    applicatorDiameterNr2 = _comboboxApplicatorDiametersNr2[applicatorDiameterComboBoxNr2.SelectedIndex];
+                }
+                _specifications.ApplicatorDiameterNr2 = applicatorDiameterNr2;
             }
         }
 
@@ -310,6 +330,13 @@ namespace WpfApp1
         {
             bool typIsSet = applicatorTypeComboBox.SelectedIndex != -1;
             bool diameterIsSet = applicatorDiameterComboBox.SelectedIndex != -1;
+            return (typIsSet && diameterIsSet && intrauterinePrescribedDoseText.Text.Length > 0);
+        }
+
+        public bool intrauterineTypeDiamterNr2AndDoseIsSet()
+        {
+            bool typIsSet = applicatorTypeComboBox.SelectedIndex != -1;
+            bool diameterIsSet = applicatorDiameterComboBoxNr2.SelectedIndex != -1;
             return (typIsSet && diameterIsSet && intrauterinePrescribedDoseText.Text.Length > 0);
         }
 
@@ -375,6 +402,11 @@ namespace WpfApp1
             return applicatorDiameterComboBox.SelectedIndex != -1;
         }
 
+        private bool applicatorDiameterNr2IsSet()
+        {
+            return applicatorDiameterComboBoxNr2.SelectedIndex != -1;
+        }
+
         private bool fractionDoseIsSet()
         {
             return intrauterinePrescribedDoseText.Text.Length > 0;
@@ -410,6 +442,7 @@ namespace WpfApp1
                 _userInputIntrauterine = new UserInputIntrauterine();
                 _userInputIntrauterine.ApplicatorTypeIsSet = applicatorTypeIsSet();
                 _userInputIntrauterine.ApplicatorDiameterIsSet = applicatorDiameterIsSet();
+                _userInputIntrauterine.ApplicatorDiameterNr2IsSet = applicatorDiameterNr2IsSet();
                 _userInputIntrauterine.FractionDoseIsSet = fractionDoseIsSet();
                 _userInputIntrauterine.PlanCodeIsSet = planCodeIsSetIntrauterine();
                 _userInputIntrauterine.SameSourceIsSet = sameSourceIsSet();
@@ -653,7 +686,8 @@ namespace WpfApp1
                 _resultRows.AddRange(comparator.intrauterineTreatmentPlanResultRows());
             }
 
-            if (intrauterineTypeDiamterAndDoseIsSet() && _treatmentPlanXpsFilePath != null)
+            if ((intrauterineTypeDiamterAndDoseIsSet() && _treatmentPlanXpsFilePath != null) ||
+                    (intrauterineTypeDiamterNr2AndDoseIsSet() && _treatmentPlanXpsFilePath != null))
             {
                 PageReader treatmentPlanPageReader = new PageReader(_treatmentPlanXpsFilePath);
                 List<List<string>> treatmentPlanPageList = treatmentPlanPageReader.getPages();
@@ -1294,11 +1328,14 @@ namespace WpfApp1
         private void applicatorTypeComboBox_DropDownClosed(object sender, EventArgs e)
         {
             applicatorDiameterComboBox.Items.Clear();
+            applicatorDiameterComboBoxNr2.Items.Clear();
             _comboboxApplicatorDiameters.Clear();
             // "Ringapplikator 0
             // "Venezia utan matris" 1
             // "Venezia med matris" 2
             // "MCVC" 3
+            // "VMIX utan" 
+            // "VMIX med" 
             if (applicatorTypeComboBox.SelectedIndex == 0)
             {
                 applicatorDiameterComboBox.Items.Add("26");
@@ -1307,6 +1344,7 @@ namespace WpfApp1
                 _comboboxApplicatorDiameters.Add(30);
                 applicatorDiameterComboBox.Items.Add("34");
                 _comboboxApplicatorDiameters.Add(34);
+                applicatorDiameterComboBoxNr2.Visibility = System.Windows.Visibility.Hidden;
             }
             if (applicatorTypeComboBox.SelectedIndex == 1)
             {
@@ -1316,6 +1354,7 @@ namespace WpfApp1
                 _comboboxApplicatorDiameters.Add(26);
                 applicatorDiameterComboBox.Items.Add("30");
                 _comboboxApplicatorDiameters.Add(30);
+                applicatorDiameterComboBoxNr2.Visibility = System.Windows.Visibility.Hidden;
             }
             if (applicatorTypeComboBox.SelectedIndex == 2)
             {
@@ -1325,6 +1364,7 @@ namespace WpfApp1
                 _comboboxApplicatorDiameters.Add(26);
                 applicatorDiameterComboBox.Items.Add("30");
                 _comboboxApplicatorDiameters.Add(30);
+                applicatorDiameterComboBoxNr2.Visibility = System.Windows.Visibility.Hidden;
             }
             if (applicatorTypeComboBox.SelectedIndex == 3)
             {
@@ -1336,6 +1376,41 @@ namespace WpfApp1
                 _comboboxApplicatorDiameters.Add(35);
                 cylinderDiameterComboBox.Items.Add("40");
                 _comboboxApplicatorDiameters.Add(40);
+                applicatorDiameterComboBoxNr2.Visibility = System.Windows.Visibility.Hidden;
+            }
+            if (applicatorTypeComboBox.SelectedIndex == 4)
+            {
+                applicatorDiameterComboBox.Items.Add("22");
+                _comboboxApplicatorDiameters.Add(22);
+                applicatorDiameterComboBox.Items.Add("26");
+                _comboboxApplicatorDiameters.Add(26);
+                applicatorDiameterComboBox.Items.Add("30");
+                _comboboxApplicatorDiameters.Add(30);
+
+                applicatorDiameterComboBoxNr2.Items.Add("22");
+                _comboboxApplicatorDiametersNr2.Add(22);
+                applicatorDiameterComboBoxNr2.Items.Add("26");
+                _comboboxApplicatorDiametersNr2.Add(26);
+                applicatorDiameterComboBoxNr2.Items.Add("30");
+                _comboboxApplicatorDiametersNr2.Add(30);
+                applicatorDiameterComboBoxNr2.Visibility = System.Windows.Visibility.Visible;
+            }
+            if (applicatorTypeComboBox.SelectedIndex == 5)
+            {
+                applicatorDiameterComboBox.Items.Add("22");
+                _comboboxApplicatorDiameters.Add(22);
+                applicatorDiameterComboBox.Items.Add("26");
+                _comboboxApplicatorDiameters.Add(26);
+                applicatorDiameterComboBox.Items.Add("30");
+                _comboboxApplicatorDiameters.Add(30);
+
+                applicatorDiameterComboBoxNr2.Items.Add("22");
+                _comboboxApplicatorDiametersNr2.Add(22);
+                applicatorDiameterComboBoxNr2.Items.Add("26");
+                _comboboxApplicatorDiametersNr2.Add(26);
+                applicatorDiameterComboBoxNr2.Items.Add("30");
+                _comboboxApplicatorDiametersNr2.Add(30);
+                applicatorDiameterComboBoxNr2.Visibility = System.Windows.Visibility.Visible;
             }
         }
 
@@ -1356,6 +1431,14 @@ namespace WpfApp1
             else if (applicatorTypeComboBox.SelectedIndex == 3)
             {
                 return IntrauterineApplicatorType.MCVC;
+            }
+            else if (applicatorTypeComboBox.SelectedIndex == 4)
+            {
+                return IntrauterineApplicatorType.VMIX;
+            }
+            else if (applicatorTypeComboBox.SelectedIndex == 5)
+            {
+                return IntrauterineApplicatorType.VMIX_M_MATRIS;
             }
             else 
             {

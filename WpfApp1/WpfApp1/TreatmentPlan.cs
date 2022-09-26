@@ -414,7 +414,10 @@ namespace WpfApp1
                 else
                 {
                     setCatheterToChannelNumberAndLengths(_intrauterineApplicatorType);
-                    if (_intrauterineApplicatorType == IntrauterineApplicatorType.VENEZIA)
+                    if (_intrauterineApplicatorType == IntrauterineApplicatorType.VENEZIA ||
+                        _intrauterineApplicatorType == IntrauterineApplicatorType.VENEZIA_M_MATRIS ||
+                        _intrauterineApplicatorType == IntrauterineApplicatorType.VMIX ||
+                        _intrauterineApplicatorType == IntrauterineApplicatorType.VMIX_M_MATRIS)
                     {
                         return intrauterineLiveCathetersVenezia(skipNoActivePositions).OrderBy(o => o.catheterNumber()).ToList();
                     }
@@ -603,7 +606,7 @@ namespace WpfApp1
     public int getIntrauterineCatheterTableEndIndex(List<string> page, int startIndex)
         {
             int nColumnsInPatientPointsTable = 6;
-            int nStepsBack = nColumnsInPatientPointsTable + 1;
+            int nStepsBack = nColumnsInPatientPointsTable - 1;
             if (_stringExtractor.getIndexOnPageForStartWithStringFromIndex(page, startIndex, "Offset (mm):") != -1)
             {
                 return _stringExtractor.getIndexOnPageForStartWithStringFromIndex(page, startIndex, "Offset (mm):");
@@ -831,11 +834,10 @@ namespace WpfApp1
             {
                 applicatorString = "R";
             }
-            else if (applicatorType == IntrauterineApplicatorType.VENEZIA)
-            {
-                applicatorString = "V";
-            }
-            else if (applicatorType == IntrauterineApplicatorType.VENEZIA_M_MATRIS)
+            else if (applicatorType == IntrauterineApplicatorType.VENEZIA ||
+                applicatorType == IntrauterineApplicatorType.VENEZIA_M_MATRIS ||
+                applicatorType == IntrauterineApplicatorType.VMIX ||
+                applicatorType == IntrauterineApplicatorType.VMIX_M_MATRIS)
             {
                 applicatorString = "V";
             }
@@ -857,12 +859,14 @@ namespace WpfApp1
         {
             if (intrauterineApplicatorType == IntrauterineApplicatorType.MCVC ||
                 intrauterineApplicatorType == IntrauterineApplicatorType.RINGAPPLIKATOR ||
-                intrauterineApplicatorType == IntrauterineApplicatorType.VENEZIA_M_MATRIS)
+                intrauterineApplicatorType == IntrauterineApplicatorType.VENEZIA_M_MATRIS ||
+                intrauterineApplicatorType == IntrauterineApplicatorType.VMIX_M_MATRIS)
             {
                 setCatheterToChannelNumberAndLengthsMcvcRingVeneziaMMatris();
                 return;
             }
-            else if (intrauterineApplicatorType == IntrauterineApplicatorType.VENEZIA)
+            else if (intrauterineApplicatorType == IntrauterineApplicatorType.VENEZIA ||
+                intrauterineApplicatorType == IntrauterineApplicatorType.VMIX)
             {
                 setCatheterToChannelNumberAndLengthsVenezia();
                 return;

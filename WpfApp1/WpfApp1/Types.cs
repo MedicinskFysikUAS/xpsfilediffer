@@ -21,7 +21,9 @@
         VENEZIA = 1,
         VENEZIA_M_MATRIS = 2,
         MCVC = 3,
-        UNKNOWN = 4
+        VMIX = 4,
+        VMIX_M_MATRIS = 5, 
+        UNKNOWN = 6
     }
     //applicatorDiameterComboBox
 
