@@ -191,7 +191,6 @@ namespace WpfApp1
                                             readCatheterPositionsAtY = "";
                                             channelNumber = "";
                                         }
-
                                         string unicodeString = (_pageContentReader.
                                           GetAttribute("UnicodeString"));
 
@@ -275,6 +274,10 @@ namespace WpfApp1
             else if ((originXint > ((startOrigin + deltaWidth * 2) - margin)) && (originXint < ((startOrigin + deltaWidth * 2) + margin)))
             {
                 return 2;
+            } // Special case: 
+            else if ((originXint > ((startOrigin + deltaWidth * 3) - margin - 3)) && (originXint < ((startOrigin + deltaWidth * 3) + margin)))
+            {
+                return 3;
             }
             else if ((originXint > ((startOrigin + deltaWidth * 3) - margin)) && (originXint < ((startOrigin + deltaWidth * 3) + margin)))
             {

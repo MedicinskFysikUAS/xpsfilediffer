@@ -185,7 +185,9 @@ namespace WpfApp1
         {
             int pageIndex = 0;
             string dateString = _stringExtractor.getValueFromSpaceSeparetedString(_pageList[pageIndex], "Status set at:", 0);
-            return toStdDateStringInTreatmentPlan(dateString);
+            string timeString = _stringExtractor.getValueFromSpaceSeparetedString(_pageList[pageIndex], "Status set at:", 1);
+            // string pattern3 = "yyyy-MM-dd HH:mm:ss";
+            return toStdDateStringInTreatmentPlan(dateString + " " + timeString);
         }
 
         public string cylindricStatusSetDateTime()
@@ -288,7 +290,7 @@ namespace WpfApp1
             string stringValue = "";
             if (_tabType == TabType.PROSTATE)
             {
-                stringValue = _stringExtractor.getValueFromSpaceSeparetedString(_pageList[pageIndex], "Planned Source Strength:", 0);
+                stringValue = _stringExtractor.getValueFromSpaceSeparetedString(_pageList[pageIndex], "Treatment Source Strength:", 0);
             }
             else if (_tabType == TabType.CYLINDER ||
                 _tabType == TabType.INTRAUTERINE)
