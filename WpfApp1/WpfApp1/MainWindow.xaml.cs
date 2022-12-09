@@ -774,7 +774,7 @@ namespace WpfApp1
                 }
             }
 
-                DataColumn testCase = new DataColumn("Test", typeof(string));
+            DataColumn testCase = new DataColumn("Test", typeof(string));
             DataColumn testResult = new DataColumn("Result", typeof(string));
             DataColumn resultDescripton = new DataColumn("Beskrivning", typeof(string));
             DataTable dataTable = new DataTable();
@@ -1126,17 +1126,24 @@ namespace WpfApp1
 
         private void BtnCheck_Click(object sender, RoutedEventArgs e)
         {
-            updateSpecifications();
-            setProstateCalculationsVisable(false);
-            calculateLengthAndFreeLength();
-            setCylinderCalculationsVisable(false);
-            // TODO:
-            //setIntrauterineCalculationsVisable(false)
-            updateInputFilePaths();
-            updateSameSourceSelected();
-            if (buildResultDataGrid())
+            try
             {
-                updateCatheters();
+                updateSpecifications();
+                setProstateCalculationsVisable(false);
+                calculateLengthAndFreeLength();
+                setCylinderCalculationsVisable(false);
+                // TODO:
+                //setIntrauterineCalculationsVisable(false)
+                updateInputFilePaths();
+                updateSameSourceSelected();
+                if (buildResultDataGrid())
+                {
+                    updateCatheters();
+                }
+            }
+            catch (Exception)
+            {
+                MessageBox.Show("Ett fel uppstod som inte programmet inte kunde hantera.", "Fel", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
 
