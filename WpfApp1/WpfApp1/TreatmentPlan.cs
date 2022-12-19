@@ -1212,6 +1212,11 @@ namespace WpfApp1
                     if (offsetIndex != -1)
                     {
                         string offsetString  = page[offsetIndex];
+                        // Ugly hack to handle catheters with no dwell positions:
+                        if (offsetString.Contains("No active dwell positions"))
+                        {
+                            offsetString = "Offset (mm): -9999.99";
+                        }
                         int startIndex = page[offsetIndex].IndexOf(':') + 1;
                         int length = offsetString.Length - startIndex;
                         string offsetValueString = offsetString.Substring(startIndex, length);
