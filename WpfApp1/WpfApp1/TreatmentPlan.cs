@@ -1036,7 +1036,6 @@ namespace WpfApp1
                                         _catheterWithNamLengths.Add(lengthString);
                                         IntrauterineCatheter intrauterineCatheter = new IntrauterineCatheter();
                                         intrauterineCatheter.CatheterNumber = counter.ToString();
-                                        //intrauterineCatheter.IntrauterineCatheterType = IntrauterineCatheterType.MODEL;
                                         intrauterineCatheter.IntrauterineCatheterType = IntrauterineCatheterType.MODEL;
                                         intrauterineCatheter.CatheterLength = _stringExtractor.decimalStringToDecimal(lengthString);
                                         _intrauterineCatheters.Add(intrauterineCatheter);
@@ -1083,12 +1082,6 @@ namespace WpfApp1
                     }
                 }
             }
-        }
-
-        public List<string> catheterLengths()
-        {
-            setCatheterToChannelNumberAndLengths(_intrauterineApplicatorType);
-            return _catheterLengths;
         }
               
         public List<IntrauterineCatheter> intrauterineCatheters()
@@ -1155,16 +1148,9 @@ namespace WpfApp1
                     if (offsetIndex != -1)
                     {
                         string offsetString  = page[offsetIndex];
-                        // Ugly hack to handle catheters with no dwell positions:
-                        //if (offsetString.Contains("No active dwell positions"))
-                        //{
-                        //    offsetString = "Offset (mm): -9999.99";
-                        //}
                         int startIndex = page[offsetIndex].IndexOf(':') + 1;
                         int length = offsetString.Length - startIndex;
                         string offsetValueString = offsetString.Substring(startIndex, length);
-                        //decimal offsetValue;
-                        //offsetValue = _stringExtractor.decimalStringToDecimal(offsetValueString);
                         Tuple<decimal, bool> offsetValueHasNoActivePair = getOffsetValueHasNoActivePair(offsetString, offsetIndex, page);
                         decimal offsetValue = offsetValueHasNoActivePair.Item1;
                         startTableIndex = offsetIndex;
@@ -1177,7 +1163,6 @@ namespace WpfApp1
                         {
                             endTableIndex = startTableIndex;
                         }
-
                         List<string> allValues = _stringExtractor.allValuesInInterval(page, startTableIndex, endTableIndex);
                         List<List<string>> catheterTableLines = _stringExtractor.nColumnsRowsInInterval(6, allValues);
                         List<Tuple<string, string>> positonTimePairs = new List<Tuple<string, string>>();
@@ -1266,16 +1251,9 @@ namespace WpfApp1
                     if (offsetIndex != -1)
                     {
                         string offsetString = page[offsetIndex];
-                        // Ugly hack to handle catheters with no dwell positions:
-                        //if (offsetString.Contains("No active dwell positions"))
-                        //{
-                        //    offsetString = "Offset (mm): -9999.99";
-                        //}
                         int startIndex = page[offsetIndex].IndexOf(':') + 1;
                         int length = offsetString.Length - startIndex;
                         string offsetValueString = offsetString.Substring(startIndex, length);
-                        //decimal offsetValue;
-                        //offsetValue = _stringExtractor.decimalStringToDecimal(offsetValueString);
                         Tuple<decimal, bool> offsetValueHasNoActivePair = getOffsetValueHasNoActivePair(offsetString, offsetIndex, page);
                         decimal offsetValue = offsetValueHasNoActivePair.Item1;
                         LiveCatheter liveCatheter = new LiveCatheter();
@@ -1353,104 +1331,7 @@ namespace WpfApp1
 
             return mergedLiveCatheters;
         }
-
-        // Original version:
-        public List<LiveCatheter> intrauterineLiveCathetersVeneziaOld(bool skipNoActivePositions = false)
-        {
-            List<LiveCatheter> liveCatheters = new List<LiveCatheter>();
-            int startTableIndex = -1;
-            int endTableIndex = -1;
-            int catheterNumberCounter = 1;
-            foreach (var page in _pageList)
-            {
-                int currentIndex = 0;
-                while (currentIndex != -1)
-                {
-                    int offsetIndex = _stringExtractor.getIndexOnPageForStartWithStringFromIndex(page, currentIndex, "Offset (mm):");
-                    if (offsetIndex != -1)
-                    {
-                        string offsetString = page[offsetIndex];
-                        // Ugly hack to handle catheters with no dwell positions:
-                        if (offsetString.Contains("No active dwell positions"))
-                        {
-                            offsetString = "Offset (mm): -9999.99";
-                        }
-                        int startIndex = page[offsetIndex].IndexOf(':') + 1;
-                        int length = offsetString.Length - startIndex;
-                        string offsetValueString = offsetString.Substring(startIndex, length);
-                        decimal offsetValue;
-                        offsetValue = _stringExtractor.decimalStringToDecimal(offsetValueString);
-                        LiveCatheter liveCatheter = new LiveCatheter();
-                        startTableIndex = offsetIndex;
-                        endTableIndex = getIntrauterineCatheterTableEndIndex(page, startTableIndex + 1);
-                        bool pageEndsWithCont = pageEndsWithContinued(page, startTableIndex + 1);
-                        List<string> allValues = _stringExtractor.allValuesInInterval(page, startTableIndex, endTableIndex);
-                        List<List<string>> catheterTableLines = _stringExtractor.nColumnsRowsInInterval(6, allValues);
-                        List<Tuple<string, string>> positonTimePairs = new List<Tuple<string, string>>();
-                        foreach (var catheterTableLine in catheterTableLines)
-                        {
-                            Tuple<string, string> tuple = new Tuple<string, string>(catheterTableLine[5], catheterTableLine[0]);
-                            positonTimePairs.Add(tuple);
-                        }
-                        int channelNumber = -1;
-                        if (_catheterTochannel.ContainsKey(catheterNumberCounter.ToString()))
-                        {
-                            bool conversionWasOk = Int32.TryParse(_catheterTochannel[catheterNumberCounter.ToString()], out channelNumber);
-                        }
-                        liveCatheter.IsPipe = channelNumberIsPipe(channelNumber);
-                        liveCatheter.ChannelLength = channelLengthFromCatheterNumber(catheterNumberCounter);
-                        liveCatheter.setCatheterNumber(channelNumber);
-                        liveCatheter.setOffsetLength(offsetValue);
-                        liveCatheter.setPositonTimePairs(positonTimePairs);
-                        if (skipNoActivePositions)
-                        {
-                            if (positonTimePairs.Count != 0 &&
-                                liveCatheter.ChannelLength != -1)
-                            {
-                                liveCatheters.Add(liveCatheter);
-                            }
-                        }
-                        else
-                        {
-                            if (liveCatheter.ChannelLength != -1)
-                            {
-                                liveCatheters.Add(liveCatheter);
-                            }
-                        }
-                        if (!pageEndsWithCont)
-                        {
-                            catheterNumberCounter++;
-                        }
-                        currentIndex = endTableIndex;
-                    }
-                    else
-                    {
-                        currentIndex = -1;
-                    }
-                }
-            }
-            List<LiveCatheter> mergedLiveCatheters = new List<LiveCatheter>();
-            for (int i = 0; i < liveCatheters.Count; i++)
-            {
-                if (i < liveCatheters.Count - 1 &&
-                    liveCatheters[i].catheterNumber() == liveCatheters[i + 1].catheterNumber())
-                {
-                    LiveCatheter liveCatheter = new LiveCatheter();
-                    liveCatheter = liveCatheters[i];
-                    liveCatheter.appendPositionTimePairs(liveCatheters[i + 1].positonTimePairs());
-                    mergedLiveCatheters.Add(liveCatheter);
-                    i++;
-                }
-                else
-                {
-                    mergedLiveCatheters.Add(liveCatheters[i]);
-                }
-            }
-
-            return mergedLiveCatheters;
-        }
-
-        // end orig version
-
     }
-}
+
+
+} // Namespace

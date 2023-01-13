@@ -131,11 +131,6 @@ namespace WpfApp1
         {
             StringExtractor stringExtractor = new StringExtractor();
             Calculator calculator = new Calculator();
-            // Debug
-            string tmp1 = _treatmentPlan.calibrationDateTime();
-            string tmp2 = _treatmentPlan.statusSetDateTime();
-            string tmp3 = _tccPlan.realizationDateAndTime();
-            // end
             return inputValue *
                (calculator.decayFactor(stringExtractor.stringToDateTime(_treatmentPlan.calibrationDateTime()),
                stringExtractor.stringToDateTime(_treatmentPlan.statusSetDateTime())) /
@@ -490,21 +485,6 @@ namespace WpfApp1
             return isOk;
         }
 
-        //private int numberOfCatheterWithNoDwellTime()
-        //{
-        //    List<LiveCatheter> liveCatheters = _treatmentPlan.liveCatheters();
-        //    int counter = 0;
-        //    for (int i = 0; i < liveCatheters.Count; i++)
-        //    {
-        //        // Ugly hack to handle catheters with no dwell positions:
-        //        // If No active dwell positions the offset will be set to -9999.99
-        //        if (Math.Abs(liveCatheters[i].offsetLength() + 9999.99m) < 0.001m)
-        //        {
-        //            ++counter;
-        //        }
-        //    }
-        //    return counter;
-        //}
         private bool offsetLengthInPlanIsOk()
         {
             List<LiveCatheter> liveCatheters = _treatmentPlan.liveCatheters();
@@ -535,16 +515,6 @@ namespace WpfApp1
                     if (Math.Abs(liveCatheters[i].offsetLength() + 6.0m) > 0.001m)
                     {
                         return false;
-                        //// Ugly hack to handle catheters with no dwell positions:
-                        //// If No active dwell positions the offset will be set to -9999.99
-                        //if (Math.Abs(liveCatheters[i].offsetLength() + 9999.99m) < 0.001m)
-                        //{
-                        //    return true;
-                        //}
-                        //else
-                        //{
-                        //    return false;
-                        //}
                     }
                 }
             }
@@ -1150,11 +1120,6 @@ namespace WpfApp1
             string resultString = result ? "OK" : "Inte OK";
             resultRow.Add(resultString);
             string description = result ? "Alla nålar har korrekt offset." : "Alla nålar har inte korrekt offset.";
-            //if (numberOfCatheterWithNoDwellTime() > 0)
-            //{
-            //    string tmp = numberOfCatheterWithNoDwellTime().ToString();
-            //    description += " Antal nålar utan källpositioner var: " + tmp;
-            //}
             resultRow.Add(description);
             return resultRow;
         }
