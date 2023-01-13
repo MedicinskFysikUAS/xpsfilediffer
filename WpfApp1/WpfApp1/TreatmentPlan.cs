@@ -879,6 +879,35 @@ namespace WpfApp1
             }
         }
 
+        private Tuple<int,int> getPosAndmmIndex(List<string> page)
+        {
+            int rowIndexCount = 0;
+            int posIndex = -1;
+            int mmIndex = -1;
+            int itemsInPosRow = -1;
+            foreach (var row in page)
+            {
+                if (row.Contains("(pos)"))
+                {
+                    posIndex = rowIndexCount;
+                    itemsInPosRow = row.Count() - 1; // pos vs mm
+                }
+                if (row.Contains("mm") && 
+                    row.Count() == itemsInPosRow)
+                {
+                    mmIndex = rowIndexCount;
+                }
+                ++rowIndexCount;
+            }
+            return Tuple.Create(posIndex, mmIndex);
+        }
+
+        private List<string> allSourcePositionsValues(List<string> page)
+        {
+            Tuple<int, int> posAndmmIndex = getPosAndmmIndex(page);
+            return page.GetRange(posAndmmIndex.Item1, (posAndmmIndex.Item2 - posAndmmIndex.Item1));
+        }
+
         private void setCatheterToChannelNumberAndLengthsVenezia()
         {
             _catheterTochannel.Clear();
@@ -892,11 +921,10 @@ namespace WpfApp1
                     int offsetIndex = _stringExtractor.getIndexOnPageForStartWithStringFromIndex(page, currentIndex, "Material info:");
                     if (offsetIndex != -1)
                     {
+                        List<string> allValues = allSourcePositionsValues(page);
                         LiveCatheter liveCatheter = new LiveCatheter();
                         startTableIndex = offsetIndex;
                         endTableIndex = getIntrauterineSourcePositionsTableEndIndex(page, startTableIndex + 1);
-                        //List<string> allValues = _stringExtractor.allValuesInInterval(page, startTableIndex + 15, endTableIndex - 2);
-                        List<string> allValues = _stringExtractor.allValuesInInterval(page, startTableIndex + 14, endTableIndex - 2);
                         List<string> catheterAndCannels = new List<string>();
                         _intrauterineCatheters.Clear();
                         int counter = 1;
@@ -911,9 +939,6 @@ namespace WpfApp1
                                 }
                                 else
                                 {
-                                    // Debug
-                                    Trace.WriteLine(allValues[i]);
-                                    // end
                                     int from = 0;
                                     int to = allValues[i].IndexOf("(");
                                     string lengthString = allValues[i].Substring(from, to).Trim();
@@ -955,95 +980,10 @@ namespace WpfApp1
                             if (int.TryParse(catheterNumber, out n) &&
                                 int.TryParse(channelNumber, out n))
                             {
-                                _catheterTochannel.Add(catheterNumber, channelNumber);
-                            }
-                        }
-                        currentIndex = -1;
-                    }
-                    else
-                    {
-                        currentIndex = -1;
-                    }
-                }
-            }
-        }
-
-
-        // TODO: Remove this when tested that it is not needed.
-        private void setCatheterToChannelNumberAndLengthsVeneziaWMatrix()
-        {
-            _catheterTochannel.Clear();
-            int startTableIndex = -1;
-            int endTableIndex = -1;
-            foreach (var page in _pageList)
-            {
-                int currentIndex = 0;
-                while (currentIndex != -1)
-                {
-                    int offsetIndex = _stringExtractor.getIndexOnPageForStartWithStringFromIndex(page, currentIndex, "Source position separation (mm):");
-                    if (offsetIndex != -1)
-                    {
-                        LiveCatheter liveCatheter = new LiveCatheter();
-                        startTableIndex = getIndexForSearchedString(page, 0, "|    |");
-                        endTableIndex = offsetIndex - 2;
-                        List<string> allValues = _stringExtractor.allValuesInInterval(page, startTableIndex + 1, endTableIndex);
-                        List<string> catheterAndCannels = new List<string>();
-                        _intrauterineCatheters.Clear();
-                        int counter = 1;
-                        for (int i = 0; i < allValues.Count; ++i)
-                        {
-                            if (allValues[i].Contains("(") &&
-                                allValues[i].Contains(")"))
-                            {
-                                if (!allValues[i].Contains("mm"))
+                                if (!_catheterTochannel.ContainsKey(catheterNumber))
                                 {
-                                    catheterAndCannels.Add(allValues[i]);
+                                    _catheterTochannel.Add(catheterNumber, channelNumber);
                                 }
-                                else
-                                {
-                                    int from = 0;
-                                    int to = allValues[i].IndexOf("(");
-                                    string lengthString = allValues[i].Substring(from, to).Trim();
-                                    _catheterLengths.Add(allValues[i].Substring(from, to).Trim());
-                                    if ((i == 0 && allValues[i + 1] != "VT") || ((i + 4 < allValues.Count) && allValues[i + 4].Contains("mm")))
-                                    {
-                                        _catheterWithNamLengths.Add(lengthString);
-                                        IntrauterineCatheter intrauterineCatheter = new IntrauterineCatheter();
-                                        intrauterineCatheter.CatheterNumber = counter.ToString();
-                                        //intrauterineCatheter.IntrauterineCatheterType = IntrauterineCatheterType.MODEL;
-                                        intrauterineCatheter.IntrauterineCatheterType = IntrauterineCatheterType.MODEL;
-                                        intrauterineCatheter.CatheterLength = _stringExtractor.decimalStringToDecimal(lengthString);
-                                        _intrauterineCatheters.Add(intrauterineCatheter);
-                                        counter++;
-                                    }
-                                    else
-                                    {
-                                        _catheterWithoutNamLengths.Add(lengthString);
-                                        IntrauterineCatheter intrauterineCatheter = new IntrauterineCatheter();
-                                        intrauterineCatheter.CatheterNumber = counter.ToString();
-                                        intrauterineCatheter.IntrauterineCatheterType = IntrauterineCatheterType.MODEL;
-                                        intrauterineCatheter.CatheterLength = _stringExtractor.decimalStringToDecimal(lengthString);
-                                        _intrauterineCatheters.Add(intrauterineCatheter);
-                                        counter++;
-                                    }
-
-                                }
-                            }
-                        }
-
-                        foreach (var catheterAndCannel in catheterAndCannels)
-                        {
-                            int from = 0;
-                            int to = catheterAndCannel.IndexOf("(");
-                            string catheterNumber = catheterAndCannel.Substring(from, to).Trim();
-                            from = catheterAndCannel.IndexOf("(") + "(".Length;
-                            to = catheterAndCannel.LastIndexOf(")");
-                            string channelNumber = catheterAndCannel.Substring(from, to - from).Trim();
-                            int n;
-                            if (int.TryParse(catheterNumber, out n) &&
-                                int.TryParse(channelNumber, out n))
-                            {
-                                _catheterTochannel.Add(catheterNumber, channelNumber);
                             }
                         }
                         currentIndex = -1;
@@ -1072,7 +1012,7 @@ namespace WpfApp1
                         LiveCatheter liveCatheter = new LiveCatheter();
                         startTableIndex = getIndexForSearchedString(page, 0, "|    |");
                         endTableIndex = offsetIndex - 2;
-                        List<string> allValues = _stringExtractor.allValuesInInterval(page, startTableIndex + 1, endTableIndex);
+                        List<string> allValues = allSourcePositionsValues(page);
                         List<string> catheterAndCannels = new List<string>();
                         _intrauterineCatheters.Clear();
                         int counter = 1;
@@ -1129,7 +1069,10 @@ namespace WpfApp1
                             if (int.TryParse(catheterNumber, out n) &&
                                 int.TryParse(channelNumber, out n))
                             {
-                                _catheterTochannel.Add(catheterNumber, channelNumber);
+                                if (!_catheterTochannel.ContainsKey(catheterNumber))
+                                {
+                                    _catheterTochannel.Add(catheterNumber, channelNumber);
+                                }
                             }
                         }
                         currentIndex = -1;
@@ -1150,7 +1093,7 @@ namespace WpfApp1
               
         public List<IntrauterineCatheter> intrauterineCatheters()
         {
-            setCatheterToChannelNumberAndLengths(_intrauterineApplicatorType); // TODO
+            setCatheterToChannelNumberAndLengths(_intrauterineApplicatorType);
             return _intrauterineCatheters;
         }
 
@@ -1213,10 +1156,10 @@ namespace WpfApp1
                     {
                         string offsetString  = page[offsetIndex];
                         // Ugly hack to handle catheters with no dwell positions:
-                        if (offsetString.Contains("No active dwell positions"))
-                        {
-                            offsetString = "Offset (mm): -9999.99";
-                        }
+                        //if (offsetString.Contains("No active dwell positions"))
+                        //{
+                        //    offsetString = "Offset (mm): -9999.99";
+                        //}
                         int startIndex = page[offsetIndex].IndexOf(':') + 1;
                         int length = offsetString.Length - startIndex;
                         string offsetValueString = offsetString.Substring(startIndex, length);
@@ -1241,10 +1184,16 @@ namespace WpfApp1
                         foreach (var catheterTableLine in catheterTableLines)
                         {
                             Tuple<string, string> tuple = new Tuple<string, string>(catheterTableLine[5], catheterTableLine[0]);
-                            if (_stringExtractor.decimalStringToDecimal(catheterTableLine[0]) != -1 &&
-                                (_stringExtractor.decimalStringToDecimal(catheterTableLine[5]) != -1))
+                            if (tuple.Item1 != "AR" &&
+                                tuple.Item1 != "AL" &&
+                                tuple.Item1 != "BR" &&
+                                tuple.Item1 != "BL")
                             {
-                                positonTimePairs.Add(tuple);
+                                if (_stringExtractor.decimalStringToDecimal(catheterTableLine[0]) != -1 &&
+                                (_stringExtractor.decimalStringToDecimal(catheterTableLine[5]) != -1))
+                                {
+                                    positonTimePairs.Add(tuple);
+                                }
                             }
                         }
                         int channelNumber = -1;
@@ -1303,6 +1252,110 @@ namespace WpfApp1
 
 
         public List<LiveCatheter> intrauterineLiveCathetersVenezia(bool skipNoActivePositions = false)
+        {
+            List<LiveCatheter> liveCatheters = new List<LiveCatheter>();
+            int startTableIndex = -1;
+            int endTableIndex = -1;
+            int catheterNumberCounter = 1;
+            foreach (var page in _pageList)
+            {
+                int currentIndex = 0;
+                while (currentIndex != -1)
+                {
+                    int offsetIndex = _stringExtractor.getIndexOnPageForStartWithStringFromIndex(page, currentIndex, "Offset (mm):");
+                    if (offsetIndex != -1)
+                    {
+                        string offsetString = page[offsetIndex];
+                        // Ugly hack to handle catheters with no dwell positions:
+                        //if (offsetString.Contains("No active dwell positions"))
+                        //{
+                        //    offsetString = "Offset (mm): -9999.99";
+                        //}
+                        int startIndex = page[offsetIndex].IndexOf(':') + 1;
+                        int length = offsetString.Length - startIndex;
+                        string offsetValueString = offsetString.Substring(startIndex, length);
+                        //decimal offsetValue;
+                        //offsetValue = _stringExtractor.decimalStringToDecimal(offsetValueString);
+                        Tuple<decimal, bool> offsetValueHasNoActivePair = getOffsetValueHasNoActivePair(offsetString, offsetIndex, page);
+                        decimal offsetValue = offsetValueHasNoActivePair.Item1;
+                        LiveCatheter liveCatheter = new LiveCatheter();
+                        startTableIndex = offsetIndex;
+                        endTableIndex = getIntrauterineCatheterTableEndIndex(page, startTableIndex + 1);
+                        bool pageEndsWithCont = pageEndsWithContinued(page, startTableIndex + 1);
+                        List<string> allValues = _stringExtractor.allValuesInInterval(page, startTableIndex, endTableIndex);
+                        List<List<string>> catheterTableLines = _stringExtractor.nColumnsRowsInInterval(6, allValues);
+                        List<Tuple<string, string>> positonTimePairs = new List<Tuple<string, string>>();
+                        foreach (var catheterTableLine in catheterTableLines)
+                        {
+                            Tuple<string, string> tuple = new Tuple<string, string>(catheterTableLine[5], catheterTableLine[0]);
+                            if (tuple.Item1 != "AR" &&
+                                tuple.Item1 != "AL" &&
+                                tuple.Item1 != "BR" &&
+                                tuple.Item1 != "BL")
+                            {
+                                positonTimePairs.Add(tuple);
+                            }
+                        }
+                        int channelNumber = -1;
+                        if (_catheterTochannel.ContainsKey(catheterNumberCounter.ToString()))
+                        {
+                            bool conversionWasOk = Int32.TryParse(_catheterTochannel[catheterNumberCounter.ToString()], out channelNumber);
+                        }
+                        liveCatheter.IsPipe = channelNumberIsPipe(channelNumber);
+                        liveCatheter.ChannelLength = channelLengthFromCatheterNumber(catheterNumberCounter);
+                        liveCatheter.setCatheterNumber(channelNumber);
+                        liveCatheter.setOffsetLength(offsetValue);
+                        liveCatheter.setPositonTimePairs(positonTimePairs);
+                        if (skipNoActivePositions)
+                        {
+                            if (positonTimePairs.Count != 0 &&
+                                liveCatheter.ChannelLength != -1)
+                            {
+                                liveCatheters.Add(liveCatheter);
+                            }
+                        }
+                        else
+                        {
+                            if (liveCatheter.ChannelLength != -1)
+                            {
+                                liveCatheters.Add(liveCatheter);
+                            }
+                        }
+                        if (!pageEndsWithCont)
+                        {
+                            catheterNumberCounter++;
+                        }
+                        currentIndex = endTableIndex;
+                    }
+                    else
+                    {
+                        currentIndex = -1;
+                    }
+                }
+            }
+            List<LiveCatheter> mergedLiveCatheters = new List<LiveCatheter>();
+            for (int i = 0; i < liveCatheters.Count; i++)
+            {
+                if (i < liveCatheters.Count - 1 &&
+                    liveCatheters[i].catheterNumber() == liveCatheters[i + 1].catheterNumber())
+                {
+                    LiveCatheter liveCatheter = new LiveCatheter();
+                    liveCatheter = liveCatheters[i];
+                    liveCatheter.appendPositionTimePairs(liveCatheters[i + 1].positonTimePairs());
+                    mergedLiveCatheters.Add(liveCatheter);
+                    i++;
+                }
+                else
+                {
+                    mergedLiveCatheters.Add(liveCatheters[i]);
+                }
+            }
+
+            return mergedLiveCatheters;
+        }
+
+        // Original version:
+        public List<LiveCatheter> intrauterineLiveCathetersVeneziaOld(bool skipNoActivePositions = false)
         {
             List<LiveCatheter> liveCatheters = new List<LiveCatheter>();
             int startTableIndex = -1;
@@ -1397,7 +1450,7 @@ namespace WpfApp1
             return mergedLiveCatheters;
         }
 
-
+        // end orig version
 
     }
 }

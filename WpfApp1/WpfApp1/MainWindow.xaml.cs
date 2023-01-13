@@ -1143,7 +1143,7 @@ namespace WpfApp1
             }
             catch (Exception)
             {
-                MessageBox.Show("Ett fel uppstod som inte programmet inte kunde hantera.", "Fel", MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBox.Show("Ett fel uppstod som programmet inte kunde hantera.", "Fel", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
 
