@@ -228,8 +228,7 @@ namespace WpfApp1
 
         public string fractionDose()
         {
-            int pageIndex = 1;
-
+            int pageIndex = 2;
             string stringValue = "";
             if (_tabType == TabType.PROSTATE)
             {
@@ -256,7 +255,7 @@ namespace WpfApp1
 
         public decimal PrescribedDose()
         {
-            int pageIndex = 1;
+            int pageIndex = 2;
             string stringValue = "";
             if (_tabType == TabType.PROSTATE)
             {

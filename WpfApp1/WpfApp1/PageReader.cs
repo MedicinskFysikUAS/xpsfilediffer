@@ -58,11 +58,11 @@ namespace WpfApp1
                     }
                 }
 
-                if (xpsFileType == XpsFileType.ONCENTRA_PROSTATE_TREATMENT_PLAN && stringsOnPage.Count > 1 && stringsOnPage[0].StartsWith("Oncentra Prostate") && stringsOnPage[1] == "Treatment Plan")
+                if (xpsFileType == XpsFileType.ONCENTRA_PROSTATE_TREATMENT_PLAN && stringsOnPage.Count > 1 && stringsOnPage[0].StartsWith("Oncentra Prostate") && stringsOnPage[1].ToLower() == "treatment plan")
                 {
                     return true;
                 }
-                else if (xpsFileType == XpsFileType.ONCENTRA_PROSTATE_DVH && stringsOnPage.Count > 1 && stringsOnPage[0].StartsWith("Oncentra Prostate") && stringsOnPage[1] == "DVH Evaluation")
+                else if (xpsFileType == XpsFileType.ONCENTRA_PROSTATE_DVH && stringsOnPage.Count > 1 && stringsOnPage[0].StartsWith("Oncentra Prostate") && stringsOnPage[1].ToLower() == "dvh evaluation")
                 {
                     return true;
                 }

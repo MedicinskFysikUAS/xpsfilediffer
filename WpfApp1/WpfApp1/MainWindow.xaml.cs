@@ -980,7 +980,10 @@ namespace WpfApp1
                     }
                     dataTable.Rows.Add(dataRow);
                 }
-                ++counter;
+                if (item.positonTimePairs().Count > 0)
+                {
+                    ++counter;
+                }
             }
             return dataTable;
         }
