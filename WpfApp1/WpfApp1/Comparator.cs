@@ -1434,7 +1434,7 @@ namespace WpfApp1
         {
             List<List<string>> resultRows = new List<List<string>>();
             resultRows.Add(headerResultRow("Plan & info"));
-            Calculator calculator = new Calculator();
+            //Calculator calculator = new Calculator();
             resultRows.Add(checkSelectedApplicatorTypeAndDiamterWithApplicatorName());
             resultRows.Add(checkPlanNameIntrauterine());
             return resultRows;
