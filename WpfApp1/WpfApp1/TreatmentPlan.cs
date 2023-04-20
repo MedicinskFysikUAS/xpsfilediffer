@@ -228,11 +228,16 @@ namespace WpfApp1
 
         public string fractionDose()
         {
-            int pageIndex = 2;
+            int pageIndex = 1;
             string stringValue = "";
             if (_tabType == TabType.PROSTATE)
             {
                 stringValue = _stringExtractor.getValueFromSpaceSeparetedString(_pageList[pageIndex], "Prescribed Dose:", 0);
+                if (stringValue.Length ==  0)
+                {
+                    pageIndex = 2;
+                    stringValue = _stringExtractor.getValueFromSpaceSeparetedString(_pageList[pageIndex], "Prescribed Dose:", 0);
+                }
             }
             else if (_tabType == TabType.CYLINDER ||
                 _tabType == TabType.INTRAUTERINE)
@@ -255,11 +260,16 @@ namespace WpfApp1
 
         public decimal PrescribedDose()
         {
-            int pageIndex = 2;
+            int pageIndex = 1;
             string stringValue = "";
             if (_tabType == TabType.PROSTATE)
             {
-                stringValue = _stringExtractor.getValueBetweenSearchStrings(_pageList[pageIndex], "Prescribed Dose:", "Gy");
+                stringValue = _stringExtractor.getValueFromSpaceSeparetedString(_pageList[pageIndex], "Prescribed Dose:", 0);
+                if (stringValue.Length == 0)
+                {
+                    pageIndex = 2;
+                    stringValue = _stringExtractor.getValueFromSpaceSeparetedString(_pageList[pageIndex], "Prescribed Dose:", 0);
+                }
             }
             else if (_tabType == TabType.CYLINDER)
             {
