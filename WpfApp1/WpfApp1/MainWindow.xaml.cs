@@ -1079,6 +1079,12 @@ namespace WpfApp1
                     _treatmentPlanXpsFilePathIntraUterine = selectedFile;
                     _tabType = TabType.INTRAUTERINE;
                 }
+                else if (EsofagusTab.IsSelected)
+                {
+                    TPXpsPathLabel3.Content = selectedFile;
+                    _tabType = TabType.ESOFAGUS;
+
+                }
             }
         }
 

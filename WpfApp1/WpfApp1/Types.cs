@@ -5,7 +5,8 @@
     {
         PROSTATE = 0,
         CYLINDER = 1,
-        INTRAUTERINE = 2
+        INTRAUTERINE = 2,
+        ESOFAGUS =3
     }
 
     public enum CylinderType
