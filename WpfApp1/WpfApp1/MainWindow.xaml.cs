@@ -41,6 +41,12 @@ namespace WpfApp1
         string _treatmentPlanXpsFilePathIntraUterine;
         string _tccPlanXpsFilePathIntraUterine;
 
+
+        string _treatmentPlanXpsFilePathEsofagus;
+        string _tccPlanXpsFilePathEsofagus;
+        string _treatmentPlanXpsFilePathEsofagusFractionX;
+        string _tccPlanXpsFilePathEsofagusFractionX;
+
         private TabType _tabType;
         private List<int> _comboboxDiameters;
         private List<int> _comboboxApplicatorDiameters;
@@ -70,6 +76,7 @@ namespace WpfApp1
             _comboboxApplicatorDiameters = new List<int>();
             _comboboxApplicatorDiametersNr2 = new List<int>();
             initiateSameSourceCombobox();
+            initiateEsofagusTab();
             // debug
             //PageReader tccPlanPageReader = new PageReader("C:\\work\\git\\xpsfilediffer\\xpsFiles\\A92DTcc.xps");
             //List<List<string>> tccPlanPageList = tccPlanPageReader.getPages(true);
@@ -143,6 +150,19 @@ namespace WpfApp1
             sameSourceCombobox1.Items.Add("Nej");
             sameSourceCombobox2.Items.Add("Ja");
             sameSourceCombobox2.Items.Add("Nej");
+            sameSourceCombobox3.Items.Add("Ja");
+            sameSourceCombobox3.Items.Add("Nej");
+        }
+
+        public void initiateEsofagusTab()
+        {
+            BtnOpenTPFile3.IsEnabled = true;
+            BtnOpenTCCFile3.IsEnabled = true;
+            BtnOpenTPFile4.IsEnabled = false;
+            BtnOpenTCCFile4.IsEnabled = false;
+            firstFractionCombobox.Items.Add("Ja");
+            firstFractionCombobox.Items.Add("Nej");
+            EsofagusBtnCheck.IsEnabled = false;
         }
 
         public void calculateLengthAndFreeLength()
@@ -281,6 +301,10 @@ namespace WpfApp1
                     applicatorDiameterNr2 = _comboboxApplicatorDiametersNr2[applicatorDiameterComboBoxNr2.SelectedIndex];
                 }
                 _specifications.ApplicatorDiameterNr2 = applicatorDiameterNr2;
+            }
+            else if (_tabType == TabType.ESOFAGUS)
+            {
+
             }
         }
 
@@ -531,6 +555,31 @@ namespace WpfApp1
             return true;
         }
 
+        private bool correctEsofagusFileType()
+        {
+            Comparator comparator = new Comparator(_specifications);
+            if (_treatmentPlanXpsFilePath != null)
+            {
+                PageReader pageReader = new PageReader(_treatmentPlanXpsFilePath);
+                if (!pageReader.isFileType(XpsFileType.ONCENTRA_ESOFAGUS_TREATMENT_PLAN))
+                {
+                    _resultRows.AddRange(comparator.informationResultRows("", "Inte OK", "Felaktig Oncentra Brachy fil."));
+                    return false;
+                }
+            }
+
+            if (_tccPlanXpsFilePath != null)
+            {
+                PageReader pageReader = new PageReader(_tccPlanXpsFilePath);
+                if (!pageReader.isFileType(XpsFileType.ESOFAGUS_TCC))
+                {
+                    _resultRows.AddRange(comparator.informationResultRows("", "Inte OK", "Felaktig TCC fil."));
+                    return false;
+                }
+            }
+            return true;
+        }
+
         private void addProstateResultRows()
         {
             Comparator comparator = new Comparator(_specifications);
@@ -744,6 +793,11 @@ namespace WpfApp1
             }
         }
 
+        private void addEsofagusResultRows()
+        {
+            Comparator comparator = new Comparator(_specifications);
+            _resultRows.AddRange(comparator.esofagusInfoRows(_userInputIntrauterine));
+        }
             bool buildResultDataGrid()
         {
             _resultRows.Clear();
@@ -771,6 +825,14 @@ namespace WpfApp1
                 {
                     correctFileType = true;
                     addIntrauterineResultRows();
+                }
+            }
+            else if (_tabType == TabType.ESOFAGUS)
+            {
+                if (correctEsofagusFileType())
+                {
+                    correctFileType = true;
+                    addEsofagusResultRows();
                 }
             }
 
@@ -1082,8 +1144,25 @@ namespace WpfApp1
                 else if (EsofagusTab.IsSelected)
                 {
                     TPXpsPathLabel3.Content = selectedFile;
+                    _treatmentPlanXpsFilePathEsofagus = selectedFile;
                     _tabType = TabType.ESOFAGUS;
+                }
+            }
+        }
 
+        private void BtnOpenTPFile2_Click(object sender, RoutedEventArgs e)
+        {
+
+            OpenFileDialog openFileDialog = new OpenFileDialog();
+            openFileDialog.Filter = "xps files (*.xps)|*.xps|All files (*.*)|*.*";
+            if (openFileDialog.ShowDialog() == true)
+            {
+                var selectedFile = openFileDialog.FileName;
+                if (EsofagusTab.IsSelected)
+                {
+                    TPXpsPathLabel4.Content = selectedFile;
+                    _treatmentPlanXpsFilePathEsofagus = selectedFile;
+                    _tabType = TabType.ESOFAGUS;
                 }
             }
         }
@@ -1100,14 +1179,8 @@ namespace WpfApp1
                     DVHXpsPathLabel0.Content = selectedFile;
                     _dvhXpsFilePathProstate = selectedFile;
                 }
-                else if (IntraUterineTab.IsSelected)
-                {
-                    //DVHXpsPathLabel2.Content = selectedFile;
-                    //_dvhXpsFilePathIntraUterine = selectedFile;
-                }
             }
         }
-
         private void BtnOpenTCCFile_Click(object sender, RoutedEventArgs e)
         {
             OpenFileDialog openFileDialog = new OpenFileDialog();
@@ -1129,6 +1202,28 @@ namespace WpfApp1
                 {
                     TCCXpsPathLabel2.Content = selectedFile;
                     _tccPlanXpsFilePathIntraUterine = selectedFile;
+                }
+                else if (EsofagusTab.IsSelected)
+                {
+                    TCCXpsPathLabel3.Content = selectedFile;
+                    _tccPlanXpsFilePathEsofagus = selectedFile;
+                }
+            }
+        }
+
+        private void BtnOpenTCCFile2_Click(object sender, RoutedEventArgs e)
+        {
+
+            OpenFileDialog openFileDialog = new OpenFileDialog();
+            openFileDialog.Filter = "xps files (*.xps)|*.xps|All files (*.*)|*.*";
+            if (openFileDialog.ShowDialog() == true)
+            {
+                var selectedFile = openFileDialog.FileName;
+                if (EsofagusTab.IsSelected)
+                {
+                    TCCXpsPathLabel4.Content = selectedFile;
+                    _treatmentPlanXpsFilePathEsofagusFractionX = selectedFile;
+                    _tabType = TabType.ESOFAGUS;
                 }
             }
         }
@@ -1307,6 +1402,11 @@ namespace WpfApp1
             {
                 _tabType = TabType.INTRAUTERINE;
             }
+            else if (EsofagusTab.IsSelected)
+            {
+                _tabType = TabType.ESOFAGUS;
+            }
+
             clearLabelsAndResultRows();
         }
 
@@ -1338,6 +1438,20 @@ namespace WpfApp1
                 _comboboxDiameters.Add(35);
                 cylinderDiameterComboBox.Items.Add("40");
                 _comboboxDiameters.Add(40);
+            }
+        }
+
+        private void firstFractionCombobox_DropDownClosed(object sender, EventArgs e)
+        {
+            if (firstFractionCombobox.SelectedIndex == 0)
+            {
+                BtnOpenTPFile4.IsEnabled = false;
+                BtnOpenTCCFile4.IsEnabled = false;
+            }
+            else if (firstFractionCombobox.SelectedIndex == 1)
+            {
+                BtnOpenTPFile4.IsEnabled = true;
+                BtnOpenTCCFile4.IsEnabled = true;
             }
         }
 

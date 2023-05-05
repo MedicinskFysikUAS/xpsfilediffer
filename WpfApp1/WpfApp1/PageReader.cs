@@ -92,6 +92,14 @@ namespace WpfApp1
                 {
                     return true;
                 }
+                else if ((xpsFileType == XpsFileType.ONCENTRA_ESOFAGUS_TREATMENT_PLAN && stringsOnPage.Count > 86 && stringsOnPage[81] == "TODO"))
+                {
+                    return true;
+                }
+                else if ((xpsFileType == XpsFileType.ESOFAGUS_TCC && stringsOnPage.Count > 86 && stringsOnPage[81] == "TODO"))
+                {
+                    return true;
+                }
                 else
                 {
                     return false;

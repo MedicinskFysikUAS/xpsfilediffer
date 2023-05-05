@@ -1382,6 +1382,13 @@ namespace WpfApp1
             return resultRows;
         }
 
+        public List<List<string>> esofagusInfoRows(UserInputIntrauterine userInputIntrauterine)
+        {
+            List<List<string>> resultRows = new List<List<string>>();
+            resultRows.Add(headerResultRow("Info"));
+            return resultRows;
+        }
+
         public List<List<string>> intrauterineInfoRows(UserInputIntrauterine userInputIntrauterine)
         {
             List<List<string>> resultRows = new List<List<string>>();
