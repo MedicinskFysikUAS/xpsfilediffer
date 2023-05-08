@@ -77,7 +77,15 @@ namespace WpfApp1
             return -1.0m;
         }
 
-       
+
+
+        private decimal treatmentTimeFromTable(decimal activeLength)
+        {
+            List<Tuple<decimal, decimal>> tableTuples = new List<Tuple<decimal, decimal>>();
+            tableTuples = tableFromConfig("Active_lengths_mm", "Treatment_times_s");
+            return getTableTime(tableTuples, activeLength);
+
+        }
 
         private decimal timeFromTable(CylinderType cylinderType, int cylinderDiameter, decimal treatmentLength)
         {
@@ -133,6 +141,13 @@ namespace WpfApp1
             return timeFromTable(cylinderType, cylinderDiameter, treatmentLength) *
                 (prescriptionDose / 1.0m) *
                 (40.0m / currentSourceStrength); 
+        }
+
+        public decimal estimateEsofagusTreatmentTime(decimal prescriptionDose, decimal activeLength, decimal currentSourceStrength)
+        {
+            return treatmentTimeFromTable(activeLength) *
+                (prescriptionDose / 10.0m) *
+                (40.0m / currentSourceStrength);
         }
 
 
