@@ -40,15 +40,12 @@ namespace WpfApp1
             {
                 stringValue = _stringExtractor.getValueFromSpaceSeparetedString(_pageList[pageIndex], "Patient name:", 0, true);
             }
-            else if (_tabType == TabType.CYLINDER)
+            else if (_tabType == TabType.CYLINDER ||
+                _tabType == TabType.INTRAUTERINE ||
+                _tabType == TabType.ESOFAGUS)
             {
                 stringValue = _stringExtractor.getValueAtIndex(_pageList[pageIndex], 11, 1);
             }
-            else if (_tabType == TabType.INTRAUTERINE)
-            {
-                stringValue = _stringExtractor.getValueAtIndex(_pageList[pageIndex], 11, 1);
-            }
-
             return stringValue;
         }
 
@@ -60,11 +57,9 @@ namespace WpfApp1
             {
                 stringValue = _stringExtractor.getValueFromSpaceSeparetedString(_pageList[pageIndex], "Patient name:", 1, true);
             }
-            else if (_tabType == TabType.CYLINDER)
-            {
-                stringValue = _stringExtractor.getValueAtIndex(_pageList[pageIndex], 11, 0);
-            }
-            else if (_tabType == TabType.INTRAUTERINE)
+            else if (_tabType == TabType.CYLINDER ||
+                _tabType == TabType.INTRAUTERINE ||
+                _tabType == TabType.ESOFAGUS)
             {
                 stringValue = _stringExtractor.getValueAtIndex(_pageList[pageIndex], 11, 0);
             }
@@ -87,6 +82,10 @@ namespace WpfApp1
             {
                 stringValue = _stringExtractor.getValueAtIndex(_pageList[pageIndex], 10, 0);
             }
+            else if (_tabType == TabType.ESOFAGUS)
+            {
+                stringValue = _stringExtractor.getValueAtIndex(_pageList[pageIndex], 10, 0);
+            }
             return stringValue;
         }
 
@@ -104,6 +103,10 @@ namespace WpfApp1
                 stringValue = _stringExtractor.getValueAtIndex(_pageList[pageIndex], 1, 0);
             }
             else if (_tabType == TabType.INTRAUTERINE)
+            {
+                stringValue = _stringExtractor.getValueAtIndex(_pageList[pageIndex], 1, 0);
+            }
+            else if (_tabType == TabType.ESOFAGUS)
             {
                 stringValue = _stringExtractor.getValueAtIndex(_pageList[pageIndex], 1, 0);
             }
@@ -128,6 +131,10 @@ namespace WpfApp1
                 return cylindricStatusSetDateTime();
             }
             else if (_tabType == TabType.INTRAUTERINE)
+            {
+                return cylindricStatusSetDateTime();
+            }
+            else if (_tabType == TabType.ESOFAGUS)
             {
                 return cylindricStatusSetDateTime();
             }
@@ -240,7 +247,8 @@ namespace WpfApp1
                 }
             }
             else if (_tabType == TabType.CYLINDER ||
-                _tabType == TabType.INTRAUTERINE)
+                _tabType == TabType.INTRAUTERINE ||
+                _tabType == TabType.ESOFAGUS)
             {
                 pageIndex = 0;
                 stringValue = _stringExtractor.getValueBeforeSearchString(_pageList[pageIndex], "Prescription dose per fraction/pulse (Gy):", pageIndex);
@@ -306,6 +314,10 @@ namespace WpfApp1
             {
                 stringValue = _stringExtractor.getValueAfterSearchString(_pageList[pageIndex], "and treatment date and time (days):", pageIndex);
             }
+            else if (_tabType == TabType.ESOFAGUS)
+            {
+                stringValue = _stringExtractor.getValueAfterSearchString(_pageList[pageIndex], "and treatment date and time (days):", pageIndex);
+            }
             return stringValue;
         }
 
@@ -322,7 +334,8 @@ namespace WpfApp1
             }
             decimal decimalValue = Convert.ToDecimal(stringValue);
             if (_tabType == TabType.CYLINDER ||
-                _tabType == TabType.INTRAUTERINE)
+                _tabType == TabType.INTRAUTERINE ||
+                _tabType == TabType.ESOFAGUS)
             {
                 decimalValue *= 1000.0m;
             }
@@ -370,6 +383,10 @@ namespace WpfApp1
                 {
                     stringValue = _stringExtractor.getStringAfterStartWithSearchString(_pageList[pageIndex + 2], "Total treatment time (sec.):");
                 }
+            }
+            else if (_tabType == TabType.ESOFAGUS)
+            {
+                stringValue = _stringExtractor.getStringAfterStartWithSearchStringAndSplitAtColon(_pageList[pageIndex], "Total treatment time");
             }
             return stringValue;
         }
@@ -437,6 +454,11 @@ namespace WpfApp1
                         return intrauterineLiveCatheters(skipNoActivePositions).OrderBy(o => o.catheterNumber()).ToList();
                     }
                 }
+            }
+            else if (_tabType == TabType.ESOFAGUS)
+            {
+                return esofagusLiveCatheters().OrderBy(o => o.catheterNumber()).ToList();
+
             }
             else // Only added to get rid of build warnings.
             {
@@ -717,6 +739,10 @@ namespace WpfApp1
             {
                 return cylinderTreatmentPlanCatheters();
             }
+            else if (_tabType == TabType.ESOFAGUS)
+            {
+                return esofagusPlanCathteters();
+            }
             else
             {
                 List <TreatmentPlanCatheter> emptyList = new List<TreatmentPlanCatheter>();
@@ -725,6 +751,23 @@ namespace WpfApp1
 
         }
 
+        public List<TreatmentPlanCatheter> esofagusPlanCathteters()
+        {
+            // Only set the Selector that is the Chanell length in the cylinder protocol //before "Cathet..."
+            TreatmentPlanCatheter treatmentPlanCatheter = new TreatmentPlanCatheter();
+            int pageIndex = 1;
+            //getValueBeforeSearchString(List<string> stringsOnPage, string searchedString, int stringIndex)
+            string stringValue = _stringExtractor.getValueBeforeSearchString(_pageList[pageIndex], "1 (1)", 0);
+            int position = stringValue.IndexOf("(mm)");
+            if (position != -1)
+            {
+                treatmentPlanCatheter.selector = _stringExtractor.decimalStringToDecimal(stringValue.Substring(0, position).Trim());
+            }
+            List<TreatmentPlanCatheter> treatmentPlanCatheters = new List<TreatmentPlanCatheter>();
+            treatmentPlanCatheters.Add(treatmentPlanCatheter);
+            return treatmentPlanCatheters;
+
+        }
         public List<TreatmentPlanCatheter> cylinderTreatmentPlanCatheters()
         {
             // Only set the Selector that is the Chanell length in the cylinder protocol //before "Cathet..."
@@ -825,6 +868,45 @@ namespace WpfApp1
             liveCatheters.Add(liveCatheter);
             return liveCatheters;
         }
+
+        public List<LiveCatheter> esofagusLiveCatheters()
+        {
+            List<LiveCatheter> liveCatheters = new List<LiveCatheter>();
+            LiveCatheter liveCatheter = new LiveCatheter();
+            liveCatheter.setCatheterNumber(1); // Assume that only one catheter is used.
+            List<Tuple<string, string>> positonTimePairs = new List<Tuple<string, string>>();
+            int startTableIndex = -1;
+            int endTableIndex = -1;
+            foreach (var page in _pageList)
+            {
+                int currentIndex = 0;
+                while (currentIndex != -1)
+                {
+                    int offsetIndex = _stringExtractor.getIndexOnPageForStartWithStringFromIndex(page, currentIndex, "Offset (mm):");
+                    if (offsetIndex != -1)
+                    {
+                        startTableIndex = offsetIndex;
+                        endTableIndex = getCylindricCatheterTableEndIndex(page, currentIndex);
+                        List<string> allValues = _stringExtractor.allValuesInInterval(page, startTableIndex, endTableIndex);
+                        List<List<string>> catheterTableLines = _stringExtractor.nColumnsRowsInInterval(6, allValues);
+                        foreach (var catheterTableLine in catheterTableLines)
+                        {
+                            Tuple<string, string> tuple = new Tuple<string, string>(catheterTableLine[5], catheterTableLine[0]);
+                            positonTimePairs.Add(tuple);
+                        }
+                        currentIndex = endTableIndex;
+                    }
+                    else
+                    {
+                        currentIndex = -1;
+                    }
+                }
+            }
+            liveCatheter.setPositonTimePairs(positonTimePairs);
+            liveCatheters.Add(liveCatheter);
+            return liveCatheters;
+        }
+
 
         public string applicatorName()
         {

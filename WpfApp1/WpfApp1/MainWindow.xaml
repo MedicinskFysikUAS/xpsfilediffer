@@ -197,6 +197,8 @@
                     <ComboBox x:Name="sameSourceCombobox3" Grid.Column="1" HorizontalAlignment="Left" Margin="4,0,0,0" VerticalAlignment="Center" Width="52"/>
                     <Label x:Name="firstFractionLabel" Content="Första fraktionen?" HorizontalAlignment="Left" VerticalAlignment="Center" Grid.Column="1" Margin="70,0,0,0"/>
                     <ComboBox x:Name="firstFractionCombobox" DropDownClosed="firstFractionCombobox_DropDownClosed" Grid.Column="1" HorizontalAlignment="Left" Margin="179,0,0,0" VerticalAlignment="Center" Width="52"/>
+                    <Label x:Name="EsofagusPrescribedDoseLabel" Content="Ordinerad dos [Gy]:" HorizontalAlignment="Left" Margin="7,166,0,0" VerticalAlignment="Top" Grid.Column="1"/>
+                    <TextBox x:Name="esofagusPrescribedDoseText" HorizontalAlignment="Center" Margin="0,171,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="84" Height="22"  TextChanged="TextBox_TextChanged" Grid.Column="1"/>
                 </Grid>
 
             </TabItem>

@@ -1334,7 +1334,19 @@ namespace WpfApp1
             return resultRow;
         }
 
+        public List<string> checkEsofagusUserInputIsSet(bool esofagusUserInputIsSet, 
+            string checkDescription, string passDescription, string failDescription)
+        {
 
+            List<string> resultRow = new List<string>();
+            resultRow.Add(checkDescription);
+            string resultString = esofagusUserInputIsSet ? "OK" : "Inte OK";
+            resultRow.Add(resultString);
+            string description = esofagusUserInputIsSet ? passDescription : failDescription;
+            resultRow.Add(description);
+            return resultRow;
+
+        }
         public List<List<string>> intrauterineTreatmentPlanAndTccPlanResultRows()
         {
             List<List<string>> resultRows = new List<List<string>>();
@@ -1382,10 +1394,29 @@ namespace WpfApp1
             return resultRows;
         }
 
-        public List<List<string>> esofagusInfoRows(UserInputIntrauterine userInputIntrauterine)
+        public List<List<string>> esofagusInfoRows(UserInputEsofagus userInputEsofagus)
         {
             List<List<string>> resultRows = new List<List<string>>();
             resultRows.Add(headerResultRow("Info"));
+            resultRows.Add(checkEsofagusUserInputIsSet(userInputEsofagus.InactiveLengthString.Length > 0,
+           "Inaktiv längd", "Inaktiv längd är given", "Inaktiv längd är inte given"));
+            resultRows.Add(checkEsofagusUserInputIsSet(userInputEsofagus.ActiveLengthString.Length > 0,
+           "Aktiv längd", "Aktiv längd är given", "Aktiv längd är inte given"));
+            resultRows.Add(checkEsofagusUserInputIsSet(userInputEsofagus.IndexerLengthString.Length > 0,
+           "Indexer längd", "Indexer längd är given", "Indexer längd är inte given"));
+            resultRows.Add(checkEsofagusUserInputIsSet(userInputEsofagus.PlanCode.Length > 0,
+           "Plankod", "Plankod är given", "Plankod är inte given"));
+            resultRows.Add(headerResultRow("Plan"));
+            StringExtractor stringExtractor = new StringExtractor();
+            Calculator calculator = new Calculator();
+            decimal estimatedTreatmentTime = 
+                calculator.estimateEsofagusTreatmentTime(stringExtractor.decimalStringToDecimal(userInputEsofagus.PrescribedDoseString),
+                stringExtractor.decimalStringToDecimal(userInputEsofagus.ActiveLengthString),
+                _treatmentPlan.plannedSourceStrengthValue());
+            decimal reportedTreatmentTime = _treatmentPlan.totalTreatmentTimeValue();
+            resultRows.Add(checkTreatmentTime(estimatedTreatmentTime,
+                reportedTreatmentTime, _specifications.TreatmentTimeEpsilon));
+            resultRows.Add(checkTreatmentPlanChannelLength(_specifications.ExpectedChannelLength));
             return resultRows;
         }
 

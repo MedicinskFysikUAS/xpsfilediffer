@@ -53,15 +53,14 @@ namespace WpfApp1
         private List<int> _comboboxApplicatorDiametersNr2;
         private bool _isSameSource;
         private bool _sameSourceSet;
-
-
         List<LiveCatheter> _treatmentPlanLiveCatheters = new List<LiveCatheter>();
         List<LiveCatheter> _treatmentPlanLiveCathetersCorr = new List<LiveCatheter>();
         List<LiveCatheter> _tccPlanLiveCatheters = new List<LiveCatheter>();
-
         Specifications _specifications;
-
         UserInputIntrauterine _userInputIntrauterine;
+        UserInputEsofagus _userInputEsofagus;
+
+
         public MainWindow()
         {
             InitializeComponent();
@@ -304,6 +303,7 @@ namespace WpfApp1
             }
             else if (_tabType == TabType.ESOFAGUS)
             {
+                _specifications.ExpectedChannelLength = 1400.0m;
 
             }
         }
@@ -383,6 +383,12 @@ namespace WpfApp1
                 _treatmentPlanXpsFilePath = _treatmentPlanXpsFilePathIntraUterine;
                 _dvhXpsFilePath = "";
                 _tccPlanXpsFilePath = _tccPlanXpsFilePathIntraUterine;
+            }
+            else if (EsofagusTab.IsSelected)
+            {
+                _treatmentPlanXpsFilePath = _treatmentPlanXpsFilePathEsofagus;
+                _dvhXpsFilePath = "";
+                _tccPlanXpsFilePath = _tccPlanXpsFilePathEsofagus;
             }
         }
 
@@ -471,6 +477,18 @@ namespace WpfApp1
                 _userInputIntrauterine.PlanCodeIsSet = planCodeIsSetIntrauterine();
                 _userInputIntrauterine.SameSourceIsSet = sameSourceIsSet();
             }
+        }
+
+        private void updateEsofagusUserInput()
+        {
+            _userInputEsofagus = new UserInputEsofagus();
+            _userInputEsofagus.ActiveLengthString = activeLengthText.Text;
+            _userInputEsofagus.InactiveLengthString = inactiveLengthText.Text;
+            _userInputEsofagus.IndexerLengthString = indexLengthText.Text;
+            _userInputEsofagus.PlanCode = planCodeEsofagusText.Text;
+            _userInputEsofagus.IsSameSource = sameSourceCombobox3.SelectedIndex == 0;
+            _userInputEsofagus.IsFirstFraction = firstFractionCombobox.SelectedIndex == 0;
+            _userInputEsofagus.PrescribedDoseString = esofagusPrescribedDoseText.Text;
         }
 
         private bool correctProstateFileType()
@@ -793,12 +811,35 @@ namespace WpfApp1
             }
         }
 
-        private void addEsofagusResultRows()
+        public void addEsofagusResultRows()
         {
             Comparator comparator = new Comparator(_specifications);
-            _resultRows.AddRange(comparator.esofagusInfoRows(_userInputIntrauterine));
+            if (_treatmentPlanXpsFilePathEsofagus != null)
+            {
+                PageReader treatmentPlanPageReader = new PageReader(_treatmentPlanXpsFilePathEsofagus);
+                List<List<string>> treatmentPlanPageList = treatmentPlanPageReader.getPages();
+                TreatmentPlan treatmentPlan = new TreatmentPlan(treatmentPlanPageList, _tabType);
+                comparator.treatmentPlan = treatmentPlan;
+                _resultRows.AddRange(comparator.esofagusInfoRows(_userInputEsofagus));
+            }
+            if (_treatmentPlanXpsFilePath != null && _tccPlanXpsFilePath != null)
+            {
+                PageReader treatmentPlanPageReader = new PageReader(_treatmentPlanXpsFilePath);
+                List<List<string>> treatmentPlanPageList = treatmentPlanPageReader.getPages();
+                TreatmentPlan treatmentPlan = new TreatmentPlan(treatmentPlanPageList, _tabType);
+                comparator.treatmentPlan = treatmentPlan;
+                PageReader tccPlanPageReader = new PageReader(_tccPlanXpsFilePath);
+                List<List<string>> tccPlanPageList = tccPlanPageReader.getPages();
+                List<LiveCatheter> tccLiveCatheters = tccPlanPageReader.tccLiveCatheters(_tabType);
+                TccPlan tccPlan = new TccPlan(tccPlanPageList, tccLiveCatheters);
+                comparator.tccPlan = tccPlan;
+                bool skipApprovalTest = true;
+                _resultRows.AddRange(comparator.resultRows(skipApprovalTest));
+            }
+
+
         }
-            bool buildResultDataGrid()
+        bool buildResultDataGrid()
         {
             _resultRows.Clear();
             resultSummaryLabel.Visibility = Visibility.Hidden;
@@ -1230,8 +1271,8 @@ namespace WpfApp1
 
         private void BtnCheck_Click(object sender, RoutedEventArgs e)
         {
-            try
-            {
+            //try
+            //{
                 updateSpecifications();
                 setProstateCalculationsVisable(false);
                 calculateLengthAndFreeLength();
@@ -1240,15 +1281,19 @@ namespace WpfApp1
                 //setIntrauterineCalculationsVisable(false)
                 updateInputFilePaths();
                 updateSameSourceSelected();
+                if (_tabType == TabType.ESOFAGUS)
+                {
+                    updateEsofagusUserInput();
+                }
                 if (buildResultDataGrid())
                 {
                     updateCatheters();
                 }
-            }
-            catch (Exception)
-            {
-                MessageBox.Show("Ett fel uppstod som programmet inte kunde hantera.", "Fel", MessageBoxButton.OK, MessageBoxImage.Error);
-            }
+            //}
+            //catch (Exception)
+            //{
+            //    MessageBox.Show("Ett fel uppstod som programmet inte kunde hantera.", "Fel", MessageBoxButton.OK, MessageBoxImage.Error);
+            //}
         }
 
         private void moveFileToArchive(string soureFileNamePath, string destinationDirectory, string destinationFileName)
@@ -1453,6 +1498,7 @@ namespace WpfApp1
                 BtnOpenTPFile4.IsEnabled = true;
                 BtnOpenTCCFile4.IsEnabled = true;
             }
+            EsofagusBtnCheck.IsEnabled = true;
         }
 
         private void applicatorTypeComboBox_DropDownClosed(object sender, EventArgs e)

@@ -231,6 +231,22 @@ namespace WpfApp1
             return stringValue;
         }
 
+        public string getStringAfterStartWithSearchStringAndSplitAtColon(List<string> stringsOnPage, string searchedString)
+        {
+            int foundIndex = stringsOnPage.FindIndex(x => x.StartsWith(searchedString));
+            string stringValue = "";
+            if (foundIndex != -1)
+            {
+                string fullString = stringsOnPage[foundIndex];
+                if (fullString.Split(":").Length > 1)
+                {
+                    stringValue = fullString.Split(":")[1].Trim();
+                }
+            }
+            return stringValue;
+        }
+
+
         public int getIndexOnPageForSearchedStringFromIndex(List<string> stringsOnPage, int startIndex, string searchedString)
         {
             return stringsOnPage.FindIndex(startIndex, x => x == searchedString);
