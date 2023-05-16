@@ -180,7 +180,11 @@ namespace WpfApp1
             }
             return tuples;
         }
-
-        
+        public decimal indexerLengthFromUserInput(Specifications specifications, UserInputEsofagus userInputEsofagus)
+        {
+            StringExtractor stringExtractor = new StringExtractor();
+            return specifications.MaxChannelLengthEsofagus -
+                 stringExtractor.decimalStringToDecimal(userInputEsofagus.InactiveLengthString);
+        }
     }
 }

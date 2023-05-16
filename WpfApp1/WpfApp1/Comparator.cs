@@ -187,7 +187,7 @@ namespace WpfApp1
                     {
                         foreach (var tccPositionTimePair in tccLiveCatheters[counter].positonTimePairs())
                         {
-                            if ((stringExtractor.decimalStringToDecimal(subItem.Item1) - 
+                            if ((stringExtractor.decimalStringToDecimal(subItem.Item1) -
                                 stringExtractor.decimalStringToDecimal(tccPositionTimePair.Item1)) == 0.0m)
                             {
                                 positonTimePairs.Add(new Tuple<string, string>(subItem.Item1, stringExtractor.decimalToTwoDecimalString(correctedTime)));
@@ -209,7 +209,7 @@ namespace WpfApp1
 
         ErrorCode hasSameCatheterPositionTimePairs(decimal timeEpsilon, bool useRelativeEpsilon)
         {
-            Tuple<List<LiveCatheter>, List<LiveCatheter>> tuple =  makeCorrectedTpLiveCathetersAboveThreshold(_treatmentPlan.liveCatheters(true), _tccPlan.liveCatheters());
+            Tuple<List<LiveCatheter>, List<LiveCatheter>> tuple = makeCorrectedTpLiveCathetersAboveThreshold(_treatmentPlan.liveCatheters(true), _tccPlan.liveCatheters());
             List<LiveCatheter> tpLiveCatheters = tuple.Item1;
             List<LiveCatheter> tccLiveCatheters = tuple.Item2;
             ErrorCode errorCode = new ErrorCode();
@@ -240,16 +240,16 @@ namespace WpfApp1
                     {
                         errorCode.Number = -102;
                         errorCode.Description = "Antalet positioner och tider för kateter nr " + tpAndTccCatheter.tpLiveCatheters.catheterNumber() +
-                            " är olika." + 
+                            " är olika." +
                             " Antalet (över tröskelvärdet på " + Constants.TIME_THRESHOLD + " sek) i dosplan: " + tpPositonTimePairs.Count +
                             ". Antalet i TCC plan: " + tccPositonTimePairs.Count;
                         return errorCode;
                     }
                     var tpAndTccPositonTimePairs = tpPositonTimePairs.Zip(
-                       tccPositonTimePairs, (tpTimePairs, tccTimePairs) => new { 
-                                tpPositonTimePairs = tpTimePairs,
-                                tccPositonTimePairs = tccTimePairs
-                            });
+                       tccPositonTimePairs, (tpTimePairs, tccTimePairs) => new {
+                           tpPositonTimePairs = tpTimePairs,
+                           tccPositonTimePairs = tccTimePairs
+                       });
 
                     StringExtractor stringExtractor = new StringExtractor();
 
@@ -279,7 +279,7 @@ namespace WpfApp1
                             errorCode.Description = "Tiden för kateter nr " + tpAndTccCatheter.tpLiveCatheters.catheterNumber() +
                                 " är olika." +
                             " I dosplan (korrigerad): " + tpAndTccPositonTimePair.tpPositonTimePairs.Item2 +
-                            " i TCC plan: " + tpAndTccPositonTimePair.tccPositonTimePairs.Item2 + 
+                            " i TCC plan: " + tpAndTccPositonTimePair.tccPositonTimePairs.Item2 +
                             " för position " + tpAndTccPositonTimePair.tpPositonTimePairs.Item1;
                             return errorCode;
                         }
@@ -405,8 +405,8 @@ namespace WpfApp1
 
         public bool prescriptionDoseIsTheSame(decimal guiPresciptionDose, decimal treatmentPlanPrescriptionDose, decimal dvhPrescriptionDose, decimal tccPrescriptionDose)
         {
-            return ((guiPresciptionDose == treatmentPlanPrescriptionDose) && 
-                (treatmentPlanPrescriptionDose == dvhPrescriptionDose) && 
+            return ((guiPresciptionDose == treatmentPlanPrescriptionDose) &&
+                (treatmentPlanPrescriptionDose == dvhPrescriptionDose) &&
                 (treatmentPlanPrescriptionDose == tccPrescriptionDose));
         }
 
@@ -436,8 +436,6 @@ namespace WpfApp1
                     stringExtractor.stringToDateTime(_tccPlan.realizationDateAndTime()));
 
         }
-
-        
 
         private bool channelLengthInIntrauterinePlanIsOk()
         {
@@ -498,7 +496,7 @@ namespace WpfApp1
             {
                 if (liveCatheters[i].IsPipe)
                 {
-                    if (Math.Abs(liveCatheters[i].offsetLength() - 0.0m) > 0.001m )
+                    if (Math.Abs(liveCatheters[i].offsetLength() - 0.0m) > 0.001m)
                     {
                         return false;
                     }
@@ -521,9 +519,57 @@ namespace WpfApp1
             return true;
         }
 
-            // check -----------------------
+        private decimal lastSourcePositionInPlan()
+        {
+            StringExtractor stringExtractor = new StringExtractor();
+            List<LiveCatheter> liveCatheters = _treatmentPlan.liveCatheters();
+            decimal lastSourcePosition = -1.0m;
+            if (liveCatheters.Count == 1)
+            {
+                lastSourcePosition = stringExtractor.decimalStringToDecimal(liveCatheters.First().positonTimePairs().First().Item1);
+            }
+            return lastSourcePosition;
+        }
+        private decimal indexerLengthPositionTableInPlan()
+        {
+            decimal indexerLength = -1;
+            decimal lastSourcePosition = lastSourcePositionInPlan();
+            if (lastSourcePosition != -1)
+            {
+                StringExtractor stringExtractor = new StringExtractor();
+                indexerLength = _specifications.LengthOfCathetersUsedForEsofagus +
+                        lastSourcePosition;
+            }
+            return indexerLength;
+        }
 
-            public List<string> checkPatientName()
+        private decimal lastSourcePositionInTcc()
+        {
+            StringExtractor stringExtractor = new StringExtractor();
+            List<LiveCatheter> liveCatheters = _tccPlan.liveCatheters();
+            decimal lastSourcePosition = -1.0m;
+            if (liveCatheters.Count == 1)
+            {
+                lastSourcePosition = stringExtractor.decimalStringToDecimal(liveCatheters.First().positonTimePairs().First().Item1);
+            }
+            return lastSourcePosition;
+        }
+        private decimal indexerLengthPositionTableInTcc()
+        {
+            decimal indexerLength = -1;
+            decimal lastSourcePosition = lastSourcePositionInTcc();
+            if (lastSourcePosition != -1)
+            {
+                StringExtractor stringExtractor = new StringExtractor();
+                indexerLength = _specifications.LengthOfCathetersUsedForEsofagus +
+                        lastSourcePosition;
+            }
+            return indexerLength;
+        }
+
+        // check -----------------------
+
+        public List<string> checkPatientName()
         {
             List<string> resultRow = new List<string>();
             resultRow.Add("Samma patientnamn");
@@ -1347,14 +1393,78 @@ namespace WpfApp1
             return resultRow;
 
         }
-        public List<List<string>> intrauterineTreatmentPlanAndTccPlanResultRows()
+
+        public List<string> checkEsofagusIndexerLengthInputAndPlan(UserInputEsofagus userInputEsofagus)
+        {
+            List<string> resultRow = new List<string>();
+            resultRow.Add("Angiven indexer length och i plan");
+            Calculator calculator = new Calculator();
+            bool resultOK = treatmentPlanHasSameChannelLength(
+                calculator.indexerLengthFromUserInput(_specifications, userInputEsofagus));
+            string resultString = resultOK ? "OK" : "Inte OK";
+            resultRow.Add(resultString);
+            resultString = resultOK ? "Den angiven Indexer Length och Indexer Length i plan är lika. " :
+                "Den angiven Indexer Length och Indexer Length i plan INTE är lika. ";
+            resultRow.Add(resultString);
+            return resultRow;
+        }
+
+        public List<string> checkEsofagusIndexerLengthInputPlanAndTcc(UserInputEsofagus userInputEsofagus)
+        {
+            List<string> resultRow = new List<string>();
+            resultRow.Add("Indexer length i tabeller i plan och TCC");
+            Calculator calculator = new Calculator();
+            decimal indexerLengthFromInput = calculator.indexerLengthFromUserInput(_specifications, userInputEsofagus);
+            decimal indexerLengthInPlan = indexerLengthPositionTableInPlan();
+            decimal indexerLengthInTcc = indexerLengthPositionTableInTcc();
+            bool resultOK = Math.Abs(indexerLengthFromInput - indexerLengthInPlan) < _specifications.FreeLengthEpsilon &&
+                Math.Abs(indexerLengthFromInput - indexerLengthInTcc) < _specifications.FreeLengthEpsilon;
+            string resultString = resultOK ? "OK" : "Inte OK";
+            resultRow.Add(resultString);
+            resultString = resultOK ? "Den angiven Indexer Length och i tabeller i plan och TCC är lika. " :
+                "Den angiven Indexer Length och i tabeller i plan och TCC är INTE lika. ";
+            resultRow.Add(resultString);
+            return resultRow;
+        }
+            //        resultOK? resultRow.Add("OK"): resultRow.Add("Inte OK");
+            //            //checkTreatmentPlanChannelLength(decimal expectedChannelLength)
+            //            if (treatmentPlanHasSameChannelLength(expectedChannelLength))
+
+            //                StringExtractor stringExtractor = new StringExtractor();
+            //        string tmp = userInputEsofagus.InactiveLengthString;
+            //        decimal indexerLengthFromUserInput = _specifications.MaxChannelLengthEsofagus -
+            //            stringExtractor.decimalStringToDecimal(userInputEsofagus.InactiveLengthString);
+            //            if (_treatmentPlan.esofagusPlanCathteters().Count == 1)
+            //            {
+            //                decimal channelLengthInPlan = _treatmentPlan.treatmentPlanCatheters()[0].selector;
+            //        List<LiveCatheter> liveCatheters = _treatmentPlan.liveCatheters();
+            //                if (liveCatheters.Count == 1)
+            //                {
+            //                    decimal indexerLengthFromPlan = _specifications.LengthOfCathetersUsedForEsofagus +
+            //                        stringExtractor.decimalStringToDecimal(liveCatheters.First().positonTimePairs().First().Item1);
+            //    }
+            //}
+            //            if (_tccPlan.getChannelNumberAndLengths().Count == 1)
+            //            {
+            //                decimal channelLengthInTcc = _tccPlan.getChannelNumberAndLengths()[0].Item2;
+            //List<LiveCatheter> tccLiveCatheters = _tccPlan.liveCatheters();
+            //                if (tccLiveCatheters.Count == 1)
+            //                {
+            //                    decimal indexerLengthFromTcc = _specifications.LengthOfCathetersUsedForEsofagus +
+            //                        stringExtractor.decimalStringToDecimal(tccLiveCatheters.First().positonTimePairs().First().Item1);
+            //                }
+
+            //            }
+            //            resultRow.Add("Indexer length fraktion 1");
+            //            resultRow.Add("Indexer length fraktion 1");
+
+            public List<List<string>> intrauterineTreatmentPlanAndTccPlanResultRows()
         {
             List<List<string>> resultRows = new List<List<string>>();
             resultRows.Add(checkIntrauterineTreatmenPlanTccPlanChannelLengths());
             return resultRows;
 
         }
-
         public List<List<string>> treatmentPlanAndDvhResultRows()
         {
             List<List<string>> resultRows = new List<List<string>>();
@@ -1503,6 +1613,14 @@ namespace WpfApp1
             }
             resultRows.Add(checkCatheterPositionTimePairs(timeEpsilon, useRelativeEpsilon));
             return resultRows;
+        }
+
+        public List<List<string>> esofagusTreatmentLengthResultRows(UserInputEsofagus userInputEsofagus)
+        {
+            List<List<string>> resultRows = new List<List<string>>();
+            resultRows.Add(checkEsofagusIndexerLengthInputAndPlan(userInputEsofagus));
+            return resultRows;
+
         }
 
         public List<List<string>> sourceComparisonResultRows(bool sameSource)

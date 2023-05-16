@@ -303,8 +303,8 @@ namespace WpfApp1
             }
             else if (_tabType == TabType.ESOFAGUS)
             {
-                _specifications.ExpectedChannelLength = 1400.0m;
-
+                _specifications.LengthOfCathetersUsedForEsofagus = 1000.0m;
+                _specifications.MaxChannelLengthEsofagus = 14000.0m;
             }
         }
 
@@ -835,6 +835,7 @@ namespace WpfApp1
                 comparator.tccPlan = tccPlan;
                 bool skipApprovalTest = true;
                 _resultRows.AddRange(comparator.resultRows(skipApprovalTest));
+                _resultRows.AddRange(comparator.esofagusTreatmentLengthResultRows(_userInputEsofagus));
             }
 
 

@@ -36,7 +36,9 @@ namespace WpfApp1
         private decimal _expectedLengthNonPipeCatheter = 1288.0m;
         private decimal _expectedLengthNonPipeCatheterAbove29 = 1234.0m;
         private decimal _expectedLengthPipeCatheterEpsilon = 0.1m;
-
+        private decimal _lengthOfCathetersUsedForEsofagus = 1000.0m;
+        private decimal _maxChannelLengthEsofagus = 14000.0m;
+        private decimal _indexerLengthEpsilon = 0.1m;
         public decimal NeedleDepth { get => _needleDepth; set => _needleDepth = value; }
         public decimal FreeLength { get => _freeLength; set => _freeLength = value; }
         public decimal NeedleDepthEpsilon { get => _needleDepthEpsilon; set => _needleDepthEpsilon = value; }
@@ -64,5 +66,8 @@ namespace WpfApp1
         public decimal TimeEpsilonVenezia { get => _timeEpsilonVenezia; set => _timeEpsilonVenezia = value; }
         public decimal ExpectedLengthNonPipeCatheterAbove29 { get => _expectedLengthNonPipeCatheterAbove29; set => _expectedLengthNonPipeCatheterAbove29 = value; }
         public int ApplicatorDiameterNr2 { get => _applicatorDiameterNr2; set => _applicatorDiameterNr2 = value; }
+        public decimal LengthOfCathetersUsedForEsofagus { get => _lengthOfCathetersUsedForEsofagus; set => _lengthOfCathetersUsedForEsofagus = value; }
+        public decimal MaxChannelLengthEsofagus { get => _maxChannelLengthEsofagus; set => _maxChannelLengthEsofagus = value; }
+        public decimal IndexerLengthEpsilon { get => _indexerLengthEpsilon; set => _indexerLengthEpsilon = value; }
     }
 }
