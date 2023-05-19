@@ -76,6 +76,7 @@ namespace WpfApp1
             _comboboxApplicatorDiametersNr2 = new List<int>();
             initiateSameSourceCombobox();
             initiateEsofagusTab();
+            setEsofagusCalculationsVisable(false);
             // debug
             //PageReader tccPlanPageReader = new PageReader("C:\\work\\git\\xpsfilediffer\\xpsFiles\\A92DTcc.xps");
             //List<List<string>> tccPlanPageList = tccPlanPageReader.getPages(true);
@@ -84,7 +85,22 @@ namespace WpfApp1
         }
         // https://stackoverflow.com/questions/23499105/c-sharp-app-config-with-array-or-list-like-data
 
-        public void setProstateCalculationsVisable(bool setVisable)
+        public void setEsofagusCalculationsVisable(bool setVisable)
+        {
+            if (setVisable)
+            {
+                indexLengthText.Visibility = Visibility.Visible;
+                indexLengthLabel.Visibility = Visibility.Visible;
+            }
+            else
+            {
+                indexLengthText.Visibility = Visibility.Hidden;
+                indexLengthLabel.Visibility = Visibility.Hidden;
+            }
+
+        }
+
+            public void setProstateCalculationsVisable(bool setVisable)
         {
             if (setVisable)
             {
@@ -161,7 +177,7 @@ namespace WpfApp1
             BtnOpenTCCFile4.IsEnabled = false;
             firstFractionCombobox.Items.Add("Ja");
             firstFractionCombobox.Items.Add("Nej");
-            EsofagusBtnCheck.IsEnabled = false;
+            EsofagusBtnCheck.IsEnabled = true;
         }
 
         public void calculateLengthAndFreeLength()
@@ -184,6 +200,21 @@ namespace WpfApp1
                     needleLengthProbSumText.Background = Brushes.Red;
                 }
                 setProstateCalculationsVisable(true);
+            }
+        }
+
+        public void calculateIndexerLengthForUserInput(UserInputEsofagus userInputEsofagus)
+        {
+            if (userInputEsofagus.InactiveLengthString.Length > 0 &&
+                _specifications.MaxChannelLengthEsofagus > 0)
+            {
+                Calculator calculator = new Calculator();
+                decimal indexerLength = calculator.indexerLengthFromUserInput(_specifications, userInputEsofagus);
+                if (indexerLength >= 0 )
+                {
+                    indexLengthText.Text = indexerLength.ToString();
+                    setEsofagusCalculationsVisable(true);
+                }
             }
         }
 
@@ -304,7 +335,7 @@ namespace WpfApp1
             else if (_tabType == TabType.ESOFAGUS)
             {
                 _specifications.LengthOfCathetersUsedForEsofagus = 1000.0m;
-                _specifications.MaxChannelLengthEsofagus = 14000.0m;
+                _specifications.MaxChannelLengthEsofagus = 1400.0m;
             }
         }
 
@@ -838,7 +869,23 @@ namespace WpfApp1
                 _resultRows.AddRange(comparator.esofagusTreatmentLengthResultRows(_userInputEsofagus));
             }
 
+            if (_treatmentPlanXpsFilePathEsofagusFractionX != null && _tccPlanXpsFilePathEsofagusFractionX != null)
+            {
+                List<List<string>> resultRows = new List<List<string>>();
+                PageReader treatmentPlanPageReader = new PageReader(_treatmentPlanXpsFilePathEsofagusFractionX);
+                List<List<string>> treatmentPlanPageList = treatmentPlanPageReader.getPages();
+                TreatmentPlan treatmentPlan = new TreatmentPlan(treatmentPlanPageList, _tabType);
+                comparator.treatmentPlan = treatmentPlan;
+                PageReader tccPlanPageReader = new PageReader(_tccPlanXpsFilePathEsofagusFractionX);
+                List<List<string>> tccPlanPageList = tccPlanPageReader.getPages();
+                List<LiveCatheter> tccLiveCatheters = tccPlanPageReader.tccLiveCatheters(_tabType);
+                TccPlan tccPlan = new TccPlan(tccPlanPageList, tccLiveCatheters);
+                comparator.tccPlan = tccPlan;
+                bool skipApprovalTest = true;
+                _resultRows.AddRange(comparator.esofagusFractionXHeaderRow());
+                _resultRows.AddRange(comparator.resultRows(skipApprovalTest));
 
+            }
         }
         bool buildResultDataGrid()
         {
@@ -1203,7 +1250,7 @@ namespace WpfApp1
                 if (EsofagusTab.IsSelected)
                 {
                     TPXpsPathLabel4.Content = selectedFile;
-                    _treatmentPlanXpsFilePathEsofagus = selectedFile;
+                    _treatmentPlanXpsFilePathEsofagusFractionX = selectedFile;
                     _tabType = TabType.ESOFAGUS;
                 }
             }
@@ -1264,7 +1311,7 @@ namespace WpfApp1
                 if (EsofagusTab.IsSelected)
                 {
                     TCCXpsPathLabel4.Content = selectedFile;
-                    _treatmentPlanXpsFilePathEsofagusFractionX = selectedFile;
+                    _tccPlanXpsFilePathEsofagusFractionX = selectedFile;
                     _tabType = TabType.ESOFAGUS;
                 }
             }
@@ -1272,8 +1319,8 @@ namespace WpfApp1
 
         private void BtnCheck_Click(object sender, RoutedEventArgs e)
         {
-            //try
-            //{
+            try
+            {
                 updateSpecifications();
                 setProstateCalculationsVisable(false);
                 calculateLengthAndFreeLength();
@@ -1285,16 +1332,18 @@ namespace WpfApp1
                 if (_tabType == TabType.ESOFAGUS)
                 {
                     updateEsofagusUserInput();
+                    // Note: _userInputEsofagus must be initiated before calling calculateIndexerLengthForUserInput
+                    calculateIndexerLengthForUserInput(_userInputEsofagus);
                 }
                 if (buildResultDataGrid())
                 {
                     updateCatheters();
                 }
-            //}
-            //catch (Exception)
-            //{
-            //    MessageBox.Show("Ett fel uppstod som programmet inte kunde hantera.", "Fel", MessageBoxButton.OK, MessageBoxImage.Error);
-            //}
+            }
+            catch (Exception)
+            {
+                MessageBox.Show("Ett fel uppstod som programmet inte kunde hantera.", "Fel", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
         }
 
         private void moveFileToArchive(string soureFileNamePath, string destinationDirectory, string destinationFileName)
@@ -1426,6 +1475,7 @@ namespace WpfApp1
         {
             setProstateCalculationsVisable(false);
             setCylinderCalculationsVisable(false);
+            setEsofagusCalculationsVisable(false);
             _resultRows.Clear();
             resultSummaryLabel.Content = "";
             resultSummaryLabel.Visibility = Visibility.Hidden;

@@ -1417,12 +1417,16 @@ namespace WpfApp1
             decimal indexerLengthFromInput = calculator.indexerLengthFromUserInput(_specifications, userInputEsofagus);
             decimal indexerLengthInPlan = indexerLengthPositionTableInPlan();
             decimal indexerLengthInTcc = indexerLengthPositionTableInTcc();
+            string indexerLengthInfo = "Angiven: " + indexerLengthFromInput.ToString();
+            indexerLengthInfo += " I plan: " + indexerLengthInPlan.ToString();
+            indexerLengthInfo += " I TCC: " + indexerLengthInTcc.ToString();
             bool resultOK = Math.Abs(indexerLengthFromInput - indexerLengthInPlan) < _specifications.FreeLengthEpsilon &&
                 Math.Abs(indexerLengthFromInput - indexerLengthInTcc) < _specifications.FreeLengthEpsilon;
             string resultString = resultOK ? "OK" : "Inte OK";
             resultRow.Add(resultString);
-            resultString = resultOK ? "Den angiven Indexer Length och i tabeller i plan och TCC är lika. " :
-                "Den angiven Indexer Length och i tabeller i plan och TCC är INTE lika. ";
+            resultString = resultOK ? "Den angiven Indexer Length och i tabeller i plan och TCC är lika med den angivna längden. " :
+                "Den angiven Indexer Length och i tabeller i plan och TCC är INTE lika med den angivna längden. ";
+            resultString += indexerLengthInfo;
             resultRow.Add(resultString);
             return resultRow;
         }
@@ -1526,7 +1530,6 @@ namespace WpfApp1
             decimal reportedTreatmentTime = _treatmentPlan.totalTreatmentTimeValue();
             resultRows.Add(checkTreatmentTime(estimatedTreatmentTime,
                 reportedTreatmentTime, _specifications.TreatmentTimeEpsilon));
-            resultRows.Add(checkTreatmentPlanChannelLength(_specifications.ExpectedChannelLength));
             return resultRows;
         }
 
@@ -1588,6 +1591,13 @@ namespace WpfApp1
             return resultRows;
         }
 
+        public List<List<string>> esofagusFractionXHeaderRow()
+        {
+            List<List<string>> resultRows = new List<List<string>>();
+            resultRows.Add(headerResultRow("Plan & TCC fraktion X"));
+            return resultRows;
+        }
+
         public List<List<string>> resultRows(bool skipApprovalTest = false, bool useRelativeEpsilon = false, bool useTimeEpsilonVenezia = false)
         {
             List<List<string>> resultRows = new List<List<string>>();
@@ -1619,8 +1629,8 @@ namespace WpfApp1
         {
             List<List<string>> resultRows = new List<List<string>>();
             resultRows.Add(checkEsofagusIndexerLengthInputAndPlan(userInputEsofagus));
+            resultRows.Add(checkEsofagusIndexerLengthInputPlanAndTcc(userInputEsofagus));
             return resultRows;
-
         }
 
         public List<List<string>> sourceComparisonResultRows(bool sameSource)

@@ -37,7 +37,7 @@ namespace WpfApp1
         private decimal _expectedLengthNonPipeCatheterAbove29 = 1234.0m;
         private decimal _expectedLengthPipeCatheterEpsilon = 0.1m;
         private decimal _lengthOfCathetersUsedForEsofagus = 1000.0m;
-        private decimal _maxChannelLengthEsofagus = 14000.0m;
+        private decimal _maxChannelLengthEsofagus;
         private decimal _indexerLengthEpsilon = 0.1m;
         public decimal NeedleDepth { get => _needleDepth; set => _needleDepth = value; }
         public decimal FreeLength { get => _freeLength; set => _freeLength = value; }

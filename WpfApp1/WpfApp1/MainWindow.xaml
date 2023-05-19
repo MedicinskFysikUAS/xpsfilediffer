@@ -163,10 +163,10 @@
                     </Grid.ColumnDefinitions>
                     <Grid Grid.ColumnSpan="3" HorizontalAlignment="Left" Height="186" Margin="3,78,0,0" VerticalAlignment="Top" Width="637">
                         <Button x:Name="EsofagusBtnCheck" Click="BtnCheck_Click" Content="Kontrollera" HorizontalAlignment="Left" Margin="573,127,0,0" VerticalAlignment="Top" Width="64" Height="26" RenderTransformOrigin="0.469,-2.114"/>
-                        <Label x:Name="activeLengthLabel" Content="Aktiv längd [mm]: " HorizontalAlignment="Left" Margin="2,58,0,0" VerticalAlignment="Top" Height="26" Width="102"/>
+                        <Label x:Name="activeLengthLabel" Content="Aktiv längd [mm]: " HorizontalAlignment="Left" Margin="2,56,0,0" VerticalAlignment="Top" Height="26" Width="102"/>
                         <TextBox x:Name="activeLengthText" HorizontalAlignment="Left" Margin="109,58,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="45" Height="22" TextChanged="TextBox_TextChanged"/>
                         <Label x:Name="instructionLabel3" Content="Tryck alltid Kontrollera efter att något har ändrats!" HorizontalAlignment="Left" Margin="366,54,0,0" VerticalAlignment="Top" FontStyle="Italic" FontSize="11" Width="250" FontWeight="Normal"/>
-                        <Label x:Name="inactiveLengthLabel" Content="Inaktiv längd [mm]:" HorizontalAlignment="Left" Margin="178,58,0,0" VerticalAlignment="Top" Height="26" Width="118" RenderTransformOrigin="0.5,0.5">
+                        <Label x:Name="inactiveLengthLabel" Content="Inaktiv längd [mm]:" HorizontalAlignment="Left" Margin="158,53,0,0" VerticalAlignment="Top" Height="26" Width="118" RenderTransformOrigin="0.5,0.5">
                             <Label.RenderTransform>
                                 <TransformGroup>
                                     <ScaleTransform/>
@@ -176,9 +176,9 @@
                                 </TransformGroup>
                             </Label.RenderTransform>
                         </Label>
-                        <TextBox x:Name="inactiveLengthText" HorizontalAlignment="Left" Margin="301,58,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="44" Height="22" TextChanged="TextBox_TextChanged"/>
-                        <Label x:Name="indexLengthLabel" Content="Indexer length: " HorizontalAlignment="Left" Margin="0,89,0,0" VerticalAlignment="Top"/>
-                        <TextBox x:Name="indexLengthText" HorizontalAlignment="Left" Margin="109,89,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="84" Height="22"  TextChanged="TextBox_TextChanged"/>
+                        <TextBox x:Name="inactiveLengthText" HorizontalAlignment="Left" Margin="270,56,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="44" Height="22" TextChanged="TextBox_TextChanged"/>
+                        <Label x:Name="indexLengthLabel" Content="Beräknad Indexer Length: " HorizontalAlignment="Left" Margin="241,91,0,0" VerticalAlignment="Top"/>
+                        <TextBox x:Name="indexLengthText" HorizontalAlignment="Left" Margin="391,93,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="84" Height="22"  TextChanged="TextBox_TextChanged"/>
                         <Label x:Name="planCodeEsofagusLabel" Content="Plankod:" HorizontalAlignment="Left" Margin="1,119,0,0" VerticalAlignment="Top"/>
                         <TextBox x:Name="planCodeEsofagusText" HorizontalAlignment="Left" Margin="109,119,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="84" Height="22"  TextChanged="TextBox_TextChanged"/>
                     </Grid>
@@ -197,8 +197,8 @@
                     <ComboBox x:Name="sameSourceCombobox3" Grid.Column="1" HorizontalAlignment="Left" Margin="4,0,0,0" VerticalAlignment="Center" Width="52"/>
                     <Label x:Name="firstFractionLabel" Content="Första fraktionen?" HorizontalAlignment="Left" VerticalAlignment="Center" Grid.Column="1" Margin="70,0,0,0"/>
                     <ComboBox x:Name="firstFractionCombobox" DropDownClosed="firstFractionCombobox_DropDownClosed" Grid.Column="1" HorizontalAlignment="Left" Margin="179,0,0,0" VerticalAlignment="Center" Width="52"/>
-                    <Label x:Name="EsofagusPrescribedDoseLabel" Content="Ordinerad dos [Gy]:" HorizontalAlignment="Left" Margin="7,166,0,0" VerticalAlignment="Top" Grid.Column="1"/>
-                    <TextBox x:Name="esofagusPrescribedDoseText" HorizontalAlignment="Center" Margin="0,171,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="84" Height="22"  TextChanged="TextBox_TextChanged" Grid.Column="1"/>
+                    <Label x:Name="EsofagusPrescribedDoseLabel" Content="Ordinerad dos [Gy]:" HorizontalAlignment="Left" Margin="7,167,0,0" VerticalAlignment="Top"/>
+                    <TextBox x:Name="esofagusPrescribedDoseText" HorizontalAlignment="Left" Margin="123,169,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="84" Height="22"  TextChanged="TextBox_TextChanged" Grid.ColumnSpan="2"/>
                 </Grid>
 
             </TabItem>
