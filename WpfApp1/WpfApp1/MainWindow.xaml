@@ -40,13 +40,13 @@
                         <Button x:Name="BtnOpenTCCFile0" Click="BtnOpenTCCFile_Click" Content="TCC file:" HorizontalAlignment="Left" Margin="0,54,0,0" VerticalAlignment="Top" Height="20" Width="46"/>
                         <Label x:Name="TCCXpsPathLabel0" Content="Inte vald" HorizontalAlignment="Left" Margin="56,51,0,0" VerticalAlignment="Top" Height="26" Width="541"/>
                     </Grid>
-                    <Label x:Name="needleLengthLabel" Content="Nållängd [mm]: " HorizontalAlignment="Left" Margin="5,97,0,0" VerticalAlignment="Top" Height="26" Width="95"/>
+                    <Label x:Name="needleLengthLabel" Content="Nållängd [mm]: " HorizontalAlignment="Left" Margin="3,97,0,0" VerticalAlignment="Top" Height="26" Width="95"/>
                     <TextBox x:Name="needleLengthText" HorizontalAlignment="Left" Margin="106,99,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="45" Height="22"  TextChanged="TextBox_TextChanged"/>
-                    <Label x:Name="probeDistanceLabel" Content="Avst. prob [mm]: " HorizontalAlignment="Left" Margin="5,124,0,0" VerticalAlignment="Top" Height="26" Width="101"/>
+                    <Label x:Name="probeDistanceLabel" Content="Avst. prob [mm]: " HorizontalAlignment="Left" Margin="4,124,0,0" VerticalAlignment="Top" Height="26" Width="101"/>
                     <TextBox x:Name="probeDistanceText" HorizontalAlignment="Left" Margin="106,128,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="45" Height="22" TextChanged="TextBox_TextChanged"/>
                     <Label x:Name="calculatedLabel" Content="Beräknat:" Grid.Column="1" HorizontalAlignment="Left" Margin="12,83,0,0" VerticalAlignment="Top" FontStyle="Italic"/>
                     <Label x:Name="instructionLabel" Content="Tryck alltid Kontrollera efter att något har ändrats!" Grid.Column="1" HorizontalAlignment="Left" Margin="170,137,0,0" VerticalAlignment="Top" FontStyle="Italic" Grid.ColumnSpan="2" FontSize="11" Width="250" FontWeight="Normal"/>
-                    <Label x:Name="prescribedDoseLabel" Content="Ordinerad dos [Gy]:" HorizontalAlignment="Left" Margin="6,159,0,0" VerticalAlignment="Top" Height="26" Width="118" RenderTransformOrigin="0.5,0.5">
+                    <Label x:Name="prescribedDoseLabel" Content="Ordinerad dos [Gy]:" HorizontalAlignment="Left" Margin="4,159,0,0" VerticalAlignment="Top" Height="26" Width="118" RenderTransformOrigin="0.5,0.5">
                         <Label.RenderTransform>
                             <TransformGroup>
                                 <ScaleTransform/>
@@ -163,10 +163,10 @@
                     </Grid.ColumnDefinitions>
                     <Grid Grid.ColumnSpan="3" HorizontalAlignment="Left" Height="186" Margin="3,78,0,0" VerticalAlignment="Top" Width="637">
                         <Button x:Name="EsofagusBtnCheck" Click="BtnCheck_Click" Content="Kontrollera" HorizontalAlignment="Left" Margin="573,127,0,0" VerticalAlignment="Top" Width="64" Height="26" RenderTransformOrigin="0.469,-2.114"/>
-                        <Label x:Name="activeLengthLabel" Content="Aktiv längd [mm]: " HorizontalAlignment="Left" Margin="2,56,0,0" VerticalAlignment="Top" Height="26" Width="102"/>
-                        <TextBox x:Name="activeLengthText" HorizontalAlignment="Left" Margin="109,58,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="45" Height="22" TextChanged="TextBox_TextChanged"/>
+                        <Label x:Name="activeLengthLabel" Content="Aktiv längd [mm]: " HorizontalAlignment="Left" Margin="0,70,0,0" VerticalAlignment="Top" Height="26" Width="102"/>
+                        <TextBox x:Name="activeLengthText" HorizontalAlignment="Left" Margin="117,72,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="45" Height="22" TextChanged="TextBox_TextChanged"/>
                         <Label x:Name="instructionLabel3" Content="Tryck alltid Kontrollera efter att något har ändrats!" HorizontalAlignment="Left" Margin="366,54,0,0" VerticalAlignment="Top" FontStyle="Italic" FontSize="11" Width="250" FontWeight="Normal"/>
-                        <Label x:Name="inactiveLengthLabel" Content="Inaktiv längd [mm]:" HorizontalAlignment="Left" Margin="158,53,0,0" VerticalAlignment="Top" Height="26" Width="118" RenderTransformOrigin="0.5,0.5">
+                        <Label x:Name="inactiveLengthLabel" Content="Inaktiv längd [mm]:" HorizontalAlignment="Left" Margin="182,67,0,0" VerticalAlignment="Top" Height="26" Width="118" RenderTransformOrigin="0.5,0.5">
                             <Label.RenderTransform>
                                 <TransformGroup>
                                     <ScaleTransform/>
@@ -176,29 +176,30 @@
                                 </TransformGroup>
                             </Label.RenderTransform>
                         </Label>
-                        <TextBox x:Name="inactiveLengthText" HorizontalAlignment="Left" Margin="270,56,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="44" Height="22" TextChanged="TextBox_TextChanged"/>
-                        <Label x:Name="indexLengthLabel" Content="Beräknad Indexer Length: " HorizontalAlignment="Left" Margin="241,91,0,0" VerticalAlignment="Top"/>
-                        <TextBox x:Name="indexLengthText" HorizontalAlignment="Left" Margin="391,93,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="84" Height="22"  TextChanged="TextBox_TextChanged"/>
-                        <Label x:Name="planCodeEsofagusLabel" Content="Plankod:" HorizontalAlignment="Left" Margin="1,119,0,0" VerticalAlignment="Top"/>
-                        <TextBox x:Name="planCodeEsofagusText" HorizontalAlignment="Left" Margin="109,119,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="84" Height="22"  TextChanged="TextBox_TextChanged"/>
+                        <TextBox x:Name="inactiveLengthText" HorizontalAlignment="Left" Margin="305,69,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="44" Height="22" TextChanged="TextBox_TextChanged"/>
+                        <Label x:Name="indexLengthLabel" Content="Beräknad Indexer Length: " HorizontalAlignment="Left" Margin="226,104,0,0" VerticalAlignment="Top"/>
+                        <TextBox x:Name="indexLengthText" HorizontalAlignment="Left" Margin="390,108,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="84" Height="22"  TextChanged="TextBox_TextChanged"/>
+                        <Label x:Name="planCodeEsofagusLabel" Content="Plankod:" HorizontalAlignment="Left" Margin="1,131,0,0" VerticalAlignment="Top"/>
+                        <TextBox x:Name="planCodeEsofagusText" HorizontalAlignment="Left" Margin="109,131,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="84" Height="22"  TextChanged="TextBox_TextChanged"/>
+                        <Label Content="Data för dagens behandling:" HorizontalAlignment="Left" Margin="10,41,0,0" VerticalAlignment="Top" FontStyle="Italic" FontWeight="Bold"/>
                     </Grid>
-                    <Grid HorizontalAlignment="Left" Height="137" Margin="10,0,0,0" VerticalAlignment="Top" Width="597" Grid.ColumnSpan="3">
-                        <Label x:Name="TPXpsPathLabel3" Content="Inte vald" HorizontalAlignment="Left" Margin="139,0,0,0" VerticalAlignment="Top" Height="26" Width="465"/>
-                        <Button x:Name="BtnOpenTPFile3" Click="BtnOpenTPFile_Click" Content="Plan-fil fraktion nr 1:" HorizontalAlignment="Left" Margin="0,3,0,0" VerticalAlignment="Top" Width="132" Height="23"/>
+                    <Grid HorizontalAlignment="Left" Height="137" Margin="10,-6,0,0" VerticalAlignment="Top" Width="597" Grid.ColumnSpan="3">
+                        <Label x:Name="TPXpsPathLabel3" Content="Inte vald" HorizontalAlignment="Left" Margin="139,3,0,0" VerticalAlignment="Top" Height="26" Width="465"/>
+                        <Button x:Name="BtnOpenTPFile3" Click="BtnOpenTPFile_Click" Content="Plan-fil fraktion nr 1:" HorizontalAlignment="Left" Margin="0,6,0,0" VerticalAlignment="Top" Width="132" Height="23"/>
                         <Button x:Name="BtnOpenTCCFile3" Click="BtnOpenTCCFile_Click" Content="TCC-fil fraktion nr 1:" HorizontalAlignment="Left" Margin="0,37,0,0" VerticalAlignment="Top" Height="20" Width="132"/>
                         <Label x:Name="TCCXpsPathLabel3" Content="Inte vald" HorizontalAlignment="Left" Margin="137,34,0,0" VerticalAlignment="Top" Height="26" Width="465"/>
-                        <Label x:Name="TPXpsPathLabel4" Content="Inte vald" HorizontalAlignment="Left" Margin="137,67,0,0" VerticalAlignment="Top" Height="26" Width="467"/>
-                        <Button x:Name="BtnOpenTPFile4" Click="BtnOpenTPFile2_Click" Content="Plan-fil fraktion nr x:" HorizontalAlignment="Left" Margin="2,70,0,0" VerticalAlignment="Top" Width="130" Height="23"/>
-                        <Button x:Name="BtnOpenTCCFile4" Click="BtnOpenTCCFile2_Click" Content="TCC-fil fraktion nr x:" HorizontalAlignment="Left" Margin="2,104,0,0" VerticalAlignment="Top" Height="20" Width="130"/>
-                        <Label x:Name="TCCXpsPathLabel4" Content="Inte vald" HorizontalAlignment="Left" Margin="137,101,0,0" VerticalAlignment="Top" Height="26" Width="467"/>
+                        <Label x:Name="TPXpsPathLabel4" Content="Inte vald" HorizontalAlignment="Left" Margin="137,64,0,0" VerticalAlignment="Top" Height="26" Width="467"/>
+                        <Button x:Name="BtnOpenTPFile4" Click="BtnOpenTPFile2_Click" Content="Plan-fil fraktion nr x:" HorizontalAlignment="Left" Margin="0,66,0,0" VerticalAlignment="Top" Width="130" Height="23"/>
+                        <Button x:Name="BtnOpenTCCFile4" Click="BtnOpenTCCFile2_Click" Content="TCC-fil fraktion nr x:" HorizontalAlignment="Left" Margin="0,101,0,0" VerticalAlignment="Top" Height="20" Width="130"/>
+                        <Label x:Name="TCCXpsPathLabel4" Content="Inte vald" HorizontalAlignment="Left" Margin="137,97,0,0" VerticalAlignment="Top" Height="26" Width="467"/>
                     </Grid>
                     <Label x:Name="resultSummaryLabel3" Content="label" HorizontalAlignment="Left" Margin="177,404,0,0" VerticalAlignment="Top" Width="124" Grid.ColumnSpan="2"/>
-                    <Label x:Name="sameSourceLabel3" Content="Samma källa i dosplan och TCC?" HorizontalAlignment="Left" Margin="3,0,0,0" VerticalAlignment="Center"/>
-                    <ComboBox x:Name="sameSourceCombobox3" Grid.Column="1" HorizontalAlignment="Left" Margin="4,0,0,0" VerticalAlignment="Center" Width="52"/>
-                    <Label x:Name="firstFractionLabel" Content="Första fraktionen?" HorizontalAlignment="Left" VerticalAlignment="Center" Grid.Column="1" Margin="70,0,0,0"/>
-                    <ComboBox x:Name="firstFractionCombobox" DropDownClosed="firstFractionCombobox_DropDownClosed" Grid.Column="1" HorizontalAlignment="Left" Margin="179,0,0,0" VerticalAlignment="Center" Width="52"/>
-                    <Label x:Name="EsofagusPrescribedDoseLabel" Content="Ordinerad dos [Gy]:" HorizontalAlignment="Left" Margin="7,167,0,0" VerticalAlignment="Top"/>
-                    <TextBox x:Name="esofagusPrescribedDoseText" HorizontalAlignment="Left" Margin="123,169,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="84" Height="22"  TextChanged="TextBox_TextChanged" Grid.ColumnSpan="2"/>
+                    <Label x:Name="sameSourceLabel3" Content="Samma källa i dosplan och TCC?" HorizontalAlignment="Left" Margin="5,233,0,0" VerticalAlignment="Top"/>
+                    <ComboBox x:Name="sameSourceCombobox3" Grid.Column="1" HorizontalAlignment="Left" Margin="11,233,0,0" VerticalAlignment="Top" Width="52"/>
+                    <Label x:Name="firstFractionLabel" Content="Första fraktionen?" HorizontalAlignment="Left" VerticalAlignment="Top" Grid.Column="1" Margin="77,232,0,0"/>
+                    <ComboBox x:Name="firstFractionCombobox" DropDownClosed="firstFractionCombobox_DropDownClosed" Grid.Column="1" HorizontalAlignment="Left" Margin="186,233,0,0" VerticalAlignment="Top" Width="52"/>
+                    <Label x:Name="EsofagusPrescribedDoseLabel" Content="Ordinerad dos [Gy]:" HorizontalAlignment="Left" Margin="3,178,0,0" VerticalAlignment="Top"/>
+                    <TextBox x:Name="esofagusPrescribedDoseText" HorizontalAlignment="Left" Margin="123,180,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="84" Height="22"  TextChanged="TextBox_TextChanged" Grid.ColumnSpan="2"/>
                 </Grid>
 
             </TabItem>

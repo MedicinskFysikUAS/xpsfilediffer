@@ -842,6 +842,13 @@ namespace WpfApp1
             }
         }
 
+        public bool isFirstFraction()
+        {
+            return (_treatmentPlanXpsFilePath != null && _tccPlanXpsFilePath != null) &&
+                (_treatmentPlanXpsFilePathEsofagusFractionX == null && _tccPlanXpsFilePathEsofagusFractionX == null);
+        }
+
+
         public void addEsofagusResultRows()
         {
             Comparator comparator = new Comparator(_specifications);
@@ -853,6 +860,7 @@ namespace WpfApp1
                 comparator.treatmentPlan = treatmentPlan;
                 _resultRows.AddRange(comparator.esofagusInfoRows(_userInputEsofagus));
             }
+            Tuple<decimal, decimal> planTccActiveLength = new Tuple<decimal, decimal>(-1.0m, -1.0m);
             if (_treatmentPlanXpsFilePath != null && _tccPlanXpsFilePath != null)
             {
                 PageReader treatmentPlanPageReader = new PageReader(_treatmentPlanXpsFilePath);
@@ -865,8 +873,10 @@ namespace WpfApp1
                 TccPlan tccPlan = new TccPlan(tccPlanPageList, tccLiveCatheters);
                 comparator.tccPlan = tccPlan;
                 bool skipApprovalTest = true;
+                _resultRows.AddRange(comparator.esofagusFirstFractionHeaderRow());
                 _resultRows.AddRange(comparator.resultRows(skipApprovalTest));
-                _resultRows.AddRange(comparator.esofagusTreatmentLengthResultRows(_userInputEsofagus));
+                _resultRows.AddRange(comparator.esofagusTreatmentLengthResultRows(_userInputEsofagus, planTccActiveLength));
+                planTccActiveLength = new Tuple<decimal, decimal>(comparator.activeLengthInPlan(), comparator.activeLengthInTcc());
             }
 
             if (_treatmentPlanXpsFilePathEsofagusFractionX != null && _tccPlanXpsFilePathEsofagusFractionX != null)
@@ -884,6 +894,21 @@ namespace WpfApp1
                 bool skipApprovalTest = true;
                 _resultRows.AddRange(comparator.esofagusFractionXHeaderRow());
                 _resultRows.AddRange(comparator.resultRows(skipApprovalTest));
+
+                if ((_treatmentPlanXpsFilePath != null && _tccPlanXpsFilePath != null) &&
+                        (planTccActiveLength.Item1 != 1.0m && planTccActiveLength.Item2 != -1.0m))
+                {
+                    PageReader treatmentPlanPageReaderFirstFraction = new PageReader(_treatmentPlanXpsFilePath);
+                    List<List<string>> treatmentPlanPageListFirstFraction = treatmentPlanPageReaderFirstFraction.getPages();
+                    TreatmentPlan treatmentPlanFirstFraction = new TreatmentPlan(treatmentPlanPageListFirstFraction, _tabType);
+                    PageReader tccPlanPageReaderFirstFraction = new PageReader(_tccPlanXpsFilePath);
+                    List<List<string>> tccPlanPageListFirstFraction = tccPlanPageReaderFirstFraction.getPages();
+                    List<LiveCatheter> tccLiveCathetersFirstFraction = tccPlanPageReaderFirstFraction.tccLiveCatheters(_tabType);
+                    TccPlan tccPlanFirstFraction = new TccPlan(tccPlanPageListFirstFraction, tccLiveCathetersFirstFraction);
+                    _resultRows.AddRange(comparator.esofagusTreatmentLengthResultRows(_userInputEsofagus, planTccActiveLength));
+                }
+
+
 
             }
         }
