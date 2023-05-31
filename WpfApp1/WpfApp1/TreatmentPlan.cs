@@ -158,6 +158,10 @@ namespace WpfApp1
             {
                 return cylinderCalibrationDateTime();
             }
+            else if (_tabType == TabType.ESOFAGUS)
+            {
+                return cylinderCalibrationDateTime();
+            }
             else
             {
                 return "";
@@ -279,17 +283,13 @@ namespace WpfApp1
                     stringValue = _stringExtractor.getValueFromSpaceSeparetedString(_pageList[pageIndex], "Prescribed Dose:", 0);
                 }
             }
-            else if (_tabType == TabType.CYLINDER)
+            else if (_tabType == TabType.CYLINDER ||
+                _tabType == TabType.INTRAUTERINE ||
+                _tabType == TabType.ESOFAGUS)
             {
                 pageIndex = 0;
                 stringValue = _stringExtractor.getValueBeforeSearchString(_pageList[pageIndex], "Prescription dose per fraction/pulse (Gy):", pageIndex);
             }
-            else if (_tabType == TabType.INTRAUTERINE)
-            {
-                pageIndex = 0;
-                stringValue = _stringExtractor.getValueBeforeSearchString(_pageList[pageIndex], "Prescription dose per fraction/pulse (Gy):", pageIndex);
-            }
-
             if (stringValue.Contains('.'))
             {
                 stringValue = stringValue.Replace('.', ',');
@@ -887,7 +887,8 @@ namespace WpfApp1
                     {
                         startTableIndex = offsetIndex;
                         endTableIndex = getCylindricCatheterTableEndIndex(page, currentIndex);
-                        List<string> allValues = _stringExtractor.allValuesInInterval(page, startTableIndex, endTableIndex);
+                        List<string> allValuesOld = _stringExtractor.allValuesInInterval(page, startTableIndex, endTableIndex);
+                        List<string> allValues = _stringExtractor.allValuesInIntervalExeptDosePointLines(page, startTableIndex, endTableIndex);
                         List<List<string>> catheterTableLines = _stringExtractor.nColumnsRowsInInterval(6, allValues);
                         foreach (var catheterTableLine in catheterTableLines)
                         {

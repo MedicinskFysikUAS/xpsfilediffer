@@ -46,6 +46,8 @@ namespace WpfApp1
         string _tccPlanXpsFilePathEsofagus;
         string _treatmentPlanXpsFilePathEsofagusFractionX;
         string _tccPlanXpsFilePathEsofagusFractionX;
+        string _savedTreatmentPlanXpsFilePath;
+        string _savedTccPlanXpsFilePath;
 
         private TabType _tabType;
         private List<int> _comboboxDiameters;
@@ -364,11 +366,17 @@ namespace WpfApp1
             return (planCodeTextIntrauterine.Text.Length > 0);
         }
 
+        public bool planCodeIsSetEsofagus()
+        {
+            return (planCodeEsofagusText.Text.Length > 0);
+        }
+
+
         public bool prescriptionDoseIsSetCylinder()
         {
             return (cylindricPrescribedDoseText.Text.Length > 0);
         }
-
+        
         public bool prescriptionDoseIsSetIntrauterine()
         {
             return (intrauterinePrescribedDoseText.Text.Length > 0);
@@ -448,9 +456,19 @@ namespace WpfApp1
             return sameSourceCombobox2.SelectedIndex == 0;
         }
 
+        private bool sameSourceEsofagus()
+        {
+            return sameSourceCombobox3.SelectedIndex == 0;
+        }
+
         private bool sameSourceSetIntrauterine()
         {
             return sameSourceCombobox2.SelectedIndex != -1;
+        }
+
+        private bool sameSourceSetEsofagus()
+        {
+            return sameSourceCombobox3.SelectedIndex != -1;
         }
 
         private bool applicatorTypeIsSet()
@@ -508,6 +526,11 @@ namespace WpfApp1
                 _userInputIntrauterine.PlanCodeIsSet = planCodeIsSetIntrauterine();
                 _userInputIntrauterine.SameSourceIsSet = sameSourceIsSet();
             }
+            else if (EsofagusTab.IsSelected)
+            {
+                _isSameSource = sameSourceEsofagus();
+                _sameSourceSet = sameSourceSetEsofagus();
+            }
         }
 
         private void updateEsofagusUserInput()
@@ -519,6 +542,7 @@ namespace WpfApp1
             _userInputEsofagus.PlanCode = planCodeEsofagusText.Text;
             _userInputEsofagus.IsSameSource = sameSourceCombobox3.SelectedIndex == 0;
             _userInputEsofagus.IsFirstFraction = firstFractionCombobox.SelectedIndex == 0;
+            _userInputEsofagus.IsFollowingFraction = firstFractionCombobox.SelectedIndex == 1;
             _userInputEsofagus.PrescribedDoseString = esofagusPrescribedDoseText.Text;
         }
 
@@ -841,14 +865,6 @@ namespace WpfApp1
                 }
             }
         }
-
-        public bool isFirstFraction()
-        {
-            return (_treatmentPlanXpsFilePath != null && _tccPlanXpsFilePath != null) &&
-                (_treatmentPlanXpsFilePathEsofagusFractionX == null && _tccPlanXpsFilePathEsofagusFractionX == null);
-        }
-
-
         public void addEsofagusResultRows()
         {
             Comparator comparator = new Comparator(_specifications);
@@ -875,10 +891,15 @@ namespace WpfApp1
                 bool skipApprovalTest = true;
                 _resultRows.AddRange(comparator.esofagusFirstFractionHeaderRow());
                 _resultRows.AddRange(comparator.resultRows(skipApprovalTest));
-                _resultRows.AddRange(comparator.esofagusTreatmentLengthResultRows(_userInputEsofagus, planTccActiveLength));
+                bool includeUserInputCheck = _userInputEsofagus.IsFirstFraction;
+                _resultRows.AddRange(comparator.esofagusTreatmentLengthResultRows(_userInputEsofagus, planTccActiveLength, includeUserInputCheck));
                 planTccActiveLength = new Tuple<decimal, decimal>(comparator.activeLengthInPlan(), comparator.activeLengthInTcc());
+                if (_userInputEsofagus.IsFirstFraction)
+                {
+                    _resultRows.AddRange(comparator.sourceAndPlanCodeEsofagusResultRows(_userInputEsofagus.IsSameSource, _userInputEsofagus.PlanCode, 
+                        _userInputEsofagus.PrescribedDoseString));
+                }
             }
-
             if (_treatmentPlanXpsFilePathEsofagusFractionX != null && _tccPlanXpsFilePathEsofagusFractionX != null)
             {
                 List<List<string>> resultRows = new List<List<string>>();
@@ -894,7 +915,8 @@ namespace WpfApp1
                 bool skipApprovalTest = true;
                 _resultRows.AddRange(comparator.esofagusFractionXHeaderRow());
                 _resultRows.AddRange(comparator.resultRows(skipApprovalTest));
-
+                _resultRows.AddRange(comparator.sourceAndPlanCodeEsofagusResultRows(_userInputEsofagus.IsSameSource, _userInputEsofagus.PlanCode,
+                       _userInputEsofagus.PrescribedDoseString));
                 if ((_treatmentPlanXpsFilePath != null && _tccPlanXpsFilePath != null) &&
                         (planTccActiveLength.Item1 != 1.0m && planTccActiveLength.Item2 != -1.0m))
                 {
@@ -905,11 +927,14 @@ namespace WpfApp1
                     List<List<string>> tccPlanPageListFirstFraction = tccPlanPageReaderFirstFraction.getPages();
                     List<LiveCatheter> tccLiveCathetersFirstFraction = tccPlanPageReaderFirstFraction.tccLiveCatheters(_tabType);
                     TccPlan tccPlanFirstFraction = new TccPlan(tccPlanPageListFirstFraction, tccLiveCathetersFirstFraction);
-                    _resultRows.AddRange(comparator.esofagusTreatmentLengthResultRows(_userInputEsofagus, planTccActiveLength));
+                    bool includeUserInputCheck = !_userInputEsofagus.IsFirstFraction;
+                    _resultRows.AddRange(comparator.esofagusTreatmentLengthResultRows(_userInputEsofagus, planTccActiveLength, includeUserInputCheck));
                 }
-
-
-
+                if (_userInputEsofagus.IsFollowingFraction)
+                {
+                    _resultRows.AddRange(comparator.sourceAndPlanCodeEsofagusResultRows(_userInputEsofagus.IsSameSource, _userInputEsofagus.PlanCode,
+                       _userInputEsofagus.PrescribedDoseString));
+                }
             }
         }
         bool buildResultDataGrid()
@@ -970,8 +995,34 @@ namespace WpfApp1
             return correctFileType;
         }
 
-        private void updateCatheters()
+
+        private void setTreatmentPlanAndTccPath()
         {
+            if (_treatmentPlanXpsFilePathEsofagusFractionX != null && _tccPlanXpsFilePathEsofagusFractionX != null)
+            {
+                _savedTreatmentPlanXpsFilePath = _treatmentPlanXpsFilePath;
+                _savedTccPlanXpsFilePath = _tccPlanXpsFilePath;
+                _treatmentPlanXpsFilePath = _treatmentPlanXpsFilePathEsofagusFractionX;
+                _tccPlanXpsFilePath = _tccPlanXpsFilePathEsofagusFractionX;
+            }
+        }
+
+        private void resetTreatmentPlanAndTccPath()
+        {
+            if (_treatmentPlanXpsFilePathEsofagusFractionX != null && _tccPlanXpsFilePathEsofagusFractionX != null &&
+                _savedTreatmentPlanXpsFilePath != null && _savedTccPlanXpsFilePath != null)
+            {
+                _treatmentPlanXpsFilePath = _savedTreatmentPlanXpsFilePath;
+                _tccPlanXpsFilePath = _savedTccPlanXpsFilePath;
+            }
+        }
+
+            private void updateCatheters()
+        {
+            if (_tabType == TabType.ESOFAGUS)
+            {
+                setTreatmentPlanAndTccPath();
+            }
             Comparator comparator = new Comparator(_specifications);
             IntrauterineApplicatorType intrauterineApplicatorType = selectedItrauterineApplicatorType();
             if (_treatmentPlanXpsFilePath != null && _tccPlanXpsFilePath != null)
@@ -1013,7 +1064,10 @@ namespace WpfApp1
                 _tccPlanLiveCatheters = comparator.tccPlanLiveCatheters();
                 catheterInfoButton.Visibility = Visibility.Visible;
             }
-
+            if (_tabType == TabType.ESOFAGUS)
+            {
+                resetTreatmentPlanAndTccPath();
+            }
         }
 
         public DataTable treatmentPlanDataTable()
@@ -1434,50 +1488,6 @@ namespace WpfApp1
             TccPlan tccPlan = new TccPlan(getPageList(xpsFilePath), liveCatheters);
             return tccPlan.planCode();
         }
-        private void moveFilesToArchive()
-        {
-            try
-            {
-                if (_treatmentPlanXpsFilePath != null && File.Exists(_treatmentPlanXpsFilePath) &&
-                    _tccPlanXpsFilePath != null && File.Exists(_tccPlanXpsFilePath) &&
-                    ((_dvhXpsFilePath != null && File.Exists(_dvhXpsFilePath) && ProstateTab.IsSelected) ||
-                        CylinderTab.IsSelected))
-                {
-                    if (MessageBox.Show("Skall xps-filerna flyttas till arkiv-mappen?", "Fråga", MessageBoxButton.YesNo, MessageBoxImage.Question) == MessageBoxResult.No)
-                    {
-                        return;
-                    }
-
-                    PageReader treatmentPlanPageReader = new PageReader(_treatmentPlanXpsFilePath);
-                    List<List<string>> treatmentPlanPageList = treatmentPlanPageReader.getPages();
-                    TreatmentPlan treatmentPlan = new TreatmentPlan(treatmentPlanPageList, _tabType);
-
-                    if (ProstateTab.IsSelected)
-                    {
-                        string planCode = getTreatmentPlanCode(_treatmentPlanXpsFilePath, TabType.PROSTATE);
-                        string archiveDirName = "Prostata_xps_filer_arkiv";
-                        moveFileToArchive(_treatmentPlanXpsFilePath,archiveDirName, planCode + "_prost_plan.xps");
-                        moveFileToArchive(_dvhXpsFilePath,archiveDirName, planCode + "_prost_dvh.xps");
-                        planCode = getTccPlanCode(_treatmentPlanXpsFilePath);
-                        moveFileToArchive(_tccPlanXpsFilePath,archiveDirName, planCode + "_prost_tcc.xps");
-                    }
-                    else if (CylinderTab.IsSelected)
-                    {
-                        string planCode = getTreatmentPlanCode(_treatmentPlanXpsFilePath, TabType.CYLINDER);
-                        string archiveDirName = "Cylinder_xps_filer_arkiv";
-                        moveFileToArchive(_treatmentPlanXpsFilePath, archiveDirName, planCode + "_cyl_plan.xps");
-                        planCode = getTccPlanCode(_treatmentPlanXpsFilePath);
-                        moveFileToArchive(_tccPlanXpsFilePath, archiveDirName, planCode + "_cyl_tcc.xps");
-                    }
-                }
-            }
-            catch (Exception e)
-            {
-                string messageStr = "Det gick inte att flytta xps-filer till arkiv-mappen. Fel: " + e.ToString();
-                MessageBox.Show(messageStr, "Fel inträffade", MessageBoxButton.OK, MessageBoxImage.Error);
-            }
-
-        }
 
         private void archiveFileReminder()
         {
@@ -1568,6 +1578,10 @@ namespace WpfApp1
             {
                 BtnOpenTPFile4.IsEnabled = false;
                 BtnOpenTCCFile4.IsEnabled = false;
+                _treatmentPlanXpsFilePathEsofagusFractionX = null;
+                _tccPlanXpsFilePathEsofagusFractionX = null;
+                TPXpsPathLabel4.Content = "Inte vald";
+                TCCXpsPathLabel4.Content = "Inte vald";
             }
             else if (firstFractionCombobox.SelectedIndex == 1)
             {

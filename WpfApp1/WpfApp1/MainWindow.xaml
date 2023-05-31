@@ -181,7 +181,7 @@
                         <TextBox x:Name="indexLengthText" HorizontalAlignment="Left" Margin="390,108,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="84" Height="22"  TextChanged="TextBox_TextChanged"/>
                         <Label x:Name="planCodeEsofagusLabel" Content="Plankod:" HorizontalAlignment="Left" Margin="1,131,0,0" VerticalAlignment="Top"/>
                         <TextBox x:Name="planCodeEsofagusText" HorizontalAlignment="Left" Margin="109,131,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="84" Height="22"  TextChanged="TextBox_TextChanged"/>
-                        <Label Content="Data för dagens behandling:" HorizontalAlignment="Left" Margin="10,41,0,0" VerticalAlignment="Top" FontStyle="Italic" FontWeight="Bold"/>
+                        <Label Content="Data för dagens behandling:" HorizontalAlignment="Left" Margin="1,41,0,0" VerticalAlignment="Top" FontStyle="Italic" FontWeight="Bold"/>
                     </Grid>
                     <Grid HorizontalAlignment="Left" Height="137" Margin="10,-6,0,0" VerticalAlignment="Top" Width="597" Grid.ColumnSpan="3">
                         <Label x:Name="TPXpsPathLabel3" Content="Inte vald" HorizontalAlignment="Left" Margin="139,3,0,0" VerticalAlignment="Top" Height="26" Width="465"/>

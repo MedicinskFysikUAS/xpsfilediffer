@@ -75,9 +75,15 @@ namespace archiveXps
                     TreatmentPlan treatmentPlan = new TreatmentPlan(pageReader.getPages(), TabType.INTRAUTERINE);
                     xpsFileInfo.PlanCode = treatmentPlan.planCode() + "_intraut_plan.xps";
                 }
+                else if (pageReader.isFileType(XpsFileType.ONCENTRA_ESOFAGUS_TREATMENT_PLAN))
+                {
+                    TreatmentPlan treatmentPlan = new TreatmentPlan(pageReader.getPages(), TabType.ESOFAGUS);
+                    xpsFileInfo.PlanCode = treatmentPlan.planCode() + "_esofagus_plan.xps";
+                }
                 else if (pageReader.isFileType(XpsFileType.PROSTATE_TCC) || 
                     (pageReader.isFileType(XpsFileType.CYLINDER_TCC)) ||
-                    pageReader.isFileType(XpsFileType.INTRAUTERINE_TCC))
+                    pageReader.isFileType(XpsFileType.INTRAUTERINE_TCC) ||
+                    pageReader.isFileType(XpsFileType.ESOFAGUS_TCC))
                 {
                     List<LiveCatheter> liveCatheters = new List<LiveCatheter>();
                     TccPlan tccPlan = new TccPlan(pageReader.getPages(), liveCatheters);
