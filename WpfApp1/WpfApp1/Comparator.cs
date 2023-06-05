@@ -11,6 +11,9 @@ namespace WpfApp1
         private TccPlan _tccPlan;
         private TreatmentDvh _treatmentDvh;
         private Specifications _specifications;
+        private bool _isFirstFraction;
+        private bool _isFollowingFraction;
+
 
         public Comparator(Specifications specifications)
         {
@@ -21,6 +24,8 @@ namespace WpfApp1
         public TccPlan tccPlan { get => _tccPlan; set => _tccPlan = value; }
 
         public TreatmentDvh treatmentDvh { get => _treatmentDvh; set => _treatmentDvh = value; }
+        public bool IsFirstFraction { get => _isFirstFraction; set => _isFirstFraction = value; }
+        public bool IsFollowingFraction { get => _isFollowingFraction; set => _isFollowingFraction = value; }
 
         // has --------------------------
 
@@ -1616,19 +1621,9 @@ namespace WpfApp1
             resultRows.Add(checkEsofagusUserInputIsSet(userInputEsofagus.PlanCode.Length > 0,
            "Plankod", "Plankod är given", "Plankod är inte given"));
             resultRows.Add(checkEsofagusUserInputIsSet(userInputEsofagus.IsSameSourceSet,
-           "Samma källa", "Samma källa är angiven", "Samma källa är inte angiven"));
+           "Samma källa", "Samma källa är given", "Samma källa är inte given"));
             resultRows.Add(checkEsofagusUserInputIsSet(userInputEsofagus.IsFractionSet,
-           "Fraktion", "Fraktion är angiven", "Fraktion är inte angiven"));
-            resultRows.Add(headerResultRow("Plan"));
-            StringExtractor stringExtractor = new StringExtractor();
-            Calculator calculator = new Calculator();
-            decimal estimatedTreatmentTime = 
-                calculator.estimateEsofagusTreatmentTime(stringExtractor.decimalStringToDecimal(userInputEsofagus.PrescribedDoseString),
-                stringExtractor.decimalStringToDecimal(userInputEsofagus.ActiveLengthString),
-                _treatmentPlan.plannedSourceStrengthValue());
-            decimal reportedTreatmentTime = _treatmentPlan.totalTreatmentTimeValue();
-            resultRows.Add(checkTreatmentTime(estimatedTreatmentTime,
-                reportedTreatmentTime, _specifications.TreatmentTimeEpsilon));
+           "Fraktion", "Fraktion är given", "Fraktion är inte given"));
             return resultRows;
         }
 
@@ -1690,24 +1685,36 @@ namespace WpfApp1
             return resultRows;
         }
 
-        public List<List<string>> esofagusFractionXHeaderRow()
+        public List<List<string>> esofagusTreatmentTimeRow(string prescribedDoseString, string activeLengthString)
         {
+            StringExtractor stringExtractor = new StringExtractor();
+            Calculator calculator = new Calculator();
+            decimal estimatedTreatmentTime =
+                calculator.estimateEsofagusTreatmentTime(stringExtractor.decimalStringToDecimal(prescribedDoseString),
+                stringExtractor.decimalStringToDecimal(activeLengthString),
+                _treatmentPlan.plannedSourceStrengthValue());
+            decimal reportedTreatmentTime = _treatmentPlan.totalTreatmentTimeValue();
             List<List<string>> resultRows = new List<List<string>>();
-            resultRows.Add(headerResultRow("Plan & TCC fraktion X"));
-            return resultRows;
-        }
-
-        public List<List<string>> esofagusFirstFractionHeaderRow()
-        {
-            List<List<string>> resultRows = new List<List<string>>();
-            resultRows.Add(headerResultRow("Plan & TCC första frakt."));
+            resultRows.Add(checkTreatmentTime(estimatedTreatmentTime,
+                reportedTreatmentTime, _specifications.TreatmentTimeEpsilon));
             return resultRows;
         }
 
         public List<List<string>> resultRows(bool skipApprovalTest = false, bool useRelativeEpsilon = false, bool useTimeEpsilonVenezia = false)
         {
             List<List<string>> resultRows = new List<List<string>>();
-            resultRows.Add(headerResultRow("Plan & TCC."));
+            if (_isFirstFraction)
+            {
+                resultRows.Add(headerResultRow("Plan & TCC \nförsta frakt."));
+            }
+            else if (_isFollowingFraction)
+            {
+                resultRows.Add(headerResultRow("Plan & TCC \nfraktion X"));
+            }
+            else
+            {
+                resultRows.Add(headerResultRow("Plan & TCC"));
+            }
             resultRows.Add(checkPatientName());
             resultRows.Add(checkPatientId());
             resultRows.Add(checkPlanCode());

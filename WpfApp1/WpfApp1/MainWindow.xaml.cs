@@ -891,8 +891,10 @@ namespace WpfApp1
                 TccPlan tccPlan = new TccPlan(tccPlanPageList, tccLiveCatheters);
                 comparator.tccPlan = tccPlan;
                 bool skipApprovalTest = true;
-                _resultRows.AddRange(comparator.esofagusFirstFractionHeaderRow());
+                comparator.IsFirstFraction = true;
+                comparator.IsFollowingFraction = false;
                 _resultRows.AddRange(comparator.resultRows(skipApprovalTest));
+                _resultRows.AddRange(comparator.esofagusTreatmentTimeRow(_userInputEsofagus.PrescribedDoseString, _userInputEsofagus.ActiveLengthString));
                 bool includeUserInputCheck = _userInputEsofagus.IsFirstFraction;
                 _resultRows.AddRange(comparator.esofagusTreatmentLengthResultRows(_userInputEsofagus, planTccActiveLength, includeUserInputCheck));
                 planTccActiveLength = new Tuple<decimal, decimal>(comparator.activeLengthInPlan(), comparator.activeLengthInTcc());
@@ -915,8 +917,10 @@ namespace WpfApp1
                 TccPlan tccPlan = new TccPlan(tccPlanPageList, tccLiveCatheters);
                 comparator.tccPlan = tccPlan;
                 bool skipApprovalTest = true;
-                _resultRows.AddRange(comparator.esofagusFractionXHeaderRow());
+                comparator.IsFirstFraction = false;
+                comparator.IsFollowingFraction = true;
                 _resultRows.AddRange(comparator.resultRows(skipApprovalTest));
+                _resultRows.AddRange(comparator.esofagusTreatmentTimeRow(_userInputEsofagus.PrescribedDoseString, _userInputEsofagus.ActiveLengthString));
                 _resultRows.AddRange(comparator.sourceAndPlanCodeEsofagusResultRows(_userInputEsofagus.IsSameSource, _userInputEsofagus.PlanCode,
                        _userInputEsofagus.PrescribedDoseString));
                 if ((_treatmentPlanXpsFilePath != null && _tccPlanXpsFilePath != null) &&
