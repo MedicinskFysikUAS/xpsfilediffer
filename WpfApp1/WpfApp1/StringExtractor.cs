@@ -291,17 +291,20 @@ namespace WpfApp1
         }
         public List<string> allValuesInIntervalExeptDosePointLines(List<string> stringsOnPage, int startIndex, int stopIndex)
         {
-            List<string> lines = new List<string>();
+            List<string> values = new List<string>();
             for (int i = startIndex + 1; i < stopIndex; i++)
             {
-                bool isdosePointTableData = (stringsOnPage[i] == "1" && i < stringsOnPage.Count - 10 && stringsOnPage[i + 10] == "1") ||
-                    (i > stringsOnPage.Count - 1 && stringsOnPage[i] == "1" && stringsOnPage[i] == "Signed for approval");
-                if (!isdosePointTableData)
+                if (stringsOnPage[i] == "1" && i < stringsOnPage.Count - 10 && stringsOnPage[i + 10] == "1")
                 {
-                    lines.Add(stringsOnPage[i]);
+                    values.RemoveRange(values.Count - 9, 9);
+                    break;
+                }
+                else
+                {
+                    values.Add(stringsOnPage[i]);
                 }
             }
-            return lines;
+            return values;
         }
 
         public List<Tuple<string, string>> valuesInIntervall(List<string> stringsOnPage, int startIndex, int stopIndex)

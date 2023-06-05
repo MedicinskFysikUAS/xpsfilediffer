@@ -1615,6 +1615,10 @@ namespace WpfApp1
            "Aktiv längd", "Aktiv längd är given", "Aktiv längd är inte given"));
             resultRows.Add(checkEsofagusUserInputIsSet(userInputEsofagus.PlanCode.Length > 0,
            "Plankod", "Plankod är given", "Plankod är inte given"));
+            resultRows.Add(checkEsofagusUserInputIsSet(userInputEsofagus.IsSameSourceSet,
+           "Samma källa", "Samma källa är angiven", "Samma källa är inte angiven"));
+            resultRows.Add(checkEsofagusUserInputIsSet(userInputEsofagus.IsFractionSet,
+           "Fraktion", "Fraktion är angiven", "Fraktion är inte angiven"));
             resultRows.Add(headerResultRow("Plan"));
             StringExtractor stringExtractor = new StringExtractor();
             Calculator calculator = new Calculator();

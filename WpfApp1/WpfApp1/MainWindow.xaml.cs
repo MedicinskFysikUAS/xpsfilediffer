@@ -544,6 +544,8 @@ namespace WpfApp1
             _userInputEsofagus.IsFirstFraction = firstFractionCombobox.SelectedIndex == 0;
             _userInputEsofagus.IsFollowingFraction = firstFractionCombobox.SelectedIndex == 1;
             _userInputEsofagus.PrescribedDoseString = esofagusPrescribedDoseText.Text;
+            _userInputEsofagus.IsFractionSet = firstFractionCombobox.SelectedIndex != -1;
+            _userInputEsofagus.IsSameSourceSet = sameSourceCombobox3.SelectedIndex != -1;
         }
 
         private bool correctProstateFileType()

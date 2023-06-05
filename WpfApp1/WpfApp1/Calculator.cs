@@ -145,9 +145,18 @@ namespace WpfApp1
 
         public decimal estimateEsofagusTreatmentTime(decimal prescriptionDose, decimal activeLength, decimal currentSourceStrength)
         {
-            return treatmentTimeFromTable(activeLength) *
+            if (prescriptionDose == -1.0m ||
+                activeLength == -1.0m ||
+                currentSourceStrength == -1.0m)
+            {
+                return -1.0m;
+            }
+            else
+            {
+                return treatmentTimeFromTable(activeLength) *
                 (prescriptionDose / 10.0m) *
                 (40.0m / currentSourceStrength);
+            }
         }
 
 

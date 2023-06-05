@@ -14,6 +14,8 @@ namespace WpfApp1
         private bool isFirstFraction;
         private bool isFollowingFraction;
         private string _prescribedDoseString;
+        bool _isFractionSet;
+        bool _isSameSourceSet;
 
         public string ActiveLengthString { get => _activeLengthString; set => _activeLengthString = value; }
         public string InactiveLengthString { get => _inactiveLengthString; set => _inactiveLengthString = value; }
@@ -23,5 +25,7 @@ namespace WpfApp1
         public bool IsFirstFraction { get => isFirstFraction; set => isFirstFraction = value; }
         public string PrescribedDoseString { get => _prescribedDoseString; set => _prescribedDoseString = value; }
         public bool IsFollowingFraction { get => isFollowingFraction; set => isFollowingFraction = value; }
+        public bool IsFractionSet { get => _isFractionSet; set => _isFractionSet = value; }
+        public bool IsSameSourceSet { get => _isSameSourceSet; set => _isSameSourceSet = value; }
     }
 }

@@ -887,7 +887,6 @@ namespace WpfApp1
                     {
                         startTableIndex = offsetIndex;
                         endTableIndex = getCylindricCatheterTableEndIndex(page, currentIndex);
-                        List<string> allValuesOld = _stringExtractor.allValuesInInterval(page, startTableIndex, endTableIndex);
                         List<string> allValues = _stringExtractor.allValuesInIntervalExeptDosePointLines(page, startTableIndex, endTableIndex);
                         List<List<string>> catheterTableLines = _stringExtractor.nColumnsRowsInInterval(6, allValues);
                         foreach (var catheterTableLine in catheterTableLines)
