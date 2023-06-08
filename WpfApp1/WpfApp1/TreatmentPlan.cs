@@ -756,7 +756,6 @@ namespace WpfApp1
             // Only set the Selector that is the Chanell length in the cylinder protocol //before "Cathet..."
             TreatmentPlanCatheter treatmentPlanCatheter = new TreatmentPlanCatheter();
             int pageIndex = 1;
-            //getValueBeforeSearchString(List<string> stringsOnPage, string searchedString, int stringIndex)
             string stringValue = _stringExtractor.getValueBeforeSearchString(_pageList[pageIndex], "1 (1)", 0);
             int position = stringValue.IndexOf("(mm)");
             if (position != -1)
