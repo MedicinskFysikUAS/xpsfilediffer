@@ -92,6 +92,14 @@ namespace WpfApp1
                 {
                     return true;
                 }
+                else if ((xpsFileType == XpsFileType.ONCENTRA_ESOFAGUS_TREATMENT_PLAN && stringsOnPage.Count > 51 && stringsOnPage[50].StartsWith("Oncentra Brachy")))
+                {
+                    return true;
+                }
+                else if ((xpsFileType == XpsFileType.ESOFAGUS_TCC && stringsOnPage.Count > 85 && stringsOnPage[81] == "Förbehandlingsrapport"))
+                {
+                    return true;
+                }
                 else
                 {
                     return false;
@@ -260,6 +268,10 @@ namespace WpfApp1
                 startOrigin = 6818;
                 //deltaWidth = 1845;
                 deltaWidth = 1839;
+            }
+            if (tabType == TabType.ESOFAGUS)
+            {
+                startOrigin = 6750;
             }
 
             int margin = 50;

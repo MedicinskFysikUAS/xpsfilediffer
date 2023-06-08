@@ -77,7 +77,15 @@ namespace WpfApp1
             return -1.0m;
         }
 
-       
+
+
+        private decimal treatmentTimeFromTable(decimal activeLength)
+        {
+            List<Tuple<decimal, decimal>> tableTuples = new List<Tuple<decimal, decimal>>();
+            tableTuples = tableFromConfig("Active_lengths_mm", "Treatment_times_s");
+            return getTableTime(tableTuples, activeLength);
+
+        }
 
         private decimal timeFromTable(CylinderType cylinderType, int cylinderDiameter, decimal treatmentLength)
         {
@@ -135,6 +143,22 @@ namespace WpfApp1
                 (40.0m / currentSourceStrength); 
         }
 
+        public decimal estimateEsofagusTreatmentTime(decimal prescriptionDose, decimal activeLength, decimal currentSourceStrength)
+        {
+            if (prescriptionDose == -1.0m ||
+                activeLength == -1.0m ||
+                currentSourceStrength == -1.0m)
+            {
+                return -1.0m;
+            }
+            else
+            {
+                return treatmentTimeFromTable(activeLength) *
+                (prescriptionDose / 10.0m) *
+                (40.0m / currentSourceStrength);
+            }
+        }
+
 
         public decimal decayFactor(DateTime calibrationDateTime, DateTime currentDateTime)
         {
@@ -165,7 +189,11 @@ namespace WpfApp1
             }
             return tuples;
         }
-
-        
+        public decimal indexerLengthFromUserInput(Specifications specifications, UserInputEsofagus userInputEsofagus)
+        {
+            StringExtractor stringExtractor = new StringExtractor();
+            return specifications.MaxChannelLengthEsofagus -
+                 stringExtractor.decimalStringToDecimal(userInputEsofagus.InactiveLengthString);
+        }
     }
 }

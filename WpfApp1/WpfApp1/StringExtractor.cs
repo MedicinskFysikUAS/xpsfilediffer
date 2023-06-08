@@ -231,6 +231,22 @@ namespace WpfApp1
             return stringValue;
         }
 
+        public string getStringAfterStartWithSearchStringAndSplitAtColon(List<string> stringsOnPage, string searchedString)
+        {
+            int foundIndex = stringsOnPage.FindIndex(x => x.StartsWith(searchedString));
+            string stringValue = "";
+            if (foundIndex != -1)
+            {
+                string fullString = stringsOnPage[foundIndex];
+                if (fullString.Split(":").Length > 1)
+                {
+                    stringValue = fullString.Split(":")[1].Trim();
+                }
+            }
+            return stringValue;
+        }
+
+
         public int getIndexOnPageForSearchedStringFromIndex(List<string> stringsOnPage, int startIndex, string searchedString)
         {
             return stringsOnPage.FindIndex(startIndex, x => x == searchedString);
@@ -272,6 +288,23 @@ namespace WpfApp1
                 lines.Add(stringsOnPage[i]);
             }
             return lines;
+        }
+        public List<string> allValuesInIntervalExeptDosePointLines(List<string> stringsOnPage, int startIndex, int stopIndex)
+        {
+            List<string> values = new List<string>();
+            for (int i = startIndex + 1; i < stopIndex; i++)
+            {
+                if (stringsOnPage[i] == "1" && i < stringsOnPage.Count - 10 && stringsOnPage[i + 10] == "1")
+                {
+                    values.RemoveRange(values.Count - 9, 9);
+                    break;
+                }
+                else
+                {
+                    values.Add(stringsOnPage[i]);
+                }
+            }
+            return values;
         }
 
         public List<Tuple<string, string>> valuesInIntervall(List<string> stringsOnPage, int startIndex, int stopIndex)

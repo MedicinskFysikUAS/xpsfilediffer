@@ -5,7 +5,8 @@
     {
         PROSTATE = 0,
         CYLINDER = 1,
-        INTRAUTERINE = 2
+        INTRAUTERINE = 2,
+        ESOFAGUS =3
     }
 
     public enum CylinderType
@@ -41,7 +42,9 @@
         ONCENTRA_CYLINDER_TREATMENT_PLAN = 3,
         CYLINDER_TCC = 4,
         ONCENTRA_INTRAUTERINE_TREATMENT_PLAN = 5,
-        INTRAUTERINE_TCC = 6
+        INTRAUTERINE_TCC = 6,
+        ONCENTRA_ESOFAGUS_TREATMENT_PLAN = 7,
+        ESOFAGUS_TCC = 8
     }
 
 
