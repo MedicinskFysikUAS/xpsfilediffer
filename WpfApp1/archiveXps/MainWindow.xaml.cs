@@ -97,12 +97,11 @@ namespace archiveXps
                 }
 
             }
-            catch (Exception exception)
+            catch (Exception)
             {
-                //string messageStr = "Skippar filen:\n\n" + filePath + " error:" + exception.ToString();
-                //MessageBox.Show(messageStr, "Fel inträffade", MessageBoxButton.OK, MessageBoxImage.Error);
                 xpsFileInfo.PlanCode = "UNKNOWN";
                 xpsFileInfo.OutputDirectoryName = "UNKNOWN";
+                MessageBox.Show("Ett fel uppstod som ArchiveXps inte kunde hantera.", "Fel", MessageBoxButton.OK, MessageBoxImage.Error);
             }
             return xpsFileInfo;
         }

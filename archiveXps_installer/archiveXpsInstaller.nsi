@@ -78,7 +78,7 @@ File /r "${archiveXpsDir}\*.*"
 
 ExpandEnvStrings $0 %COMSPEC%
 
-ExecWait '"$0" /C "${ApplicationDir}\${installerOutDir}\${vbsScriptName}" ${ApplicationName} ${archiveXpsOutDirPath}\WpfApp1.exe ${installerDirOutDirPath}\archiveIcon.ico ${archiveXpsOutDirPath} %userprofile%'
+ExecWait '"$0" /C "${ApplicationDir}\${installerOutDir}\${vbsScriptName}" ${ApplicationName} ${archiveXpsOutDirPath}\archiveXps.exe ${installerDirOutDirPath}\archiveIcon.ico ${archiveXpsOutDirPath} %userprofile%'
 
 # define uninstaller name
 WriteUninstaller "${ApplicationDir}\uninstaller.exe"
