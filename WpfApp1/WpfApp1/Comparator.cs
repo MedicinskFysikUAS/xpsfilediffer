@@ -218,12 +218,15 @@ namespace WpfApp1
             List<LiveCatheter> tpLiveCatheters = tuple.Item1;
             List<LiveCatheter> tccLiveCatheters = tuple.Item2;
             ErrorCode errorCode = new ErrorCode();
+            errorCode.Number = 0;
+           
             if (tpLiveCatheters.Count != tccLiveCatheters.Count)
             {
                 errorCode.Number = -100;
                 errorCode.Description = "Olika antal katetrar i dosplan och TCC plan." +
                         " I dosplan: " + tpLiveCatheters.Count +
                         " i TCC plan: " + tccLiveCatheters.Count; ;
+                // If number of catheters differ no further checks are performed for any catheter
                 return errorCode;
             }
             var tpAndTccCatheters = tpLiveCatheters.Zip(tccLiveCatheters, (tp, tcc) => new { tpLiveCatheters = tp, tccLiveCatheters = tcc });
@@ -235,6 +238,7 @@ namespace WpfApp1
                     errorCode.Description = "Kateter nummer är inte det samma." +
                         " I dosplan: " + tpAndTccCatheter.tpLiveCatheters.catheterNumber() +
                         " i TCC plan: " + tpAndTccCatheter.tccLiveCatheters.catheterNumber();
+                    //If catheter number differ no further checks are performed for any other catheter
                     return errorCode;
                 }
                 else
@@ -244,11 +248,13 @@ namespace WpfApp1
                     if (tpPositonTimePairs.Count != tccPositonTimePairs.Count)
                     {
                         errorCode.Number = -102;
-                        errorCode.Description = "Antalet positioner och tider för kateter nr " + tpAndTccCatheter.tpLiveCatheters.catheterNumber() +
+                        errorCode.Description += "Antalet positioner och tider för kateter nr " + tpAndTccCatheter.tpLiveCatheters.catheterNumber() +
                             " är olika." +
                             " Antalet (över tröskelvärdet på " + Constants.TIME_THRESHOLD + " sek) i dosplan: " + tpPositonTimePairs.Count +
-                            ". Antalet i TCC plan: " + tccPositonTimePairs.Count;
-                        return errorCode;
+                            ". Antalet i TCC plan: " + tccPositonTimePairs.Count+" ";
+                        //Break here so that no further checks of catheter arises (position/time-pairs check would otherwise render a long list of errors.)
+                        continue;
+                      //  return errorCode;
                     }
                     var tpAndTccPositonTimePairs = tpPositonTimePairs.Zip(
                        tccPositonTimePairs, (tpTimePairs, tccTimePairs) => new {
@@ -264,11 +270,11 @@ namespace WpfApp1
                             stringExtractor.decimalStringToDecimal(tpAndTccPositonTimePair.tccPositonTimePairs.Item1) != 0.0m)
                         {
                             errorCode.Number = -103;
-                            errorCode.Description = "Positionen för kateter nr " + tpAndTccCatheter.tpLiveCatheters.catheterNumber() +
+                            errorCode.Description += "Positionen för kateter nr " + tpAndTccCatheter.tpLiveCatheters.catheterNumber() +
                                 " är olika." +
                             " I dosplan: " + tpAndTccPositonTimePair.tpPositonTimePairs.Item1 +
                             " i TCC plan: " + tpAndTccPositonTimePair.tccPositonTimePairs.Item1;
-                            return errorCode;
+                           // return errorCode;
                         }
 
                         decimal tpTime = stringExtractor.decimalStringToDecimal(tpAndTccPositonTimePair.tpPositonTimePairs.Item2);
@@ -281,18 +287,21 @@ namespace WpfApp1
                         if (deltaTime > timeEpsilon)
                         {
                             errorCode.Number = -103;
-                            errorCode.Description = "Tiden för kateter nr " + tpAndTccCatheter.tpLiveCatheters.catheterNumber() +
+                            errorCode.Description += "Tiden för kateter nr " + tpAndTccCatheter.tpLiveCatheters.catheterNumber() +
                                 " är olika." +
                             " I dosplan (korrigerad): " + tpAndTccPositonTimePair.tpPositonTimePairs.Item2 +
                             " i TCC plan: " + tpAndTccPositonTimePair.tccPositonTimePairs.Item2 +
                             " för position " + tpAndTccPositonTimePair.tpPositonTimePairs.Item1;
-                            return errorCode;
+                            //return errorCode;
                         }
                     }
                 }
             }
-            errorCode.Number = 0;
-            errorCode.Description = "Alla positioner och tider är lika";
+            if (errorCode.Number == 0)
+            {
+                errorCode.Description = "Alla positioner och tider är lika";
+            }
+
             return errorCode;
         }
 
@@ -372,7 +381,7 @@ namespace WpfApp1
         }
 
         public bool treatmentPlanHasExpectedDepth(decimal expectedDepth, decimal needleDepthEpsilon)
-        {
+        {   
             foreach (var catheter in _treatmentPlan.treatmentPlanCatheters())
             {
                 if (Math.Abs(catheter.depth - expectedDepth) > needleDepthEpsilon)
@@ -383,16 +392,17 @@ namespace WpfApp1
             return true;
         }
 
-        int treatmentCatheterNumberWithWrongDepth(decimal expectedDepth, decimal needleDepthEpsilon)
+        List<int> treatmentCatheterNumberWithWrongDepth(decimal expectedDepth, decimal needleDepthEpsilon)
         {
+            List<int> deviatingCatheters = new List<int>();
             foreach (var catheter in _treatmentPlan.treatmentPlanCatheters())
             {
                 if (Math.Abs(catheter.depth - expectedDepth) > needleDepthEpsilon)
                 {
-                    return catheter.catheterNumber;
+                    deviatingCatheters.Add(catheter.catheterNumber);
                 }
             }
-            return -1;
+            return deviatingCatheters;
         }
 
         public bool treatmentPlanHasExpectedFreeLength(decimal expectedFreeLength, decimal freeLengthEpsilon)
@@ -751,6 +761,32 @@ namespace WpfApp1
             return resultRow;
         }
 
+        public List<string> checkRecentApprovalDateTime()
+        {
+            List<string> resultRow = new List<string>();
+            resultRow.Add("Rimlighet godkännandetid");
+            string info = "";
+            DateTime currentTime = DateTime.Now;
+            DateTime approvalTime;
+            DateTime.TryParse(_treatmentPlan.statusSetDateTime(), out approvalTime);
+            if (approvalTime.AddHours(_specifications.approvalTimeToleranceHours) > currentTime)
+            {
+                resultRow.Add("OK");
+
+                info += "innanför";
+            }
+            else
+            {
+                resultRow.Add("Inte OK");
+                info += "utanför";
+            }
+
+            resultRow.Add("Tiden för godkännande är " + info + " tolerans. Dosplanens godkännande: " + _treatmentPlan.statusSetDateTime() +
+                ", tid för kontroll: " + currentTime.ToString());
+
+            return resultRow;
+        }
+
         public List<string> checkCalibrationDateTime(bool sameSource)
         {
             List<string> resultRow = new List<string>();
@@ -981,10 +1017,10 @@ namespace WpfApp1
             {
                 resultRow.Add("Inte OK");
                 descriptionString = "Nåldjupet avviker från det förväntade djupet på " + expectedDepth + " mm mer än " + needleDepthEpsilon + " mm.";
-                int catheterNumber = treatmentCatheterNumberWithWrongDepth(expectedDepth, needleDepthEpsilon);
-                if (catheterNumber != -1)
+                List<int> catheterNumber = treatmentCatheterNumberWithWrongDepth(expectedDepth, needleDepthEpsilon);
+                if (catheterNumber.Any())
                 {
-                    descriptionString += " Detta gäller kateter nr: " + catheterNumber + ".";
+                    descriptionString += " Detta gäller kateter nr: " + String.Join(",",catheterNumber) + ".";
                 }
             }
             resultRow.Add(descriptionString);
@@ -1650,6 +1686,7 @@ namespace WpfApp1
             resultRows.Add(headerResultRow("Plan"));
             resultRows.Add(checkIntrauterinePlanCatheterLengths());
             resultRows.Add(checkIntrauterineOffsetLengths());
+            resultRows.Add(checkRecentApprovalDateTime());
             return resultRows;
         }
 

@@ -39,6 +39,7 @@ namespace WpfApp1
         private decimal _lengthOfCathetersUsedForEsofagus = 1000.0m;
         private decimal _maxChannelLengthEsofagus;
         private decimal _indexerLengthEpsilon = 0.1m;
+        private double _approvalTimeToleranceHours = 2.0;
         public decimal NeedleDepth { get => _needleDepth; set => _needleDepth = value; }
         public decimal FreeLength { get => _freeLength; set => _freeLength = value; }
         public decimal NeedleDepthEpsilon { get => _needleDepthEpsilon; set => _needleDepthEpsilon = value; }
@@ -69,5 +70,6 @@ namespace WpfApp1
         public decimal LengthOfCathetersUsedForEsofagus { get => _lengthOfCathetersUsedForEsofagus; set => _lengthOfCathetersUsedForEsofagus = value; }
         public decimal MaxChannelLengthEsofagus { get => _maxChannelLengthEsofagus; set => _maxChannelLengthEsofagus = value; }
         public decimal IndexerLengthEpsilon { get => _indexerLengthEpsilon; set => _indexerLengthEpsilon = value; }
+        public double approvalTimeToleranceHours { get => _approvalTimeToleranceHours; set => _approvalTimeToleranceHours = value; }
     }
 }
